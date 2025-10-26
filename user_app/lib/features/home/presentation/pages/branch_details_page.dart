@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:iconsax/iconsax.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../di/home_injection.dart';
 import '../../domain/usecases/get_branch_details_usecase.dart';
 import '../../domain/entities/branch_entity.dart';
 import '../cubit/branch_details_cubit.dart';
 import '../cubit/branch_details_state.dart';
-import '../widgets/branch_header_section.dart';
-import '../widgets/branch_info_card.dart';
-import '../widgets/working_hours_widget.dart';
-import '../widgets/amenities_grid.dart';
-import '../widgets/halls_section.dart';
+import '../widgets/hero_banner_widget.dart';
+import '../widgets/seasonal_offers_section.dart';
+import '../widgets/featured_branches_section.dart';
+import '../widgets/welcome_section.dart';
 
 class BranchDetailsPage extends StatelessWidget {
   final String branchId;
@@ -40,11 +40,14 @@ class BranchDetailsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
       body: BlocBuilder<BranchDetailsCubit, BranchDetailsState>(
         builder: (context, state) {
           if (state is BranchDetailsLoading) {
             return const Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(
+                color: AppColors.primaryRed,
+              ),
             );
           }
 
@@ -56,14 +59,14 @@ class BranchDetailsView extends StatelessWidget {
                   Icon(
                     Iconsax.info_circle,
                     size: 64,
-                    color: Colors.red[300],
+                    color: AppColors.errorColor,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     state.message,
                     style: const TextStyle(
                       fontSize: 16,
-                      color: Colors.red,
+                      color: AppColors.errorColor,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -72,6 +75,10 @@ class BranchDetailsView extends StatelessWidget {
                     onPressed: () {
                       context.read<BranchDetailsCubit>().loadBranchDetails(branchId);
                     },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryRed,
+                      foregroundColor: Colors.white,
+                    ),
                     child: Text('retry'.tr()),
                   ),
                 ],
@@ -99,109 +106,82 @@ class BranchDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildBranchDetails(BuildContext context, branch) {
+  Widget _buildBranchDetails(BuildContext context, BranchEntity branch) {
     return CustomScrollView(
       slivers: [
-        // Header section
+        // Custom App Bar
+        SliverAppBar(
+          expandedHeight: 0,
+          floating: true,
+          pinned: true,
+          backgroundColor: AppColors.primaryRed,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Iconsax.arrow_right_3, color: Colors.white),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Iconsax.notification, color: Colors.white),
+              onPressed: () {
+                // TODO: Handle notification tap
+              },
+            ),
+          ],
+        ),
+        
+        // Hero Banner
         SliverToBoxAdapter(
-          child: BranchHeaderSection(branch: branch),
+          child: HeroBannerWidget(
+            title: 'want_to_change_mood'.tr(),
+            subtitle: 'with_tornado_entertainment'.tr(),
+            onTap: () {
+              // TODO: Handle banner tap
+            },
+          ),
         ),
         
         // Content
         SliverPadding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
-              const SizedBox(height: 16),
-              
-              // Description
-              if (branch.descriptionAr != null || branch.descriptionEn != null)
-                Card(
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Iconsax.document_text,
-                              color: Theme.of(context).primaryColor,
-                              size: 24,
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              'description'.tr(),
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          context.locale.languageCode == 'ar' 
-                              ? branch.descriptionAr ?? branch.descriptionEn ?? ''
-                              : branch.descriptionEn ?? branch.descriptionAr ?? '',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            height: 1.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              
-              const SizedBox(height: 16),
-              
-              // Branch info cards
-              Row(
-                children: [
-                  Expanded(
-                    child: BranchInfoCard(
-                      icon: Iconsax.people,
-                      title: 'capacity_info'.tr(),
-                      value: branch.capacity > 0 
-                          ? 'capacity'.tr(args: ['${branch.capacity}'])
-                          : 'capacity_not_available'.tr(),
-                      iconColor: branch.capacity > 0 ? Colors.green : Colors.orange,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: BranchInfoCard(
-                      icon: Iconsax.call,
-                      title: 'phone'.tr(),
-                      value: branch.contactPhone ?? 'not_available'.tr(),
-                      onTap: branch.contactPhone != null 
-                          ? () => _makePhoneCall(branch.contactPhone!)
-                          : null,
-                      iconColor: branch.contactPhone != null ? Colors.blue : Colors.grey,
-                    ),
-                  ),
-                ],
+              // Seasonal Offers Section
+              MockSeasonalOffersSection(
+                onViewMore: () {
+                  // TODO: Navigate to offers page
+                },
+                onOfferTap: (offerTitle) {
+                  // TODO: Handle offer tap
+                  print('Offer tapped: $offerTitle');
+                },
               ),
               
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
               
-              // Working hours
-              WorkingHoursWidget(branch: branch),
+              // Featured Branches Section
+              MockFeaturedBranchesSection(
+                onViewMore: () {
+                  // TODO: Navigate to branches page
+                },
+                onBranchTap: (branchName) {
+                  // TODO: Handle branch tap
+                  print('Branch tapped: $branchName');
+                },
+              ),
               
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
               
-              // Amenities
-              AmenitiesGrid(branch: branch),
-              
-              const SizedBox(height: 16),
-              
-              // Halls Section
-              HallsSection(branchId: branch.id),
+              // Welcome Section
+              MockWelcomeSection(
+                onViewMore: () {
+                  // TODO: Navigate to all branches page
+                },
+                onBranchTap: (branchName) {
+                  // TODO: Handle branch tap
+                  print('Welcome branch tapped: $branchName');
+                },
+              ),
               
               const SizedBox(height: 100), // Space for bottom action bar
             ]),
@@ -209,12 +189,6 @@ class BranchDetailsView extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  Future<void> _makePhoneCall(String phoneNumber) async {
-    // TODO: Implement phone call functionality
-    // This would require adding url_launcher package to pubspec.yaml
-    print('Calling: $phoneNumber');
   }
 }
 
@@ -229,12 +203,12 @@ class BranchDetailsBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
+        color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: AppColors.shadowColor,
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
@@ -249,12 +223,33 @@ class BranchDetailsBottomBar extends StatelessWidget {
                   // TODO: View on map
                 },
                 icon: const Icon(Iconsax.location),
-                label: Text('view_on_map'.tr()),
+                label: Text('branches'.tr()),
                 style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.primaryRed,
+                  side: const BorderSide(color: AppColors.primaryRed),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  // TODO: View map
+                },
+                icon: const Icon(Iconsax.map),
+                label: Text('map'.tr()),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryRed,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
                 ),
               ),
             ),

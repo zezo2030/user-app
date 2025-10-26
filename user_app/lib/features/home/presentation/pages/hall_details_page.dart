@@ -12,6 +12,9 @@ import '../widgets/hall_pricing_card.dart';
 import '../widgets/hall_features_list.dart';
 import '../widgets/working_hours_widget.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../booking/presentation/pages/hall_booking_page.dart';
+import '../../../booking/di/booking_injection.dart' as booking;
+import '../../../booking/presentation/cubit/booking_cubit.dart';
 
 class HallDetailsPage extends StatelessWidget {
   final String hallId;
@@ -331,7 +334,19 @@ class HallDetailsBottomBar extends StatelessWidget {
               flex: 2,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  // TODO: Book hall
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BlocProvider(
+                        create: (context) => booking.sl<BookingCubit>(),
+                        child: HallBookingPage(
+                          hallId: hall.id,
+                          branchId: hall.branchId,
+                          hallName: hall.nameAr,
+                        ),
+                      ),
+                    ),
+                  );
                 },
                 icon: const Icon(Iconsax.calendar_1),
                 label: Text('book_hall'.tr()),

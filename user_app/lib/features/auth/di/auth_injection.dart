@@ -13,6 +13,7 @@ import '../domain/usecases/get_profile_usecase.dart';
 import '../domain/usecases/refresh_token_usecase.dart';
 import '../presentation/cubit/auth_cubit.dart';
 import '../../home/di/home_injection.dart';
+import '../../booking/di/booking_injection.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -55,5 +56,8 @@ Future<void> init() async {
 
   // Initialize Home feature
   await initHome();
+  
+  // Initialize Booking feature
+  initBookingInjection();
 }
 

@@ -9,10 +9,10 @@ class AppTheme {
       
       // Color Scheme
       colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.primaryPink,
+        seedColor: AppColors.primaryRed,
         brightness: Brightness.light,
-        primary: AppColors.primaryPink,
-        secondary: AppColors.primaryOrange,
+        primary: AppColors.primaryRed,
+        secondary: AppColors.primaryRed,
         surface: AppColors.surfaceColor,
         background: AppColors.backgroundColor,
         error: AppColors.errorColor,
@@ -39,7 +39,7 @@ class AppTheme {
       // Elevated Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryPink,
+          backgroundColor: AppColors.primaryRed,
           foregroundColor: Colors.white,
           elevation: 2,
           shadowColor: AppColors.shadowColor,
@@ -56,9 +56,9 @@ class AppTheme {
       // Outlined Button Theme
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.primaryPink,
+          foregroundColor: AppColors.primaryRed,
           side: const BorderSide(
-            color: AppColors.primaryPink,
+            color: AppColors.primaryRed,
             width: 1.5,
           ),
           shape: RoundedRectangleBorder(
@@ -74,7 +74,7 @@ class AppTheme {
       // Text Button Theme
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColors.primaryPink,
+          foregroundColor: AppColors.primaryRed,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -97,7 +97,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.primaryPink, width: 2),
+          borderSide: const BorderSide(color: AppColors.primaryRed, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
@@ -124,7 +124,7 @@ class AppTheme {
       // Bottom Navigation Bar Theme
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.surfaceColor,
-        selectedItemColor: AppColors.primaryPink,
+        selectedItemColor: AppColors.primaryRed,
         unselectedItemColor: AppColors.greyMedium,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
@@ -132,14 +132,14 @@ class AppTheme {
       
       // Floating Action Button Theme
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: AppColors.primaryPink,
+        backgroundColor: AppColors.primaryRed,
         foregroundColor: Colors.white,
         elevation: 4,
       ),
       
       // Progress Indicator Theme
       progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: AppColors.primaryPink,
+        color: AppColors.primaryRed,
         linearTrackColor: AppColors.greyLight,
         circularTrackColor: AppColors.greyLight,
       ),
@@ -160,10 +160,10 @@ class AppTheme {
       
       // Color Scheme
       colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.primaryPink,
+        seedColor: AppColors.primaryRed,
         brightness: Brightness.dark,
-        primary: AppColors.primaryPink,
-        secondary: AppColors.primaryOrange,
+        primary: AppColors.primaryRed,
+        secondary: AppColors.primaryPink,
         surface: const Color(0xFF1E1E1E),
         background: const Color(0xFF121212),
         error: AppColors.errorColor,
@@ -190,7 +190,7 @@ class AppTheme {
       // Elevated Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryPink,
+          backgroundColor: AppColors.primaryRed,
           foregroundColor: Colors.white,
           elevation: 2,
           shadowColor: AppColors.shadowColor,
@@ -207,9 +207,9 @@ class AppTheme {
       // Outlined Button Theme
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.primaryPink,
+          foregroundColor: AppColors.primaryRed,
           side: const BorderSide(
-            color: AppColors.primaryPink,
+            color: AppColors.primaryRed,
             width: 1.5,
           ),
           shape: RoundedRectangleBorder(
@@ -225,7 +225,7 @@ class AppTheme {
       // Text Button Theme
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColors.primaryPink,
+          foregroundColor: AppColors.primaryRed,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -248,7 +248,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.primaryPink, width: 2),
+          borderSide: const BorderSide(color: AppColors.primaryRed, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
@@ -275,7 +275,7 @@ class AppTheme {
       // Bottom Navigation Bar Theme
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Color(0xFF1E1E1E),
-        selectedItemColor: AppColors.primaryPink,
+        selectedItemColor: AppColors.primaryRed,
         unselectedItemColor: AppColors.greyMedium,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
@@ -283,14 +283,14 @@ class AppTheme {
       
       // Floating Action Button Theme
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: AppColors.primaryPink,
+        backgroundColor: AppColors.primaryRed,
         foregroundColor: Colors.white,
         elevation: 4,
       ),
       
       // Progress Indicator Theme
       progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: AppColors.primaryPink,
+        color: AppColors.primaryRed,
         linearTrackColor: AppColors.greyDark,
         circularTrackColor: AppColors.greyDark,
       ),

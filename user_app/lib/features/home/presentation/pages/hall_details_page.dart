@@ -10,6 +10,8 @@ import '../cubit/hall_details_state.dart';
 import '../widgets/hall_header_section.dart';
 import '../widgets/hall_pricing_card.dart';
 import '../widgets/hall_features_list.dart';
+import '../widgets/working_hours_widget.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class HallDetailsPage extends StatelessWidget {
   final String hallId;
@@ -260,13 +262,13 @@ class HallDetailsView extends StatelessWidget {
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
       case 'available':
-        return Colors.green;
+        return AppColors.availableColor;
       case 'maintenance':
-        return Colors.orange;
+        return AppColors.maintenanceColor;
       case 'reserved':
-        return Colors.red;
+        return AppColors.reservedColor;
       default:
-        return Colors.grey;
+        return AppColors.greyMedium;
     }
   }
 

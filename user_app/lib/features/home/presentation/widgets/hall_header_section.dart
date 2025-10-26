@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../domain/entities/hall_entity.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class HallHeaderSection extends StatelessWidget {
   final HallEntity hall;
@@ -180,13 +181,13 @@ class HallHeaderSection extends StatelessWidget {
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
       case 'available':
-        return Colors.green;
+        return AppColors.availableColor;
       case 'maintenance':
-        return Colors.orange;
+        return AppColors.maintenanceColor;
       case 'reserved':
-        return Colors.red;
+        return AppColors.reservedColor;
       default:
-        return Colors.grey;
+        return AppColors.greyMedium;
     }
   }
 

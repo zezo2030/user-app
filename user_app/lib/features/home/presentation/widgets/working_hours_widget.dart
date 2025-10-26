@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../domain/entities/branch_entity.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class WorkingHoursWidget extends StatefulWidget {
   final BranchEntity branch;
@@ -267,13 +268,13 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: isOpen 
-            ? Colors.green.withValues(alpha: 0.1)
-            : Colors.red.withValues(alpha: 0.1),
+            ? AppColors.availableColor.withValues(alpha: 0.1)
+            : AppColors.closedColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isOpen 
-              ? Colors.green.withValues(alpha: 0.3)
-              : Colors.red.withValues(alpha: 0.3),
+              ? AppColors.availableColor.withValues(alpha: 0.3)
+              : AppColors.closedColor.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -284,7 +285,7 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
             width: 8,
             height: 8,
             decoration: BoxDecoration(
-              color: isOpen ? Colors.green[600] : Colors.red[600],
+              color: isOpen ? AppColors.availableColor : AppColors.closedColor,
               shape: BoxShape.circle,
             ),
           ),
@@ -292,7 +293,7 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
           Text(
             isOpen ? 'open'.tr() : 'closed'.tr(),
             style: TextStyle(
-              color: isOpen ? Colors.green[700] : Colors.red[700],
+              color: isOpen ? AppColors.availableColor : AppColors.closedColor,
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
@@ -442,8 +443,8 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
                         style: TextStyle(
                           fontSize: 14,
                           color: isOpen 
-                              ? Colors.green[700]
-                              : Colors.red[600],
+                              ? AppColors.availableColor
+                              : AppColors.closedColor,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -467,15 +468,15 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isOpen 
-              ? [Colors.green[400]!, Colors.green[600]!]
-              : [Colors.red[400]!, Colors.red[600]!],
+              ? [AppColors.availableColor.withValues(alpha: 0.8), AppColors.availableColor]
+              : [AppColors.closedColor.withValues(alpha: 0.8), AppColors.closedColor],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: (isOpen ? Colors.green : Colors.red).withValues(alpha: 0.3),
+            color: (isOpen ? AppColors.availableColor : AppColors.closedColor).withValues(alpha: 0.3),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),

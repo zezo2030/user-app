@@ -63,7 +63,7 @@ class _BannerCarouselState extends State<BannerCarousel> {
                     shape: BoxShape.circle,
                     color: _currentIndex == index
                         ? Theme.of(context).primaryColor
-                        : Colors.grey[400],
+                        : Theme.of(context).colorScheme.outline.withOpacity(0.3),
                   ),
                 ),
               ),
@@ -101,7 +101,7 @@ class _BannerItem extends StatelessWidget {
               imageUrl: banner.imageUrl,
               width: double.infinity,
               height: double.infinity,
-              fit: BoxFit.cover,
+              fit: BoxFit.fill,
               placeholder: (context, url) => Container(
                 color: Colors.grey[300],
                 child: const Center(

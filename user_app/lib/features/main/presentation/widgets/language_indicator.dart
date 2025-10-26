@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class LanguageIndicator extends StatelessWidget {
   const LanguageIndicator({Key? key}) : super(key: key);
@@ -13,11 +14,11 @@ class LanguageIndicator extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: isArabic
-            ? Colors.green.withOpacity(0.1)
-            : Colors.blue.withOpacity(0.1),
+            ? AppColors.arabicColor.withOpacity(0.1)
+            : AppColors.englishColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isArabic ? Colors.green : Colors.blue,
+          color: isArabic ? AppColors.arabicColor : AppColors.englishColor,
           width: 1,
         ),
       ),
@@ -27,7 +28,7 @@ class LanguageIndicator extends StatelessWidget {
           Icon(
             isArabic ? Icons.language : Icons.translate,
             size: 16,
-            color: isArabic ? Colors.green : Colors.blue,
+            color: isArabic ? AppColors.arabicColor : AppColors.englishColor,
           ),
           const SizedBox(width: 4),
           Text(
@@ -35,7 +36,7 @@ class LanguageIndicator extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
-              color: isArabic ? Colors.green : Colors.blue,
+              color: isArabic ? AppColors.arabicColor : AppColors.englishColor,
             ),
           ),
         ],

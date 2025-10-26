@@ -131,5 +131,20 @@
   "profile_subtitle": "Manage your personal information",
   "current_language": "Current Language",
   "language_arabic": "Arabic",
-  "language_english": "English"
+  "language_english": "English",
+  "offers": "Offers",
+  "featured_branches": "Featured Branches",
+  "off": "off",
+  "offer_details": "Offer Details",
+  "valid_until": "Valid until",
+  "valid_now": "Valid now",
+  "capacity": "Capacity: {0} people",
+  "capacity_not_available": "Capacity not available",
+  "active": "Active",
+  "inactive": "Inactive",
+  "view_details": "View Details",
+  "book_now": "Book Now",
+  "no_content_available": "No content available",
+  "check_back_later": "Check back later",
+  "error_loading_data": "Error loading data"
 }

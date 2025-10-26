@@ -131,5 +131,20 @@
   "profile_subtitle": "إدارة معلوماتك الشخصية",
   "current_language": "اللغة الحالية",
   "language_arabic": "العربية",
-  "language_english": "الإنجليزية"
+  "language_english": "الإنجليزية",
+  "offers": "العروض",
+  "featured_branches": "الفروع المميزة",
+  "off": "خصم",
+  "offer_details": "تفاصيل العرض",
+  "valid_until": "صالح حتى",
+  "valid_now": "صالح الآن",
+  "capacity": "السعة: {0} شخص",
+  "capacity_not_available": "السعة غير متاحة",
+  "active": "نشط",
+  "inactive": "غير نشط",
+  "view_details": "عرض التفاصيل",
+  "book_now": "احجز الآن",
+  "no_content_available": "لا يوجد محتوى متاح",
+  "check_back_later": "تحقق مرة أخرى لاحقاً",
+  "error_loading_data": "خطأ في تحميل البيانات"
 }

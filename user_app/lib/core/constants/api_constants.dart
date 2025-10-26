@@ -23,6 +23,9 @@ class ApiConstants {
   static const String profileEndpoint = '/auth/me';
   static const String refreshTokenEndpoint = '/auth/refresh';
   static const String emailConfigEndpoint = '/auth/email-config';
+  
+  // Home Endpoints
+  static const String homeEndpoint = '/home';
 
   // Headers
   static const String contentTypeHeader = 'Content-Type';

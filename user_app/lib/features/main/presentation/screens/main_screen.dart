@@ -8,6 +8,8 @@ import 'home_screen.dart';
 import 'my_activity_screen.dart';
 import 'category_screen.dart';
 import 'profile_tab_screen.dart';
+import '../../../home/presentation/cubit/home_cubit.dart';
+import '../../../home/di/home_injection.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -56,11 +58,14 @@ class MainScreenView extends StatelessWidget {
             ),
             body: IndexedStack(
               index: cubit.currentIndex,
-              children: const [
-                HomeScreen(),
-                MyActivityScreen(),
-                CategoryScreen(),
-                ProfileTabScreen(),
+              children: [
+                BlocProvider(
+                  create: (context) => sl<HomeCubit>(),
+                  child: const HomeScreen(),
+                ),
+                const MyActivityScreen(),
+                const CategoryScreen(),
+                const ProfileTabScreen(),
               ],
             ),
             bottomNavigationBar: BottomNavigationBar(

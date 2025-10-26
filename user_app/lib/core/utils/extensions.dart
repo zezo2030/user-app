@@ -61,7 +61,9 @@ extension DioExceptionToFailure on DioException {
         }
 
       case DioExceptionType.cancel:
-        return const NetworkFailure(message: 'Request was cancelled.');
+        return const NetworkFailure(
+          message: 'Request was cancelled.',
+        );
 
       case DioExceptionType.connectionError:
         return const NetworkFailure(

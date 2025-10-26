@@ -12,6 +12,7 @@ import '../domain/usecases/register_verify_otp_usecase.dart';
 import '../domain/usecases/get_profile_usecase.dart';
 import '../domain/usecases/refresh_token_usecase.dart';
 import '../presentation/cubit/auth_cubit.dart';
+import '../../home/di/home_injection.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -51,5 +52,8 @@ Future<void> init() async {
     getProfileUseCase: sl(),
     refreshTokenUseCase: sl(),
   ));
+
+  // Initialize Home feature
+  await initHome();
 }
 

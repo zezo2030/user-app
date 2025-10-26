@@ -1,9 +1,11 @@
 import 'package:dio/dio.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../models/home_response_model.dart';
+import '../models/branch_model.dart';
 
 abstract class HomeRemoteDataSource {
   Future<HomeResponseModel> getHomeData();
+  Future<BranchModel> getBranchDetails(String branchId);
 }
 
 class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
@@ -50,6 +52,32 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       throw _handleDioException(e);
     } catch (e) {
       print('❌ HomeDataSource: Unexpected error: ${e.toString()}');
+      throw Exception('Unexpected error: $e');
+    }
+  }
+
+  @override
+  Future<BranchModel> getBranchDetails(String branchId) async {
+    try {
+      print('🔍 HomeDataSource: Making request to branch details endpoint for ID: $branchId');
+      final response = await dio.get(
+        '${ApiConstants.baseUrl}${ApiConstants.branchDetailsEndpoint}/$branchId',
+      );
+
+      print('🔍 HomeDataSource: Branch details response received');
+      print('🔍 HomeDataSource: Response status: ${response.statusCode}');
+      print('🔍 HomeDataSource: Response data: ${response.data}');
+
+      if (response.data == null) {
+        throw Exception('Branch details response data is null');
+      }
+
+      return BranchModel.fromJson(response.data);
+    } on DioException catch (e) {
+      print('❌ HomeDataSource: DioException occurred for branch details: ${e.toString()}');
+      throw _handleDioException(e);
+    } catch (e) {
+      print('❌ HomeDataSource: Unexpected error for branch details: ${e.toString()}');
       throw Exception('Unexpected error: $e');
     }
   }

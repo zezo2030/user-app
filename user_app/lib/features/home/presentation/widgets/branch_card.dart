@@ -188,7 +188,10 @@ class BranchCard extends StatelessWidget {
                         Expanded(
                           child: OutlinedButton(
                             onPressed: () {
-                              // TODO: Navigate to branch details
+                              Navigator.of(context).pushNamed(
+                                '/branch-details',
+                                arguments: {'branchId': branch.id},
+                              );
                             },
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 8),

@@ -11,6 +11,7 @@ import 'features/auth/presentation/screens/register_screen.dart';
 import 'features/auth/presentation/screens/otp_verify_screen.dart';
 import 'features/auth/presentation/screens/profile_screen.dart';
 import 'features/main/presentation/screens/main_screen.dart';
+import 'features/home/presentation/pages/branch_details_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -142,6 +143,14 @@ class MyApp extends StatelessWidget {
             case '/main':
               return MaterialPageRoute(
                 builder: (context) => const MainScreen(),
+              );
+
+            case '/branch-details':
+              final args = settings.arguments as Map<String, dynamic>?;
+              return MaterialPageRoute(
+                builder: (context) => BranchDetailsPage(
+                  branchId: args?['branchId'] ?? '',
+                ),
               );
 
             default:

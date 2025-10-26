@@ -40,13 +40,13 @@ class BranchModel extends BranchEntity {
     
     return BranchModel(
       id: json['id']?.toString() ?? '',
-      nameAr: json['nameAr']?.toString() ?? '',
-      nameEn: json['nameEn']?.toString() ?? '',
+      nameAr: json['name_ar']?.toString() ?? '',
+      nameEn: json['name_en']?.toString() ?? '',
       location: json['location']?.toString() ?? '',
       capacity: parsedCapacity,
       status: json['status']?.toString() ?? 'inactive',
-      descriptionAr: json['descriptionAr']?.toString(),
-      descriptionEn: json['descriptionEn']?.toString(),
+      descriptionAr: json['description_ar']?.toString(),
+      descriptionEn: json['description_en']?.toString(),
       contactPhone: json['contactPhone']?.toString(),
       workingHours: json['workingHours'] as Map<String, dynamic>?,
       amenities: (json['amenities'] as List<dynamic>?)

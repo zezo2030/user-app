@@ -26,6 +26,7 @@ class ApiConstants {
   
   // Home Endpoints
   static const String homeEndpoint = '/home';
+  static const String branchDetailsEndpoint = '/content/branches';
 
   // Headers
   static const String contentTypeHeader = 'Content-Type';

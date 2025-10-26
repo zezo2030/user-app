@@ -103,7 +103,7 @@ class WelcomeBranchCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              // Image Section
+              // Image Section (using first letter of branch name since BranchEntity doesn't have image field)
               Container(
                 width: 80,
                 height: 80,
@@ -148,7 +148,7 @@ class WelcomeBranchCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     
-                    // Rating
+                    // Rating (using default rating since BranchEntity doesn't have rating field)
                     const RatingStarsWidget(
                       rating: 4.0,
                       starSize: 14,
@@ -220,7 +220,7 @@ class WelcomeBranchCard extends StatelessWidget {
                     Row(
                       children: [
                         PriceTagWidget(
-                          price: 40.0, // Mock price
+                          price: 40.0, // Default price since BranchEntity doesn't have price field
                           backgroundColor: AppColors.primaryRed,
                         ),
                         const Spacer(),

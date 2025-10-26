@@ -9,9 +9,6 @@ import '../../domain/entities/branch_entity.dart';
 import '../cubit/branch_details_cubit.dart';
 import '../cubit/branch_details_state.dart';
 import '../widgets/hero_banner_widget.dart';
-import '../widgets/seasonal_offers_section.dart';
-import '../widgets/featured_branches_section.dart';
-import '../widgets/welcome_section.dart';
 
 class BranchDetailsPage extends StatelessWidget {
   final String branchId;
@@ -130,11 +127,12 @@ class BranchDetailsView extends StatelessWidget {
           ],
         ),
         
-        // Hero Banner
+        // Hero Banner with Branch Info
         SliverToBoxAdapter(
           child: HeroBannerWidget(
-            title: 'want_to_change_mood'.tr(),
-            subtitle: 'with_tornado_entertainment'.tr(),
+            title: branch.nameAr,
+            subtitle: branch.descriptionAr ?? 'with_tornado_entertainment'.tr(),
+            amenities: branch.amenities,
             onTap: () {
               // TODO: Handle banner tap
             },
@@ -146,48 +144,577 @@ class BranchDetailsView extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 16),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
-              // Seasonal Offers Section
-              MockSeasonalOffersSection(
-                onViewMore: () {
-                  // TODO: Navigate to offers page
-                },
-                onOfferTap: (offerTitle) {
-                  // TODO: Handle offer tap
-                  print('Offer tapped: $offerTitle');
-                },
-              ),
+              // Branch Info Card
+             // _buildBranchInfoCard(branch),
+              
+             // const SizedBox(height: 24),
+              
+              // Branch Details Section
+              _buildBranchDetailsSection(branch),
               
               const SizedBox(height: 24),
               
-              // Featured Branches Section
-              MockFeaturedBranchesSection(
-                onViewMore: () {
-                  // TODO: Navigate to branches page
-                },
-                onBranchTap: (branchName) {
-                  // TODO: Handle branch tap
-                  print('Branch tapped: $branchName');
-                },
-              ),
+              // Branch Amenities Section (only if more than 3 amenities or not shown in hero)
+              if (branch.amenities != null && branch.amenities!.length > 3)
+                _buildBranchAmenitiesSection(branch),
               
               const SizedBox(height: 24),
               
-              // Welcome Section
-              MockWelcomeSection(
-                onViewMore: () {
-                  // TODO: Navigate to all branches page
-                },
-                onBranchTap: (branchName) {
-                  // TODO: Handle branch tap
-                  print('Welcome branch tapped: $branchName');
-                },
-              ),
+              // Branch Working Hours Section
+              _buildBranchWorkingHoursSection(branch),
+              
+              const SizedBox(height: 24),
+              
+              // Branch Contact Section
+              if (branch.contactPhone != null)
+                _buildBranchContactSection(branch),
               
               const SizedBox(height: 100), // Space for bottom action bar
             ]),
           ),
         ),
       ],
+    );
+  }
+
+
+  Widget _buildBranchDetailsSection(BranchEntity branch) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowColor,
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Iconsax.document_text,
+                color: AppColors.primaryRed,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'description'.tr(),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            branch.descriptionAr ?? branch.descriptionEn ?? 'no_content_available'.tr(),
+            style: const TextStyle(
+              fontSize: 14,
+              height: 1.5,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBranchAmenitiesSection(BranchEntity branch) {
+    if (branch.amenities == null || branch.amenities!.isEmpty || branch.amenities!.length <= 3) {
+      return const SizedBox.shrink();
+    }
+
+    // Get amenities beyond the first 3 (which are shown in hero)
+    final additionalAmenities = branch.amenities!.skip(3).toList();
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowColor,
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Iconsax.star,
+                color: AppColors.primaryRed,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'more_amenities'.tr(),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: additionalAmenities.map((amenity) {
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryRed.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: AppColors.primaryRed.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Text(
+                  amenity,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.primaryRed,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBranchWorkingHoursSection(BranchEntity branch) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowColor,
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryRed.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Iconsax.clock,
+                  color: AppColors.primaryRed,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'working_hours'.tr(),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          
+          if (branch.workingHours != null && branch.workingHours!.isNotEmpty)
+            Column(
+              children: branch.workingHours!.entries.map((entry) {
+                final isToday = _isToday(entry.key);
+                final formattedHours = _formatWorkingHours(entry.value);
+                final isClosed = formattedHours == 'مغلق';
+                final isOpenNow = isToday && !isClosed && _isCurrentlyOpen(formattedHours);
+                
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isToday 
+                        ? (isClosed 
+                            ? Colors.red.withValues(alpha: 0.05)
+                            : AppColors.primaryRed.withValues(alpha: 0.05))
+                        : (isClosed 
+                            ? Colors.grey.withValues(alpha: 0.05)
+                            : Colors.grey.withValues(alpha: 0.05)),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isToday 
+                          ? (isClosed 
+                              ? Colors.red.withValues(alpha: 0.2)
+                              : AppColors.primaryRed.withValues(alpha: 0.2))
+                          : Colors.grey.withValues(alpha: 0.1),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      // Day name
+                      Expanded(
+                        flex: 2,
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: isToday 
+                                    ? (isClosed ? Colors.red : AppColors.primaryRed)
+                                    : Colors.grey.withValues(alpha: 0.5),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    entry.key,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: isToday ? FontWeight.bold : FontWeight.w500,
+                                      color: isToday 
+                                          ? (isClosed ? Colors.red : AppColors.primaryRed)
+                                          : AppColors.textPrimary,
+                                    ),
+                                  ),
+                                  if (isToday && isOpenNow)
+                                    Text(
+                                      'مفتوح الآن',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: AppColors.primaryRed,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                      // Working hours
+                      Expanded(
+                        flex: 3,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Icon(
+                              isClosed ? Iconsax.close_circle : Iconsax.clock,
+                              size: 16,
+                              color: isClosed 
+                                  ? Colors.red 
+                                  : AppColors.textSecondary,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              formattedHours,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: isToday 
+                                    ? (isClosed ? Colors.red : AppColors.primaryRed)
+                                    : (isClosed ? Colors.red : AppColors.textSecondary),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            )
+          else
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.grey.withValues(alpha: 0.05),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.grey.withValues(alpha: 0.1),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Iconsax.info_circle,
+                    size: 20,
+                    color: AppColors.textSecondary,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'working_hours_all_week'.tr(),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  bool _isToday(String dayName) {
+    final now = DateTime.now();
+    final today = now.weekday;
+    
+    final dayMap = {
+      'Monday': 1,
+      'Tuesday': 2,
+      'Wednesday': 3,
+      'Thursday': 4,
+      'Friday': 5,
+      'Saturday': 6,
+      'Sunday': 7,
+      'الاثنين': 1,
+      'الثلاثاء': 2,
+      'الأربعاء': 3,
+      'الخميس': 4,
+      'الجمعة': 5,
+      'السبت': 6,
+      'الأحد': 7,
+    };
+    
+    return dayMap[dayName] == today;
+  }
+
+  bool _isCurrentlyOpen(String hours) {
+    try {
+      // Extract time range from formatted hours like "09:00 - 18:00"
+      final timePattern = RegExp(r'(\d{1,2}):(\d{2})');
+      final matches = timePattern.allMatches(hours).toList();
+      
+      if (matches.length >= 2) {
+        final now = DateTime.now();
+        final currentHour = now.hour;
+        final currentMinute = now.minute;
+        final currentTimeInMinutes = currentHour * 60 + currentMinute;
+        
+        final openHour = int.parse(matches[0].group(1)!);
+        final openMinute = int.parse(matches[0].group(2)!);
+        final openTimeInMinutes = openHour * 60 + openMinute;
+        
+        final closeHour = int.parse(matches[1].group(1)!);
+        final closeMinute = int.parse(matches[1].group(2)!);
+        final closeTimeInMinutes = closeHour * 60 + closeMinute;
+        
+        return currentTimeInMinutes >= openTimeInMinutes && 
+               currentTimeInMinutes <= closeTimeInMinutes;
+      }
+    } catch (e) {
+      // If parsing fails, return false
+    }
+    
+    return false;
+  }
+
+  String _formatWorkingHours(dynamic hours) {
+    // Handle different data types
+    if (hours == null) {
+      return 'مغلق';
+    }
+    
+    // If it's already a Map or Object, try to extract values
+    if (hours is Map) {
+      // Check if it has closed field
+      if (hours.containsKey('closed') && hours['closed'] == true) {
+        return 'مغلق';
+      }
+      
+      // Check if it has open and close times
+      if (hours.containsKey('open') && hours.containsKey('close')) {
+        final openTime = hours['open']?.toString() ?? '';
+        final closeTime = hours['close']?.toString() ?? '';
+        if (openTime.isNotEmpty && closeTime.isNotEmpty) {
+          return '$openTime - $closeTime';
+        }
+      }
+      
+      // If it's a Map but we can't extract meaningful data, convert to string
+      hours = hours.toString();
+    }
+    
+    // Convert to string and remove any extra whitespace and brackets
+    String cleanHours = hours.toString().trim();
+    
+    
+    // Handle different formats of working hours
+    if (cleanHours.contains('closed') || cleanHours.contains('مغلق') || cleanHours.contains('closed: true')) {
+      return 'مغلق';
+    }
+    
+    // Handle JSON-like format: "{open: 09:00, close: 18:00, closed: false}"
+    if (cleanHours.contains('open:') && cleanHours.contains('close:')) {
+      final openMatch = RegExp(r'open:\s*(\d{1,2}:\d{2})').firstMatch(cleanHours);
+      final closeMatch = RegExp(r'close:\s*(\d{1,2}:\d{2})').firstMatch(cleanHours);
+      
+      if (openMatch != null && closeMatch != null) {
+        return '${openMatch.group(1)} - ${closeMatch.group(1)}';
+      }
+    }
+    
+    // Handle simple time range like "09:00 - 18:00" or "09:00-18:00"
+    if (cleanHours.contains(' - ') || cleanHours.contains('-')) {
+      return cleanHours.replaceAll('-', ' - ');
+    }
+    
+    // Handle 24-hour format like "09:00" to "18:00"
+    final timePattern = RegExp(r'(\d{1,2}:\d{2})');
+    final matches = timePattern.allMatches(cleanHours).toList();
+    
+    if (matches.length >= 2) {
+      return '${matches[0].group(1)} - ${matches[1].group(1)}';
+    }
+    
+    // Handle single time like "09:00"
+    if (matches.length == 1) {
+      return '${matches[0].group(1)} - ${matches[0].group(1)}';
+    }
+    
+    // Handle boolean values
+    if (cleanHours.toLowerCase() == 'true') {
+      return '24/7';
+    }
+    
+    if (cleanHours.toLowerCase() == 'false' || cleanHours.isEmpty) {
+      return 'مغلق';
+    }
+    
+    // Handle numeric values (might be minutes or hours)
+    if (RegExp(r'^\d+$').hasMatch(cleanHours)) {
+      final num = int.tryParse(cleanHours);
+      if (num != null) {
+        if (num == 0) {
+          return 'مغلق';
+        } else if (num == 1) {
+          return '24/7';
+        }
+      }
+    }
+    
+    // Handle null or undefined
+    if (cleanHours.toLowerCase() == 'null' || cleanHours.toLowerCase() == 'undefined') {
+      return 'مغلق';
+    }
+    
+    // Return the original string if we can't parse it
+    return cleanHours;
+  }
+
+  Widget _buildBranchContactSection(BranchEntity branch) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowColor,
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Iconsax.call,
+                color: AppColors.primaryRed,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'contact_info'.tr(),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Icon(
+                Iconsax.call,
+                size: 20,
+                color: AppColors.textSecondary,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  branch.contactPhone!,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              ElevatedButton.icon(
+                onPressed: () {
+                  // TODO: Implement phone call functionality
+                  print('Calling: ${branch.contactPhone}');
+                },
+                icon: const Icon(Iconsax.call, size: 16),
+                label: Text('call_now'.tr()),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryRed,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  elevation: 0,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

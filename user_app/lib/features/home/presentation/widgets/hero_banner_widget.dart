@@ -9,6 +9,7 @@ class HeroBannerWidget extends StatelessWidget {
   final VoidCallback? onTap;
   final double height;
   final EdgeInsets? padding;
+  final List<String>? amenities;
 
   const HeroBannerWidget({
     Key? key,
@@ -18,6 +19,7 @@ class HeroBannerWidget extends StatelessWidget {
     this.onTap,
     this.height = 200.0,
     this.padding,
+    this.amenities,
   }) : super(key: key);
 
   @override
@@ -76,36 +78,84 @@ class HeroBannerWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Text(
-                  effectiveTitle,
-                  style: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    height: 1.2,
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        effectiveTitle,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          height: 1.2,
+                        ),
+                        textAlign: TextAlign.start,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        effectiveSubtitle,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                          height: 1.3,
+                        ),
+                        textAlign: TextAlign.start,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 12),
+                      
+                      // Amenities Section
+                      if (amenities != null && amenities!.isNotEmpty) ...[
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: amenities!.take(3).map((amenity) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.3),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                amenity,
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                    ],
                   ),
-                  textAlign: TextAlign.start,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  effectiveSubtitle,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white,
-                    height: 1.3,
-                  ),
-                  textAlign: TextAlign.start,
-                ),
-                const SizedBox(height: 16),
+                
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
+                    horizontal: 14,
+                    vertical: 6,
                   ),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: Colors.white.withValues(alpha: 0.3),
                       width: 1,
@@ -114,7 +164,7 @@ class HeroBannerWidget extends StatelessWidget {
                   child: Text(
                     'book_now'.tr(),
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
                     ),
@@ -136,6 +186,7 @@ class HeroBannerWithImageWidget extends StatelessWidget {
   final VoidCallback? onTap;
   final double height;
   final EdgeInsets? padding;
+  final List<String>? amenities;
 
   const HeroBannerWithImageWidget({
     Key? key,
@@ -145,6 +196,7 @@ class HeroBannerWithImageWidget extends StatelessWidget {
     this.onTap,
     this.height = 200.0,
     this.padding,
+    this.amenities,
   }) : super(key: key);
 
   @override
@@ -156,6 +208,7 @@ class HeroBannerWithImageWidget extends StatelessWidget {
       onTap: onTap,
       height: height,
       padding: padding,
+      amenities: amenities,
     );
   }
 }

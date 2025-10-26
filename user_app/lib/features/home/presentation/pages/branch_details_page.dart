@@ -29,10 +29,17 @@ class BranchDetailsPage extends StatelessWidget {
   }
 }
 
-class BranchDetailsView extends StatelessWidget {
+class BranchDetailsView extends StatefulWidget {
   final String branchId;
   
   const BranchDetailsView({Key? key, required this.branchId}) : super(key: key);
+
+  @override
+  State<BranchDetailsView> createState() => _BranchDetailsViewState();
+}
+
+class _BranchDetailsViewState extends State<BranchDetailsView> {
+  bool _isWorkingHoursExpanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +77,7 @@ class BranchDetailsView extends StatelessWidget {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      context.read<BranchDetailsCubit>().loadBranchDetails(branchId);
+                      context.read<BranchDetailsCubit>().loadBranchDetails(widget.branchId);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryRed,
@@ -302,6 +309,91 @@ class BranchDetailsView extends StatelessWidget {
   }
 
   Widget _buildBranchWorkingHoursSection(BranchEntity branch) {
+    if (branch.workingHours == null || branch.workingHours!.isEmpty) {
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.shadowColor,
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryRed.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Iconsax.clock,
+                    color: AppColors.primaryRed,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'working_hours'.tr(),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.grey.withValues(alpha: 0.05),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.grey.withValues(alpha: 0.1),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Iconsax.info_circle,
+                    size: 20,
+                    color: AppColors.textSecondary,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'working_hours_all_week'.tr(),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Sort working hours to show today first
+    final sortedEntries = _sortWorkingHoursByToday(branch.workingHours!);
+    final todayEntry = sortedEntries.first;
+    final otherEntries = sortedEntries.skip(1).toList();
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
@@ -346,150 +438,200 @@ class BranchDetailsView extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           
-          if (branch.workingHours != null && branch.workingHours!.isNotEmpty)
-            Column(
-              children: branch.workingHours!.entries.map((entry) {
-                final isToday = _isToday(entry.key);
-                final formattedHours = _formatWorkingHours(entry.value);
-                final isClosed = formattedHours == 'مغلق';
-                final isOpenNow = isToday && !isClosed && _isCurrentlyOpen(formattedHours);
-                
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: isToday 
-                        ? (isClosed 
-                            ? Colors.red.withValues(alpha: 0.05)
-                            : AppColors.primaryRed.withValues(alpha: 0.05))
-                        : (isClosed 
-                            ? Colors.grey.withValues(alpha: 0.05)
-                            : Colors.grey.withValues(alpha: 0.05)),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: isToday 
-                          ? (isClosed 
-                              ? Colors.red.withValues(alpha: 0.2)
-                              : AppColors.primaryRed.withValues(alpha: 0.2))
-                          : Colors.grey.withValues(alpha: 0.1),
-                      width: 1,
-                    ),
+          // Today's hours (always visible)
+          _buildDayHoursCard(todayEntry.key, todayEntry.value, true),
+          
+          // Other days (expandable)
+          if (otherEntries.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _isWorkingHoursExpanded = !_isWorkingHoursExpanded;
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryRed.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppColors.primaryRed.withValues(alpha: 0.2),
+                    width: 1,
                   ),
-                  child: Row(
-                    children: [
-                      // Day name
-                      Expanded(
-                        flex: 2,
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color: isToday 
-                                    ? (isClosed ? Colors.red : AppColors.primaryRed)
-                                    : Colors.grey.withValues(alpha: 0.5),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    entry.key,
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: isToday ? FontWeight.bold : FontWeight.w500,
-                                      color: isToday 
-                                          ? (isClosed ? Colors.red : AppColors.primaryRed)
-                                          : AppColors.textPrimary,
-                                    ),
-                                  ),
-                                  if (isToday && isOpenNow)
-                                    Text(
-                                      'مفتوح الآن',
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        color: AppColors.primaryRed,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      
-                      // Working hours
-                      Expanded(
-                        flex: 3,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Icon(
-                              isClosed ? Iconsax.close_circle : Iconsax.clock,
-                              size: 16,
-                              color: isClosed 
-                                  ? Colors.red 
-                                  : AppColors.textSecondary,
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              formattedHours,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: isToday 
-                                    ? (isClosed ? Colors.red : AppColors.primaryRed)
-                                    : (isClosed ? Colors.red : AppColors.textSecondary),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-            )
-          else
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Colors.grey.withValues(alpha: 0.1),
-                  width: 1,
                 ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Iconsax.info_circle,
-                    size: 20,
-                    color: AppColors.textSecondary,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'working_hours_all_week'.tr(),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _isWorkingHoursExpanded ? 'إخفاء باقي الأيام' : 'عرض باقي الأيام',
                       style: const TextStyle(
                         fontSize: 14,
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primaryRed,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Icon(
+                      _isWorkingHoursExpanded ? Iconsax.arrow_up_2 : Iconsax.arrow_down_2,
+                      size: 16,
+                      color: AppColors.primaryRed,
+                    ),
+                  ],
+                ),
               ),
             ),
+            
+            // Expandable section
+            if (_isWorkingHoursExpanded) ...[
+              const SizedBox(height: 12),
+              ...otherEntries.map((entry) => 
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _buildDayHoursCard(entry.key, entry.value, false),
+                ),
+              ),
+            ],
+          ],
         ],
       ),
     );
+  }
+
+  Widget _buildDayHoursCard(String dayName, dynamic hours, bool isToday) {
+    final formattedHours = _formatWorkingHours(hours);
+    final isClosed = formattedHours == 'مغلق';
+    final isOpenNow = isToday && !isClosed && _isCurrentlyOpen(formattedHours);
+    
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isToday 
+            ? (isClosed 
+                ? Colors.red.withValues(alpha: 0.05)
+                : AppColors.primaryRed.withValues(alpha: 0.05))
+            : (isClosed 
+                ? Colors.grey.withValues(alpha: 0.05)
+                : Colors.grey.withValues(alpha: 0.05)),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isToday 
+              ? (isClosed 
+                  ? Colors.red.withValues(alpha: 0.2)
+                  : AppColors.primaryRed.withValues(alpha: 0.2))
+              : Colors.grey.withValues(alpha: 0.1),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          // Day name
+          Expanded(
+            flex: 2,
+            child: Row(
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: isToday 
+                        ? (isClosed ? Colors.red : AppColors.primaryRed)
+                        : Colors.grey.withValues(alpha: 0.5),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        dayName,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: isToday ? FontWeight.bold : FontWeight.w500,
+                          color: isToday 
+                              ? (isClosed ? Colors.red : AppColors.primaryRed)
+                              : AppColors.textPrimary,
+                        ),
+                      ),
+                      if (isToday && isOpenNow)
+                        Text(
+                          'مفتوح الآن',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: AppColors.primaryRed,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Working hours
+          Expanded(
+            flex: 3,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Icon(
+                  isClosed ? Iconsax.close_circle : Iconsax.clock,
+                  size: 16,
+                  color: isClosed 
+                      ? Colors.red 
+                      : AppColors.textSecondary,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  formattedHours,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: isToday 
+                        ? (isClosed ? Colors.red : AppColors.primaryRed)
+                        : (isClosed ? Colors.red : AppColors.textSecondary),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<MapEntry<String, dynamic>> _sortWorkingHoursByToday(Map<String, dynamic> workingHours) {
+    final entries = workingHours.entries.toList();
+    
+    // Find today's entry
+    final todayEntry = entries.firstWhere(
+      (entry) => _isToday(entry.key),
+      orElse: () => entries.first,
+    );
+    
+    // Remove today from the list
+    entries.remove(todayEntry);
+    
+    // Sort remaining entries by day order
+    entries.sort((a, b) {
+      final dayOrder = {
+        'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4,
+        'Friday': 5, 'Saturday': 6, 'Sunday': 7,
+        'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4,
+        'الجمعة': 5, 'السبت': 6, 'الأحد': 7,
+      };
+      
+      final aOrder = dayOrder[a.key] ?? 0;
+      final bOrder = dayOrder[b.key] ?? 0;
+      
+      return aOrder.compareTo(bOrder);
+    });
+    
+    // Return today first, then others
+    return [todayEntry, ...entries];
   }
 
   bool _isToday(String dayName) {

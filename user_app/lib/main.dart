@@ -12,6 +12,7 @@ import 'features/auth/presentation/screens/otp_verify_screen.dart';
 import 'features/auth/presentation/screens/profile_screen.dart';
 import 'features/main/presentation/screens/main_screen.dart';
 import 'features/home/presentation/pages/branch_details_page.dart';
+import 'features/home/presentation/pages/hall_details_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -150,6 +151,14 @@ class MyApp extends StatelessWidget {
               return MaterialPageRoute(
                 builder: (context) => BranchDetailsPage(
                   branchId: args?['branchId'] ?? '',
+                ),
+              );
+
+            case '/hall-details':
+              final args = settings.arguments as Map<String, dynamic>?;
+              return MaterialPageRoute(
+                builder: (context) => HallDetailsPage(
+                  hallId: args?['hallId'] ?? '',
                 ),
               );
 

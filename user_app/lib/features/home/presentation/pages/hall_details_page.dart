@@ -2,52 +2,50 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../di/home_injection.dart';
-import '../../domain/usecases/get_branch_details_usecase.dart';
-import '../../domain/entities/branch_entity.dart';
-import '../cubit/branch_details_cubit.dart';
-import '../cubit/branch_details_state.dart';
-import '../widgets/branch_header_section.dart';
-import '../widgets/branch_info_card.dart';
-import '../widgets/working_hours_widget.dart';
-import '../widgets/amenities_grid.dart';
-import '../widgets/halls_section.dart';
+import '../../domain/usecases/get_hall_details_usecase.dart';
+import '../../domain/entities/hall_entity.dart';
+import '../cubit/hall_details_cubit.dart';
+import '../cubit/hall_details_state.dart';
+import '../widgets/hall_header_section.dart';
+import '../widgets/hall_pricing_card.dart';
+import '../widgets/hall_features_list.dart';
 
-class BranchDetailsPage extends StatelessWidget {
-  final String branchId;
+class HallDetailsPage extends StatelessWidget {
+  final String hallId;
 
-  const BranchDetailsPage({
+  const HallDetailsPage({
     Key? key,
-    required this.branchId,
+    required this.hallId,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => BranchDetailsCubit(
-        getBranchDetailsUseCase: sl<GetBranchDetailsUseCase>(),
-      )..loadBranchDetails(branchId),
-      child: BranchDetailsView(branchId: branchId),
+      create: (context) => HallDetailsCubit(
+        getHallDetailsUseCase: sl<GetHallDetailsUseCase>(),
+      )..loadHallDetails(hallId),
+      child: HallDetailsView(hallId: hallId),
     );
   }
 }
 
-class BranchDetailsView extends StatelessWidget {
-  final String branchId;
+class HallDetailsView extends StatelessWidget {
+  final String hallId;
   
-  const BranchDetailsView({Key? key, required this.branchId}) : super(key: key);
+  const HallDetailsView({Key? key, required this.hallId}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocBuilder<BranchDetailsCubit, BranchDetailsState>(
+      body: BlocBuilder<HallDetailsCubit, HallDetailsState>(
         builder: (context, state) {
-          if (state is BranchDetailsLoading) {
+          if (state is HallDetailsLoading) {
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
 
-          if (state is BranchDetailsError) {
+          if (state is HallDetailsError) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -69,7 +67,7 @@ class BranchDetailsView extends StatelessWidget {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      context.read<BranchDetailsCubit>().loadBranchDetails(branchId);
+                      context.read<HallDetailsCubit>().loadHallDetails(hallId);
                     },
                     child: Text('retry'.tr()),
                   ),
@@ -78,15 +76,15 @@ class BranchDetailsView extends StatelessWidget {
             );
           }
 
-          if (state is BranchDetailsLoaded) {
+          if (state is HallDetailsLoaded) {
             return Stack(
               children: [
-                _buildBranchDetails(context, state.branch),
+                _buildHallDetails(context, state.hall),
                 Positioned(
                   bottom: 0,
                   left: 0,
                   right: 0,
-                  child: BranchDetailsBottomBar(branch: state.branch),
+                  child: HallDetailsBottomBar(hall: state.hall),
                 ),
               ],
             );
@@ -98,12 +96,12 @@ class BranchDetailsView extends StatelessWidget {
     );
   }
 
-  Widget _buildBranchDetails(BuildContext context, branch) {
+  Widget _buildHallDetails(BuildContext context, HallEntity hall) {
     return CustomScrollView(
       slivers: [
         // Header section
         SliverToBoxAdapter(
-          child: BranchHeaderSection(branch: branch),
+          child: HallHeaderSection(hall: hall),
         ),
         
         // Content
@@ -114,7 +112,7 @@ class BranchDetailsView extends StatelessWidget {
               const SizedBox(height: 16),
               
               // Description
-              if (branch.descriptionAr != null || branch.descriptionEn != null)
+              if (hall.descriptionAr != null || hall.descriptionEn != null)
                 Card(
                   elevation: 2,
                   shape: RoundedRectangleBorder(
@@ -145,8 +143,8 @@ class BranchDetailsView extends StatelessWidget {
                         const SizedBox(height: 16),
                         Text(
                           context.locale.languageCode == 'ar' 
-                              ? branch.descriptionAr ?? branch.descriptionEn ?? ''
-                              : branch.descriptionEn ?? branch.descriptionAr ?? '',
+                              ? hall.descriptionAr ?? hall.descriptionEn ?? ''
+                              : hall.descriptionEn ?? hall.descriptionAr ?? '',
                           style: const TextStyle(
                             fontSize: 14,
                             height: 1.5,
@@ -159,29 +157,81 @@ class BranchDetailsView extends StatelessWidget {
               
               const SizedBox(height: 16),
               
-              // Branch info cards
+              // Hall info cards
               Row(
                 children: [
                   Expanded(
-                    child: BranchInfoCard(
-                      icon: Icons.people,
-                      title: 'capacity_info'.tr(),
-                      value: branch.capacity > 0 
-                          ? 'capacity'.tr(args: ['${branch.capacity}'])
-                          : 'capacity_not_available'.tr(),
-                      iconColor: branch.capacity > 0 ? Colors.green : Colors.orange,
+                    child: Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.people,
+                              color: Colors.green,
+                              size: 32,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'hall_capacity'.tr(),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${hall.capacity}',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: BranchInfoCard(
-                      icon: Icons.phone,
-                      title: 'phone'.tr(),
-                      value: branch.contactPhone ?? 'not_available'.tr(),
-                      onTap: branch.contactPhone != null 
-                          ? () => _makePhoneCall(branch.contactPhone!)
-                          : null,
-                      iconColor: branch.contactPhone != null ? Colors.blue : Colors.grey,
+                    child: Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.event_available,
+                              color: _getStatusColor(hall.status),
+                              size: 32,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'hall_status'.tr(),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _getStatusText(hall.status),
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: _getStatusColor(hall.status),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -189,18 +239,14 @@ class BranchDetailsView extends StatelessWidget {
               
               const SizedBox(height: 16),
               
-              // Working hours
-              WorkingHoursWidget(branch: branch),
+              // Pricing information
+              HallPricingCard(hall: hall),
               
               const SizedBox(height: 16),
               
-              // Amenities
-              AmenitiesGrid(branch: branch),
-              
-              const SizedBox(height: 16),
-              
-              // Halls Section
-              HallsSection(branchId: branch.id),
+              // Features
+              if (hall.features != null && hall.features!.isNotEmpty)
+                HallFeaturesList(features: hall.features!),
               
               const SizedBox(height: 100), // Space for bottom action bar
             ]),
@@ -210,19 +256,39 @@ class BranchDetailsView extends StatelessWidget {
     );
   }
 
-  Future<void> _makePhoneCall(String phoneNumber) async {
-    // TODO: Implement phone call functionality
-    // This would require adding url_launcher package to pubspec.yaml
-    print('Calling: $phoneNumber');
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'available':
+        return Colors.green;
+      case 'maintenance':
+        return Colors.orange;
+      case 'reserved':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  String _getStatusText(String status) {
+    switch (status.toLowerCase()) {
+      case 'available':
+        return 'available'.tr();
+      case 'maintenance':
+        return 'maintenance'.tr();
+      case 'reserved':
+        return 'reserved'.tr();
+      default:
+        return status;
+    }
   }
 }
 
-class BranchDetailsBottomBar extends StatelessWidget {
-  final BranchEntity branch;
+class HallDetailsBottomBar extends StatelessWidget {
+  final HallEntity hall;
 
-  const BranchDetailsBottomBar({
+  const HallDetailsBottomBar({
     Key? key,
-    required this.branch,
+    required this.hall,
   }) : super(key: key);
 
   @override
@@ -245,10 +311,10 @@ class BranchDetailsBottomBar extends StatelessWidget {
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: () {
-                  // TODO: View on map
+                  // TODO: Share hall
                 },
-                icon: const Icon(Icons.map),
-                label: Text('view_on_map'.tr()),
+                icon: const Icon(Icons.share),
+                label: Text('share'.tr()),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
@@ -262,10 +328,10 @@ class BranchDetailsBottomBar extends StatelessWidget {
               flex: 2,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  // TODO: Book branch
+                  // TODO: Book hall
                 },
                 icon: const Icon(Icons.book_online),
-                label: Text('book_branch'.tr()),
+                label: Text('book_hall'.tr()),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(

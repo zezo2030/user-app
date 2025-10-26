@@ -2,10 +2,13 @@ import 'package:dio/dio.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../models/home_response_model.dart';
 import '../models/branch_model.dart';
+import '../models/hall_model.dart';
 
 abstract class HomeRemoteDataSource {
   Future<HomeResponseModel> getHomeData();
   Future<BranchModel> getBranchDetails(String branchId);
+  Future<List<HallModel>> getHallsByBranch(String branchId);
+  Future<HallModel> getHallDetails(String hallId);
 }
 
 class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
@@ -78,6 +81,63 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       throw _handleDioException(e);
     } catch (e) {
       print('❌ HomeDataSource: Unexpected error for branch details: ${e.toString()}');
+      throw Exception('Unexpected error: $e');
+    }
+  }
+
+  @override
+  Future<List<HallModel>> getHallsByBranch(String branchId) async {
+    try {
+      print('🔍 HomeDataSource: Making request to halls endpoint for branch: $branchId');
+      final response = await dio.get(
+        '${ApiConstants.baseUrl}${ApiConstants.hallsEndpoint}',
+        queryParameters: {'branchId': branchId},
+      );
+
+      print('🔍 HomeDataSource: Halls response received');
+      print('🔍 HomeDataSource: Response status: ${response.statusCode}');
+      print('🔍 HomeDataSource: Response data: ${response.data}');
+
+      if (response.data == null) {
+        throw Exception('Response data is null');
+      }
+
+      final List<dynamic> hallsData = response.data is List 
+          ? response.data as List<dynamic>
+          : [];
+      
+      return hallsData.map((hallJson) => HallModel.fromJson(hallJson)).toList();
+    } on DioException catch (e) {
+      print('❌ HomeDataSource: DioException occurred for halls: ${e.toString()}');
+      throw _handleDioException(e);
+    } catch (e) {
+      print('❌ HomeDataSource: Unexpected error for halls: ${e.toString()}');
+      throw Exception('Unexpected error: $e');
+    }
+  }
+
+  @override
+  Future<HallModel> getHallDetails(String hallId) async {
+    try {
+      print('🔍 HomeDataSource: Making request to hall details endpoint: $hallId');
+      final response = await dio.get(
+        '${ApiConstants.baseUrl}${ApiConstants.hallsEndpoint}/$hallId',
+      );
+
+      print('🔍 HomeDataSource: Hall details response received');
+      print('🔍 HomeDataSource: Response status: ${response.statusCode}');
+      print('🔍 HomeDataSource: Response data: ${response.data}');
+
+      if (response.data == null) {
+        throw Exception('Response data is null');
+      }
+
+      return HallModel.fromJson(response.data);
+    } on DioException catch (e) {
+      print('❌ HomeDataSource: DioException occurred for hall details: ${e.toString()}');
+      throw _handleDioException(e);
+    } catch (e) {
+      print('❌ HomeDataSource: Unexpected error for hall details: ${e.toString()}');
       throw Exception('Unexpected error: $e');
     }
   }

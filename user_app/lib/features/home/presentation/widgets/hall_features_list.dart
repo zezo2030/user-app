@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:iconsax/iconsax.dart';
 
 class HallFeaturesList extends StatelessWidget {
   final List<String> features;
@@ -24,7 +25,7 @@ class HallFeaturesList extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  Icons.star,
+                  Iconsax.star_1,
                   color: Theme.of(context).primaryColor,
                   size: 24,
                 ),
@@ -101,27 +102,27 @@ class HallFeaturesList extends StatelessWidget {
     final featureLower = feature.toLowerCase();
     
     if (featureLower.contains('sound') || featureLower.contains('audio')) {
-      return Icons.volume_up;
+      return Iconsax.volume_high;
     } else if (featureLower.contains('projector') || featureLower.contains('screen')) {
-      return Icons.video_library;
+      return Iconsax.video;
     } else if (featureLower.contains('air') || featureLower.contains('conditioning')) {
-      return Icons.ac_unit;
+      return Iconsax.wind;
     } else if (featureLower.contains('stage') || featureLower.contains('platform')) {
-      return Icons.stairs;
+      return Iconsax.microphone;
     } else if (featureLower.contains('lighting') || featureLower.contains('light')) {
-      return Icons.lightbulb;
+      return Iconsax.lamp;
     } else if (featureLower.contains('wifi') || featureLower.contains('internet')) {
-      return Icons.wifi;
+      return Iconsax.wifi;
     } else if (featureLower.contains('parking')) {
-      return Icons.local_parking;
+      return Iconsax.car;
     } else if (featureLower.contains('security')) {
-      return Icons.security;
+      return Iconsax.security_safe;
     } else if (featureLower.contains('catering') || featureLower.contains('food')) {
-      return Icons.restaurant;
+      return Iconsax.cake;
     } else if (featureLower.contains('decoration') || featureLower.contains('decor')) {
-      return Icons.palette;
+      return Iconsax.paintbucket;
     } else {
-      return Icons.check_circle;
+      return Iconsax.tick_circle;
     }
   }
 }

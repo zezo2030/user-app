@@ -205,24 +205,6 @@ class BranchCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              // TODO: Navigate to booking
-                            },
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            child: Text(
-                              'book_now'.tr(),
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ],

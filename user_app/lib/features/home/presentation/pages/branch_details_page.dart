@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:iconsax/iconsax.dart';
 import '../../di/home_injection.dart';
 import '../../domain/usecases/get_branch_details_usecase.dart';
 import '../../domain/entities/branch_entity.dart';
@@ -53,7 +54,7 @@ class BranchDetailsView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.error_outline,
+                    Iconsax.info_circle,
                     size: 64,
                     color: Colors.red[300],
                   ),
@@ -128,7 +129,7 @@ class BranchDetailsView extends StatelessWidget {
                         Row(
                           children: [
                             Icon(
-                              Icons.description,
+                              Iconsax.document_text,
                               color: Theme.of(context).primaryColor,
                               size: 24,
                             ),
@@ -164,7 +165,7 @@ class BranchDetailsView extends StatelessWidget {
                 children: [
                   Expanded(
                     child: BranchInfoCard(
-                      icon: Icons.people,
+                      icon: Iconsax.people,
                       title: 'capacity_info'.tr(),
                       value: branch.capacity > 0 
                           ? 'capacity'.tr(args: ['${branch.capacity}'])
@@ -175,7 +176,7 @@ class BranchDetailsView extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: BranchInfoCard(
-                      icon: Icons.phone,
+                      icon: Iconsax.call,
                       title: 'phone'.tr(),
                       value: branch.contactPhone ?? 'not_available'.tr(),
                       onTap: branch.contactPhone != null 
@@ -247,26 +248,9 @@ class BranchDetailsBottomBar extends StatelessWidget {
                 onPressed: () {
                   // TODO: View on map
                 },
-                icon: const Icon(Icons.map),
+                icon: const Icon(Iconsax.location),
                 label: Text('view_on_map'.tr()),
                 style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              flex: 2,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  // TODO: Book branch
-                },
-                icon: const Icon(Icons.book_online),
-                label: Text('book_branch'.tr()),
-                style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

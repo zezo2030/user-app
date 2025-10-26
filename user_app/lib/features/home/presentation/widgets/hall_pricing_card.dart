@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:iconsax/iconsax.dart';
 import '../../domain/entities/hall_entity.dart';
 
 class HallPricingCard extends StatelessWidget {
@@ -32,7 +33,7 @@ class HallPricingCard extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  Icons.attach_money,
+                  Iconsax.dollar_circle,
                   color: Theme.of(context).primaryColor,
                   size: 24,
                 ),
@@ -54,7 +55,7 @@ class HallPricingCard extends StatelessWidget {
               context,
               'base_price'.tr(),
               '${basePrice} ${'currency'.tr()}',
-              Icons.event,
+              Iconsax.calendar_1,
             ),
             
             const SizedBox(height: 12),
@@ -64,7 +65,7 @@ class HallPricingCard extends StatelessWidget {
               context,
               'hourly_rate'.tr(),
               '${hourlyRate} ${'currency'.tr()} ${'per_hour'.tr()}',
-              Icons.access_time,
+              Iconsax.clock,
             ),
             
             const SizedBox(height: 12),
@@ -75,7 +76,7 @@ class HallPricingCard extends StatelessWidget {
                 context,
                 'weekend_price'.tr(),
                 '${(hourlyRate * weekendMultiplier).toStringAsFixed(0)} ${'currency'.tr()} ${'per_hour'.tr()}',
-                Icons.weekend,
+                Iconsax.calendar_2,
                 subtitle: '${(weekendMultiplier * 100).toStringAsFixed(0)}% ${'increase'.tr()}',
               ),
             
@@ -87,7 +88,7 @@ class HallPricingCard extends StatelessWidget {
                 context,
                 'holiday_price'.tr(),
                 '${(hourlyRate * holidayMultiplier).toStringAsFixed(0)} ${'currency'.tr()} ${'per_hour'.tr()}',
-                Icons.celebration,
+                Iconsax.cake,
                 subtitle: '${(holidayMultiplier * 100).toStringAsFixed(0)}% ${'increase'.tr()}',
               ),
             
@@ -99,7 +100,7 @@ class HallPricingCard extends StatelessWidget {
                 context,
                 'decoration_price'.tr(),
                 '${decorationPrice} ${'currency'.tr()}',
-                Icons.star,
+                Iconsax.star_1,
                 subtitle: 'optional'.tr(),
               ),
             
@@ -115,7 +116,7 @@ class HallPricingCard extends StatelessWidget {
               child: Row(
                 children: [
                   Icon(
-                    Icons.info_outline,
+                    Iconsax.info_circle,
                     color: Theme.of(context).primaryColor,
                     size: 16,
                   ),

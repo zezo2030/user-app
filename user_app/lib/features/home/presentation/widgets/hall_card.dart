@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../domain/entities/hall_entity.dart';
 
 class HallCard extends StatelessWidget {
@@ -27,7 +29,7 @@ class HallCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Hall image placeholder
+              // Hall image
               Container(
                 height: 140,
                 width: double.infinity,
@@ -36,69 +38,13 @@ class HallCard extends StatelessWidget {
                     topLeft: Radius.circular(16),
                     topRight: Radius.circular(16),
                   ),
-                  gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                      Theme.of(context).primaryColor.withValues(alpha: 0.05),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
                 ),
-                child: Stack(
-                  children: [
-                    Center(
-                      child: Icon(
-                        Icons.event,
-                        size: 50,
-                        color: Theme.of(context).primaryColor.withValues(alpha: 0.7),
-                      ),
-                    ),
-                    // Status badge
-                    Positioned(
-                      top: 12,
-                      right: 12,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _getStatusColor(hall.status).withValues(alpha: 0.9),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          _getStatusText(hall.status),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                    // Decoration badge
-                    if (hall.isDecorated)
-                      Positioned(
-                        top: 12,
-                        left: 12,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.amber.withValues(alpha: 0.9),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.star,
-                            color: Colors.white,
-                            size: 12,
-                          ),
-                        ),
-                      ),
-                  ],
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                  child: _buildImageWidget(context),
                 ),
               ),
               
@@ -125,7 +71,7 @@ class HallCard extends StatelessWidget {
                     Row(
                       children: [
                         Icon(
-                          Icons.people,
+                          Iconsax.people,
                           size: 16,
                           color: Colors.grey[600],
                         ),
@@ -146,7 +92,7 @@ class HallCard extends StatelessWidget {
                     Row(
                       children: [
                         Icon(
-                          Icons.attach_money,
+                          Iconsax.dollar_circle,
                           size: 16,
                           color: Theme.of(context).primaryColor,
                         ),
@@ -223,6 +169,212 @@ class HallCard extends StatelessWidget {
         return 'reserved'.tr();
       default:
         return status;
+    }
+  }
+
+  Widget _buildImageWidget(BuildContext context) {
+    // Check if hall has images
+    if (hall.images != null && hall.images!.isNotEmpty) {
+      return Stack(
+        children: [
+          // Main image
+          CachedNetworkImage(
+            imageUrl: hall.images!.first,
+            width: double.infinity,
+            height: 140,
+            fit: BoxFit.cover,
+            placeholder: (context, url) => Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                    Theme.of(context).primaryColor.withValues(alpha: 0.05),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Center(
+                child: Icon(
+                  Iconsax.calendar_1,
+                  size: 50,
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.7),
+                ),
+              ),
+            ),
+            errorWidget: (context, url, error) => Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                    Theme.of(context).primaryColor.withValues(alpha: 0.05),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Center(
+                child: Icon(
+                  Iconsax.calendar_1,
+                  size: 50,
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.7),
+                ),
+              ),
+            ),
+          ),
+          
+          // Status badge
+          Positioned(
+            top: 12,
+            right: 12,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 4,
+              ),
+              decoration: BoxDecoration(
+                color: _getStatusColor(hall.status).withValues(alpha: 0.9),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                _getStatusText(hall.status),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+          
+          // Decoration badge
+          if (hall.isDecorated)
+            Positioned(
+              top: 12,
+              left: 12,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 3,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.amber.withValues(alpha: 0.9),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Iconsax.star_1,
+                  color: Colors.white,
+                  size: 12,
+                ),
+              ),
+            ),
+          
+          // Images count badge (if more than 1 image)
+          if (hall.images!.length > 1)
+            Positioned(
+              bottom: 12,
+              left: 12,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.7),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Iconsax.gallery,
+                      color: Colors.white,
+                      size: 12,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${hall.images!.length}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      );
+    } else {
+      // No images - show placeholder
+      return Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).primaryColor.withValues(alpha: 0.1),
+              Theme.of(context).primaryColor.withValues(alpha: 0.05),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Stack(
+          children: [
+            Center(
+              child: Icon(
+                Iconsax.calendar_1,
+                size: 50,
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.7),
+              ),
+            ),
+            // Status badge
+            Positioned(
+              top: 12,
+              right: 12,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: _getStatusColor(hall.status).withValues(alpha: 0.9),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  _getStatusText(hall.status),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+            // Decoration badge
+            if (hall.isDecorated)
+              Positioned(
+                top: 12,
+                left: 12,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.withValues(alpha: 0.9),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Iconsax.star_1,
+                    color: Colors.white,
+                    size: 12,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      );
     }
   }
 }

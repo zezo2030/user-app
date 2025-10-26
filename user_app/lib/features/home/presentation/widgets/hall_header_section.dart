@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:iconsax/iconsax.dart';
 import '../../domain/entities/hall_entity.dart';
 
 class HallHeaderSection extends StatelessWidget {
@@ -67,7 +68,7 @@ class HallHeaderSection extends StatelessWidget {
               child: IconButton(
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const Icon(
-                  Icons.arrow_back,
+                  Iconsax.arrow_left_2,
                   color: Colors.white,
                 ),
               ),
@@ -126,7 +127,7 @@ class HallHeaderSection extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             const Icon(
-                              Icons.star,
+                              Iconsax.star_1,
                               color: Colors.white,
                               size: 14,
                             ),
@@ -159,7 +160,7 @@ class HallHeaderSection extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.event,
+            Iconsax.calendar_1,
             size: 80,
             color: Colors.white.withValues(alpha: 0.8),
           ),

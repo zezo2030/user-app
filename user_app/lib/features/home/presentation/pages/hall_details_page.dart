@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:iconsax/iconsax.dart';
 import '../../di/home_injection.dart';
 import '../../domain/usecases/get_hall_details_usecase.dart';
 import '../../domain/entities/hall_entity.dart';
@@ -51,7 +52,7 @@ class HallDetailsView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.error_outline,
+                    Iconsax.info_circle,
                     size: 64,
                     color: Colors.red[300],
                   ),
@@ -126,7 +127,7 @@ class HallDetailsView extends StatelessWidget {
                         Row(
                           children: [
                             Icon(
-                              Icons.description,
+                              Iconsax.document_text,
                               color: Theme.of(context).primaryColor,
                               size: 24,
                             ),
@@ -168,13 +169,13 @@ class HallDetailsView extends StatelessWidget {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.people,
-                              color: Colors.green,
-                              size: 32,
-                            ),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Iconsax.people,
+                                color: Colors.green,
+                                size: 32,
+                              ),
                             const SizedBox(height: 8),
                             Text(
                               'hall_capacity'.tr(),
@@ -205,13 +206,13 @@ class HallDetailsView extends StatelessWidget {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.event_available,
-                              color: _getStatusColor(hall.status),
-                              size: 32,
-                            ),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Iconsax.tick_circle,
+                                color: _getStatusColor(hall.status),
+                                size: 32,
+                              ),
                             const SizedBox(height: 8),
                             Text(
                               'hall_status'.tr(),
@@ -313,7 +314,7 @@ class HallDetailsBottomBar extends StatelessWidget {
                 onPressed: () {
                   // TODO: Share hall
                 },
-                icon: const Icon(Icons.share),
+                icon: const Icon(Iconsax.send_2),
                 label: Text('share'.tr()),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -330,7 +331,7 @@ class HallDetailsBottomBar extends StatelessWidget {
                 onPressed: () {
                   // TODO: Book hall
                 },
-                icon: const Icon(Icons.book_online),
+                icon: const Icon(Iconsax.calendar_1),
                 label: Text('book_hall'.tr()),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),

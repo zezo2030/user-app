@@ -1,6 +1,16 @@
 class ApiConstants {
-  // Base URL
-  static const String baseUrl = 'http://72.61.159.84:3000/api/v1';
+  // Base URL - Choose the appropriate one based on your setup:
+  // For production server:
+  // static const String baseUrl = 'http://72.61.159.84:3000/api/v1';
+
+  // For Android emulator:
+  static const String baseUrl = 'http://10.0.2.2:3000/api/v1';
+
+  // For iOS simulator (if needed):
+  // static const String baseUrl = 'http://localhost:3000/api/v1';
+
+  // For physical device on same network (replace with your computer's IP):
+  // static const String baseUrl = 'http://192.168.1.3:3000/api/v1';
 
   static void printEndpoints() {
     print('🌐 API Endpoints:');
@@ -23,7 +33,7 @@ class ApiConstants {
   static const String profileEndpoint = '/auth/me';
   static const String refreshTokenEndpoint = '/auth/refresh';
   static const String emailConfigEndpoint = '/auth/email-config';
-  
+
   // Home Endpoints
   static const String homeEndpoint = '/home';
   static const String branchDetailsEndpoint = '/content/branches';

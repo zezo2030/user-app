@@ -5,6 +5,9 @@ import '../data/datasources/booking_remote_datasource.dart';
 import '../data/repositories/booking_repository_impl.dart';
 import '../domain/repositories/booking_repository.dart';
 import '../domain/usecases/create_booking_usecase.dart';
+import '../domain/usecases/get_quote_usecase.dart';
+import '../domain/usecases/check_availability_usecase.dart';
+import '../domain/usecases/check_server_health_usecase.dart';
 import '../presentation/cubit/booking_cubit.dart';
 
 final sl = GetIt.instance;
@@ -17,7 +20,8 @@ void initBookingInjection() {
 
   // Repositories
   sl.registerLazySingleton<BookingRepository>(
-    () => BookingRepositoryImpl(remoteDataSource: sl<BookingRemoteDataSource>()),
+    () =>
+        BookingRepositoryImpl(remoteDataSource: sl<BookingRemoteDataSource>()),
   );
 
   // Use Cases
@@ -25,8 +29,25 @@ void initBookingInjection() {
     () => CreateBookingUseCase(repository: sl<BookingRepository>()),
   );
 
+  sl.registerLazySingleton<GetQuoteUseCase>(
+    () => GetQuoteUseCase(repository: sl<BookingRepository>()),
+  );
+
+  sl.registerLazySingleton<CheckAvailabilityUseCase>(
+    () => CheckAvailabilityUseCase(repository: sl<BookingRepository>()),
+  );
+
+  sl.registerLazySingleton<CheckServerHealthUseCase>(
+    () => CheckServerHealthUseCase(repository: sl<BookingRepository>()),
+  );
+
   // Cubits
   sl.registerFactory<BookingCubit>(
-    () => BookingCubit(createBookingUseCase: sl<CreateBookingUseCase>()),
+    () => BookingCubit(
+      createBookingUseCase: sl<CreateBookingUseCase>(),
+      getQuoteUseCase: sl<GetQuoteUseCase>(),
+      checkAvailabilityUseCase: sl<CheckAvailabilityUseCase>(),
+      checkServerHealthUseCase: sl<CheckServerHealthUseCase>(),
+    ),
   );
 }

@@ -13,6 +13,10 @@ class CreateBookingUseCase {
     required DateTime startTime,
     required int durationHours,
     required int persons,
+    String? couponCode,
+    List<Map<String, dynamic>>? addOns,
+    String? specialRequests,
+    String? contactPhone,
   }) async {
     return await repository.createBooking(
       branchId: branchId,
@@ -20,6 +24,10 @@ class CreateBookingUseCase {
       startTime: startTime,
       durationHours: durationHours,
       persons: persons,
+      couponCode: couponCode,
+      addOns: addOns,
+      specialRequests: specialRequests,
+      contactPhone: contactPhone,
     );
   }
 }

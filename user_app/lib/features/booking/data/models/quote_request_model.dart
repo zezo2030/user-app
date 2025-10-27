@@ -1,38 +1,38 @@
-// Booking Request Model - Data Layer
-class BookingRequestModel {
+// Quote Request Model - Data Layer
+class QuoteRequestModel {
   final String branchId;
-  final String hallId;
+  final String? hallId; // جعل hallId اختياري
   final String startTime;
   final int durationHours;
   final int persons;
-  final String? couponCode;
   final List<Map<String, dynamic>>? addOns;
-  final String? specialRequests;
-  final String? contactPhone;
+  final String? couponCode;
 
-  BookingRequestModel({
+  QuoteRequestModel({
     required this.branchId,
-    required this.hallId,
+    this.hallId, // جعل hallId اختياري
     required this.startTime,
     required this.durationHours,
     required this.persons,
-    this.couponCode,
     this.addOns,
-    this.specialRequests,
-    this.contactPhone,
+    this.couponCode,
   });
 
   Map<String, dynamic> toJson() {
-    return {
+    final Map<String, dynamic> json = {
       'branchId': branchId,
-      'hallId': hallId,
       'startTime': startTime,
       'durationHours': durationHours,
       'persons': persons,
-      'couponCode': couponCode,
       'addOns': addOns,
-      'specialRequests': specialRequests,
-      'contactPhone': contactPhone,
+      'couponCode': couponCode,
     };
+
+    // إضافة hallId فقط إذا كان موجوداً
+    if (hallId != null) {
+      json['hallId'] = hallId;
+    }
+
+    return json;
   }
 }

@@ -3,9 +3,18 @@ import 'package:dio/dio.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../models/booking_model.dart';
 import '../models/booking_request_model.dart';
+import '../models/quote_model.dart';
+import '../models/quote_request_model.dart';
 
 abstract class BookingRemoteDataSource {
   Future<BookingModel> createBooking(BookingRequestModel request);
+  Future<QuoteModel> getQuote(QuoteRequestModel request);
+  Future<bool> checkAvailability(
+    String hallId,
+    String startTime,
+    int durationHours,
+  );
+  Future<bool> checkServerHealth();
 }
 
 class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
@@ -40,36 +49,155 @@ class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
     }
   }
 
+  @override
+  Future<QuoteModel> getQuote(QuoteRequestModel request) async {
+    int retryCount = 0;
+    const maxRetries = 3;
+
+    while (retryCount < maxRetries) {
+      try {
+        print(
+          '🔍 BookingDataSource: Making request to get quote (attempt ${retryCount + 1})',
+        );
+        final response = await dio.post(
+          '${ApiConstants.baseUrl}/bookings/quote',
+          data: request.toJson(),
+        );
+
+        print('🔍 BookingDataSource: Quote response received');
+        print('🔍 BookingDataSource: Response status: ${response.statusCode}');
+        print('🔍 BookingDataSource: Response data: ${response.data}');
+
+        if (response.data == null) {
+          throw Exception('Quote response data is null');
+        }
+
+        return QuoteModel.fromJson(response.data);
+      } on DioException catch (e) {
+        retryCount++;
+        print(
+          '❌ BookingDataSource: DioException occurred (attempt $retryCount): ${e.toString()}',
+        );
+
+        // إذا كان الخطأ 500 أو مشكلة في الشبكة، نحاول مرة أخرى
+        if (e.response?.statusCode == 500 ||
+            e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.connectionError) {
+          if (retryCount >= maxRetries) {
+            throw _handleDioException(e);
+          }
+
+          // انتظار قبل المحاولة مرة أخرى (exponential backoff)
+          final delaySeconds = retryCount * 2;
+          print('⏳ BookingDataSource: Retrying in $delaySeconds seconds...');
+          await Future.delayed(Duration(seconds: delaySeconds));
+          continue;
+        } else {
+          // للأخطاء الأخرى، لا نحاول مرة أخرى
+          throw _handleDioException(e);
+        }
+      } catch (e) {
+        print('❌ BookingDataSource: Unexpected error: ${e.toString()}');
+        throw Exception('خطأ غير متوقع: $e');
+      }
+    }
+
+    throw Exception('فشل في الحصول على عرض السعر بعد $maxRetries محاولات');
+  }
+
+  @override
+  Future<bool> checkAvailability(
+    String hallId,
+    String startTime,
+    int durationHours,
+  ) async {
+    try {
+      print('🔍 BookingDataSource: Making request to check availability');
+      final response = await dio.get(
+        '${ApiConstants.baseUrl}/content/halls/$hallId/availability',
+        queryParameters: {
+          'startTime': startTime,
+          'durationHours': durationHours,
+        },
+      );
+
+      print('🔍 BookingDataSource: Availability response received');
+      print('🔍 BookingDataSource: Response status: ${response.statusCode}');
+      print('🔍 BookingDataSource: Response data: ${response.data}');
+
+      if (response.data == null) {
+        throw Exception('Availability response data is null');
+      }
+
+      return response.data['available'] as bool;
+    } on DioException catch (e) {
+      print('❌ BookingDataSource: DioException occurred: ${e.toString()}');
+      throw _handleDioException(e);
+    } catch (e) {
+      print('❌ BookingDataSource: Unexpected error: ${e.toString()}');
+      throw Exception('Unexpected error: $e');
+    }
+  }
+
+  @override
+  Future<bool> checkServerHealth() async {
+    try {
+      print('🔍 BookingDataSource: Checking server health...');
+      final response = await dio.get('${ApiConstants.baseUrl}/health');
+      final isHealthy = response.statusCode == 200;
+      print('🔍 BookingDataSource: Server health check result: $isHealthy');
+      return isHealthy;
+    } catch (e) {
+      print('❌ BookingDataSource: Server health check failed: $e');
+      return false;
+    }
+  }
+
   Exception _handleDioException(DioException e) {
+    print(
+      '❌ BookingDataSource: Handling DioException - Type: ${e.type}, Status: ${e.response?.statusCode}',
+    );
+
     switch (e.type) {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
-        return Exception('Connection timeout. Please check your internet connection.');
+        return Exception('انتهت مهلة الاتصال. يرجى التحقق من اتصال الإنترنت.');
       case DioExceptionType.badResponse:
         final statusCode = e.response?.statusCode;
+        final responseData = e.response?.data;
+
+        print('❌ Response Status: $statusCode');
+        print('❌ Response Data: $responseData');
+
         switch (statusCode) {
           case 400:
-            return Exception('Bad request. Please check your booking details.');
+            return Exception(
+              'طلب غير صحيح. يرجى التحقق من بيانات الحجز المرسلة.',
+            );
           case 401:
-            return Exception('Unauthorized. Please login again.');
+            return Exception(
+              'غير مصرح لك بالوصول. يرجى تسجيل الدخول مرة أخرى.',
+            );
           case 403:
-            return Exception('Forbidden. You don\'t have permission to create bookings.');
+            return Exception('غير مسموح لك بإنشاء حجوزات.');
           case 404:
-            return Exception('Hall or branch not found.');
+            return Exception('القاعة أو الفرع غير موجود.');
           case 409:
-            return Exception('Hall is not available for the selected time.');
+            return Exception('القاعة غير متاحة في الوقت المحدد.');
           case 500:
-            return Exception('Server error. Please try again later.');
+            return Exception(
+              'خطأ في السيرفر. يرجى المحاولة لاحقاً أو التواصل مع الدعم الفني.',
+            );
           default:
-            return Exception('Server error with status code: $statusCode');
+            return Exception('خطأ في السيرفر برمز الحالة: $statusCode');
         }
       case DioExceptionType.cancel:
-        return Exception('Request was cancelled.');
+        return Exception('تم إلغاء الطلب.');
       case DioExceptionType.connectionError:
-        return Exception('No internet connection. Please check your network.');
+        return Exception('لا يوجد اتصال بالإنترنت. يرجى التحقق من الشبكة.');
       default:
-        return Exception('Network error: ${e.message}');
+        return Exception('خطأ في الشبكة: ${e.message}');
     }
   }
 }

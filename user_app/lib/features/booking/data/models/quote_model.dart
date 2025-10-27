@@ -27,6 +27,12 @@ class QuoteModel extends QuoteEntity {
       'hourlyRate': pricing['hourlyRate'] != null
           ? (pricing['hourlyRate'] as num).toDouble()
           : 0.0,
+      'pricePerPerson': pricing['pricePerPerson'] != null
+          ? (pricing['pricePerPerson'] as num).toDouble()
+          : 0.0,
+      'personsPrice': pricing['personsPrice'] != null
+          ? (pricing['personsPrice'] as num).toDouble()
+          : 0.0,
       'multiplier': pricing['multiplier'] != null
           ? (pricing['multiplier'] as num).toDouble()
           : 1.0,

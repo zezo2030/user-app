@@ -146,6 +146,29 @@ class PriceBreakdownCard extends StatelessWidget {
               Iconsax.calculator,
               color: Colors.orange,
             ),
+            const SizedBox(height: 8),
+
+            // السعر لكل شخص
+            if (_getPricePerPerson() > 0) ...[
+              _buildPriceRow(
+                context,
+                'price_per_person'.tr(),
+                '${_getPricePerPerson()} ${'currency'.tr()} ${'per_person'.tr()}',
+                Iconsax.people,
+                color: Colors.teal,
+              ),
+              const SizedBox(height: 8),
+
+              // السعر الإجمالي للأشخاص
+              _buildPriceRow(
+                context,
+                'persons_total_price'.tr(),
+                '${_getPersonsPrice()} ${'currency'.tr()}',
+                Iconsax.people,
+                color: Colors.teal.shade700,
+              ),
+              const SizedBox(height: 8),
+            ],
             // القسم الثاني: الإضافات والتحسينات
             if (_getDecorationPrice() > 0 || quote!.addOns.isNotEmpty) ...[
               const SizedBox(height: 16),
@@ -261,7 +284,7 @@ class PriceBreakdownCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'formula_text'.tr(),
+                    'formula_text_persons'.tr(),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.grey.shade600,
                       fontStyle: FontStyle.italic,
@@ -412,6 +435,20 @@ class PriceBreakdownCard extends StatelessWidget {
     if (quote == null) return '0';
     final basePrice = quote!.pricing['basePrice'];
     return basePrice?.toStringAsFixed(2) ?? '0';
+  }
+
+  // دالة للحصول على السعر لكل شخص من الباك إند
+  double _getPricePerPerson() {
+    if (quote == null) return 0.0;
+    final pricePerPerson = quote!.pricing['pricePerPerson'];
+    return pricePerPerson?.toDouble() ?? 0.0;
+  }
+
+  // دالة للحصول على السعر الإجمالي للأشخاص من الباك إند
+  String _getPersonsPrice() {
+    if (quote == null) return '0';
+    final personsPrice = quote!.pricing['personsPrice'];
+    return personsPrice?.toStringAsFixed(2) ?? '0';
   }
 
   // دالة للحصول على السعر بالساعة من الباك إند

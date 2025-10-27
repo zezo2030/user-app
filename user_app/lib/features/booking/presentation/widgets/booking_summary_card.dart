@@ -179,6 +179,18 @@ class BookingSummaryCard extends StatelessWidget {
           'base_price'.tr(),
           '${_getBasePrice()} ${'currency'.tr()}',
         ),
+        if (_getPricePerPerson() > 0) ...[
+          _buildPriceRow(
+            context,
+            'price_per_person'.tr(),
+            '${_getPricePerPerson()} ${'currency'.tr()} ${'per_person'.tr()}',
+          ),
+          _buildPriceRow(
+            context,
+            'persons_total_price'.tr(),
+            '${_getPersonsPrice()} ${'currency'.tr()}',
+          ),
+        ],
         if (quote!.discount > 0) ...[
           _buildPriceRow(
             context,
@@ -245,5 +257,19 @@ class BookingSummaryCard extends StatelessWidget {
     }
 
     return '0';
+  }
+
+  // دالة للحصول على السعر لكل شخص
+  double _getPricePerPerson() {
+    if (quote == null) return 0.0;
+    final pricePerPerson = quote!.pricing['pricePerPerson'];
+    return pricePerPerson?.toDouble() ?? 0.0;
+  }
+
+  // دالة للحصول على السعر الإجمالي للأشخاص
+  String _getPersonsPrice() {
+    if (quote == null) return '0';
+    final personsPrice = quote!.pricing['personsPrice'];
+    return personsPrice?.toStringAsFixed(2) ?? '0';
   }
 }

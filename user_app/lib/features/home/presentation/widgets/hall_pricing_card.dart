@@ -6,25 +6,21 @@ import '../../domain/entities/hall_entity.dart';
 class HallPricingCard extends StatelessWidget {
   final HallEntity hall;
 
-  const HallPricingCard({
-    Key? key,
-    required this.hall,
-  }) : super(key: key);
+  const HallPricingCard({Key? key, required this.hall}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final priceConfig = hall.priceConfig;
     final basePrice = priceConfig['basePrice'] ?? 0;
     final hourlyRate = priceConfig['hourlyRate'] ?? 0;
+    final pricePerPerson = priceConfig['pricePerPerson'] ?? 0;
     final weekendMultiplier = priceConfig['weekendMultiplier'] ?? 1.0;
     final holidayMultiplier = priceConfig['holidayMultiplier'] ?? 1.0;
     final decorationPrice = priceConfig['decorationPrice'] ?? 0;
 
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -47,9 +43,9 @@ class HallPricingCard extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Base price
             _buildPriceRow(
               context,
@@ -57,9 +53,9 @@ class HallPricingCard extends StatelessWidget {
               '${basePrice} ${'currency'.tr()}',
               Iconsax.calendar_1,
             ),
-            
+
             const SizedBox(height: 12),
-            
+
             // Hourly rate
             _buildPriceRow(
               context,
@@ -67,9 +63,20 @@ class HallPricingCard extends StatelessWidget {
               '${hourlyRate} ${'currency'.tr()} ${'per_hour'.tr()}',
               Iconsax.clock,
             ),
-            
+
             const SizedBox(height: 12),
-            
+
+            // Price per person
+            if (pricePerPerson > 0)
+              _buildPriceRow(
+                context,
+                'price_per_person'.tr(),
+                '${pricePerPerson} ${'currency'.tr()} ${'per_person'.tr()}',
+                Iconsax.people,
+              ),
+
+            if (pricePerPerson > 0) const SizedBox(height: 12),
+
             // Weekend pricing
             if (weekendMultiplier > 1.0)
               _buildPriceRow(
@@ -77,11 +84,12 @@ class HallPricingCard extends StatelessWidget {
                 'weekend_price'.tr(),
                 '${(hourlyRate * weekendMultiplier).toStringAsFixed(0)} ${'currency'.tr()} ${'per_hour'.tr()}',
                 Iconsax.calendar_2,
-                subtitle: '${(weekendMultiplier * 100).toStringAsFixed(0)}% ${'increase'.tr()}',
+                subtitle:
+                    '${(weekendMultiplier * 100).toStringAsFixed(0)}% ${'increase'.tr()}',
               ),
-            
+
             if (weekendMultiplier > 1.0) const SizedBox(height: 12),
-            
+
             // Holiday pricing
             if (holidayMultiplier > 1.0)
               _buildPriceRow(
@@ -89,11 +97,12 @@ class HallPricingCard extends StatelessWidget {
                 'holiday_price'.tr(),
                 '${(hourlyRate * holidayMultiplier).toStringAsFixed(0)} ${'currency'.tr()} ${'per_hour'.tr()}',
                 Iconsax.cake,
-                subtitle: '${(holidayMultiplier * 100).toStringAsFixed(0)}% ${'increase'.tr()}',
+                subtitle:
+                    '${(holidayMultiplier * 100).toStringAsFixed(0)}% ${'increase'.tr()}',
               ),
-            
+
             if (holidayMultiplier > 1.0) const SizedBox(height: 12),
-            
+
             // Decoration price
             if (decorationPrice > 0)
               _buildPriceRow(
@@ -103,9 +112,9 @@ class HallPricingCard extends StatelessWidget {
                 Iconsax.star_1,
                 subtitle: 'optional'.tr(),
               ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Note
             Container(
               padding: const EdgeInsets.all(12),
@@ -148,11 +157,7 @@ class HallPricingCard extends StatelessWidget {
   }) {
     return Row(
       children: [
-        Icon(
-          icon,
-          size: 20,
-          color: Colors.grey[600],
-        ),
+        Icon(icon, size: 20, color: Colors.grey[600]),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -168,10 +173,7 @@ class HallPricingCard extends StatelessWidget {
               if (subtitle != null)
                 Text(
                   subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
             ],
           ),

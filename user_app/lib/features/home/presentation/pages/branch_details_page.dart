@@ -13,15 +13,11 @@ import '../cubit/branch_details_state.dart';
 import '../cubit/halls_cubit.dart';
 import '../cubit/halls_state.dart';
 import '../widgets/hero_banner_widget.dart';
-import 'hall_details_page.dart';
 
 class BranchDetailsPage extends StatelessWidget {
   final String branchId;
 
-  const BranchDetailsPage({
-    Key? key,
-    required this.branchId,
-  }) : super(key: key);
+  const BranchDetailsPage({Key? key, required this.branchId}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +29,9 @@ class BranchDetailsPage extends StatelessWidget {
           )..loadBranchDetails(branchId),
         ),
         BlocProvider(
-          create: (context) => HallsCubit(
-            getHallsByBranchUseCase: sl<GetHallsByBranchUseCase>(),
-          )..loadHallsByBranch(branchId),
+          create: (context) =>
+              HallsCubit(getHallsByBranchUseCase: sl<GetHallsByBranchUseCase>())
+                ..loadHallsByBranch(branchId),
         ),
       ],
       child: BranchDetailsView(branchId: branchId),
@@ -45,7 +41,7 @@ class BranchDetailsPage extends StatelessWidget {
 
 class BranchDetailsView extends StatefulWidget {
   final String branchId;
-  
+
   const BranchDetailsView({Key? key, required this.branchId}) : super(key: key);
 
   @override
@@ -63,9 +59,7 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
         builder: (context, state) {
           if (state is BranchDetailsLoading) {
             return const Center(
-              child: CircularProgressIndicator(
-                color: AppColors.primaryRed,
-              ),
+              child: CircularProgressIndicator(color: AppColors.primaryRed),
             );
           }
 
@@ -91,7 +85,9 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      context.read<BranchDetailsCubit>().loadBranchDetails(widget.branchId);
+                      context.read<BranchDetailsCubit>().loadBranchDetails(
+                        widget.branchId,
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryRed,
@@ -105,17 +101,7 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
           }
 
           if (state is BranchDetailsLoaded) {
-            return Stack(
-              children: [
-                _buildBranchDetails(context, state.branch),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: BranchDetailsBottomBar(branch: state.branch),
-                ),
-              ],
-            );
+            return _buildBranchDetails(context, state.branch);
           }
 
           return const SizedBox.shrink();
@@ -147,7 +133,7 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
             ),
           ],
         ),
-        
+
         // Hero Banner with Branch Info
         SliverToBoxAdapter(
           child: HeroBannerWidget(
@@ -159,50 +145,47 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
             },
           ),
         ),
-        
+
         // Content
         SliverPadding(
           padding: const EdgeInsets.symmetric(vertical: 16),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
               // Branch Info Card
-             // _buildBranchInfoCard(branch),
-              
-             // const SizedBox(height: 24),
-              
+              // _buildBranchInfoCard(branch),
+
+              // const SizedBox(height: 24),
+
               // Branch Details Section
               _buildBranchDetailsSection(branch),
-              
+
               const SizedBox(height: 24),
-              
+
               // Branch Amenities Section (only if more than 3 amenities or not shown in hero)
               if (branch.amenities != null && branch.amenities!.length > 3)
                 _buildBranchAmenitiesSection(branch),
-              
+
               const SizedBox(height: 24),
-              
+
               // Branch Working Hours Section
               _buildBranchWorkingHoursSection(branch),
-              
+
               const SizedBox(height: 24),
-              
+
               // Branch Contact Section
               if (branch.contactPhone != null)
                 _buildBranchContactSection(branch),
-              
+
               const SizedBox(height: 24),
-              
+
               // Halls Section
               _buildHallsSection(),
-              
-              const SizedBox(height: 100), // Space for bottom action bar
             ]),
           ),
         ),
       ],
     );
   }
-
 
   Widget _buildBranchDetailsSection(BranchEntity branch) {
     return Container(
@@ -242,7 +225,9 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
           ),
           const SizedBox(height: 16),
           Text(
-            branch.descriptionAr ?? branch.descriptionEn ?? 'no_content_available'.tr(),
+            branch.descriptionAr ??
+                branch.descriptionEn ??
+                'no_content_available'.tr(),
             style: const TextStyle(
               fontSize: 14,
               height: 1.5,
@@ -255,7 +240,9 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
   }
 
   Widget _buildBranchAmenitiesSection(BranchEntity branch) {
-    if (branch.amenities == null || branch.amenities!.isEmpty || branch.amenities!.length <= 3) {
+    if (branch.amenities == null ||
+        branch.amenities!.isEmpty ||
+        branch.amenities!.length <= 3) {
       return const SizedBox.shrink();
     }
 
@@ -281,11 +268,7 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
         children: [
           Row(
             children: [
-              Icon(
-                Iconsax.star,
-                color: AppColors.primaryRed,
-                size: 24,
-              ),
+              Icon(Iconsax.star, color: AppColors.primaryRed, size: 24),
               const SizedBox(width: 12),
               Text(
                 'more_amenities'.tr(),
@@ -303,7 +286,10 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
             runSpacing: 8,
             children: additionalAmenities.map((amenity) {
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.primaryRed.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
@@ -456,10 +442,10 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
             ],
           ),
           const SizedBox(height: 20),
-          
+
           // Today's hours (always visible)
           _buildDayHoursCard(todayEntry.key, todayEntry.value, true),
-          
+
           // Other days (expandable)
           if (otherEntries.isNotEmpty) ...[
             const SizedBox(height: 12),
@@ -470,7 +456,10 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                 });
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 16,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.primaryRed.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(12),
@@ -483,7 +472,9 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      _isWorkingHoursExpanded ? 'إخفاء باقي الأيام' : 'عرض باقي الأيام',
+                      _isWorkingHoursExpanded
+                          ? 'hide_other_days'.tr()
+                          : 'show_other_days'.tr(),
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -492,7 +483,9 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                     ),
                     const SizedBox(width: 8),
                     Icon(
-                      _isWorkingHoursExpanded ? Iconsax.arrow_up_2 : Iconsax.arrow_down_2,
+                      _isWorkingHoursExpanded
+                          ? Iconsax.arrow_up_2
+                          : Iconsax.arrow_down_2,
                       size: 16,
                       color: AppColors.primaryRed,
                     ),
@@ -500,12 +493,12 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                 ),
               ),
             ),
-            
+
             // Expandable section
             if (_isWorkingHoursExpanded) ...[
               const SizedBox(height: 12),
-              ...otherEntries.map((entry) => 
-                Padding(
+              ...otherEntries.map(
+                (entry) => Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: _buildDayHoursCard(entry.key, entry.value, false),
                 ),
@@ -519,25 +512,25 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
 
   Widget _buildDayHoursCard(String dayName, dynamic hours, bool isToday) {
     final formattedHours = _formatWorkingHours(hours);
-    final isClosed = formattedHours == 'مغلق';
+    final isClosed = formattedHours == 'closed'.tr();
     final isOpenNow = isToday && !isClosed && _isCurrentlyOpen(formattedHours);
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isToday 
-            ? (isClosed 
-                ? Colors.red.withValues(alpha: 0.05)
-                : AppColors.primaryRed.withValues(alpha: 0.05))
-            : (isClosed 
-                ? Colors.grey.withValues(alpha: 0.05)
-                : Colors.grey.withValues(alpha: 0.05)),
+        color: isToday
+            ? (isClosed
+                  ? Colors.red.withValues(alpha: 0.05)
+                  : AppColors.primaryRed.withValues(alpha: 0.05))
+            : (isClosed
+                  ? Colors.grey.withValues(alpha: 0.05)
+                  : Colors.grey.withValues(alpha: 0.05)),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isToday 
-              ? (isClosed 
-                  ? Colors.red.withValues(alpha: 0.2)
-                  : AppColors.primaryRed.withValues(alpha: 0.2))
+          color: isToday
+              ? (isClosed
+                    ? Colors.red.withValues(alpha: 0.2)
+                    : AppColors.primaryRed.withValues(alpha: 0.2))
               : Colors.grey.withValues(alpha: 0.1),
           width: 1,
         ),
@@ -553,7 +546,7 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                   width: 8,
                   height: 8,
                   decoration: BoxDecoration(
-                    color: isToday 
+                    color: isToday
                         ? (isClosed ? Colors.red : AppColors.primaryRed)
                         : Colors.grey.withValues(alpha: 0.5),
                     shape: BoxShape.circle,
@@ -565,18 +558,20 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        dayName,
+                        _translateDayName(dayName),
                         style: TextStyle(
                           fontSize: 15,
-                          fontWeight: isToday ? FontWeight.bold : FontWeight.w500,
-                          color: isToday 
+                          fontWeight: isToday
+                              ? FontWeight.bold
+                              : FontWeight.w500,
+                          color: isToday
                               ? (isClosed ? Colors.red : AppColors.primaryRed)
                               : AppColors.textPrimary,
                         ),
                       ),
                       if (isToday && isOpenNow)
                         Text(
-                          'مفتوح الآن',
+                          'open_now'.tr(),
                           style: TextStyle(
                             fontSize: 11,
                             color: AppColors.primaryRed,
@@ -589,7 +584,7 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
               ],
             ),
           ),
-          
+
           // Working hours
           Expanded(
             flex: 3,
@@ -599,9 +594,7 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                 Icon(
                   isClosed ? Iconsax.close_circle : Iconsax.clock,
                   size: 16,
-                  color: isClosed 
-                      ? Colors.red 
-                      : AppColors.textSecondary,
+                  color: isClosed ? Colors.red : AppColors.textSecondary,
                 ),
                 const SizedBox(width: 6),
                 Text(
@@ -609,7 +602,7 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: isToday 
+                    color: isToday
                         ? (isClosed ? Colors.red : AppColors.primaryRed)
                         : (isClosed ? Colors.red : AppColors.textSecondary),
                   ),
@@ -622,33 +615,52 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
     );
   }
 
-  List<MapEntry<String, dynamic>> _sortWorkingHoursByToday(Map<String, dynamic> workingHours) {
+  List<MapEntry<String, dynamic>> _sortWorkingHoursByToday(
+    Map<String, dynamic> workingHours,
+  ) {
     final entries = workingHours.entries.toList();
-    
+
     // Find today's entry
     final todayEntry = entries.firstWhere(
       (entry) => _isToday(entry.key),
       orElse: () => entries.first,
     );
-    
+
     // Remove today from the list
     entries.remove(todayEntry);
-    
+
     // Sort remaining entries by day order
     entries.sort((a, b) {
       final dayOrder = {
-        'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4,
-        'Friday': 5, 'Saturday': 6, 'Sunday': 7,
-        'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4,
-        'الجمعة': 5, 'السبت': 6, 'الأحد': 7,
+        'monday': 1,
+        'tuesday': 2,
+        'wednesday': 3,
+        'thursday': 4,
+        'friday': 5,
+        'saturday': 6,
+        'sunday': 7,
+        'Monday': 1,
+        'Tuesday': 2,
+        'Wednesday': 3,
+        'Thursday': 4,
+        'Friday': 5,
+        'Saturday': 6,
+        'Sunday': 7,
+        'الاثنين': 1,
+        'الثلاثاء': 2,
+        'الأربعاء': 3,
+        'الخميس': 4,
+        'الجمعة': 5,
+        'السبت': 6,
+        'الأحد': 7,
       };
-      
-      final aOrder = dayOrder[a.key] ?? 0;
-      final bOrder = dayOrder[b.key] ?? 0;
-      
+
+      final aOrder = dayOrder[a.key.toLowerCase()] ?? 0;
+      final bOrder = dayOrder[b.key.toLowerCase()] ?? 0;
+
       return aOrder.compareTo(bOrder);
     });
-    
+
     // Return today first, then others
     return [todayEntry, ...entries];
   }
@@ -656,8 +668,16 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
   bool _isToday(String dayName) {
     final now = DateTime.now();
     final today = now.weekday;
-    
+
+    // Map API day names to weekday numbers
     final dayMap = {
+      'monday': 1,
+      'tuesday': 2,
+      'wednesday': 3,
+      'thursday': 4,
+      'friday': 5,
+      'saturday': 6,
+      'sunday': 7,
       'Monday': 1,
       'Tuesday': 2,
       'Wednesday': 3,
@@ -673,8 +693,29 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
       'السبت': 6,
       'الأحد': 7,
     };
-    
-    return dayMap[dayName] == today;
+
+    return dayMap[dayName.toLowerCase()] == today;
+  }
+
+  String _translateDayName(String dayName) {
+    final dayTranslations = {
+      'monday': 'monday'.tr(),
+      'tuesday': 'tuesday'.tr(),
+      'wednesday': 'wednesday'.tr(),
+      'thursday': 'thursday'.tr(),
+      'friday': 'friday'.tr(),
+      'saturday': 'saturday'.tr(),
+      'sunday': 'sunday'.tr(),
+      'Monday': 'monday'.tr(),
+      'Tuesday': 'tuesday'.tr(),
+      'Wednesday': 'wednesday'.tr(),
+      'Thursday': 'thursday'.tr(),
+      'Friday': 'friday'.tr(),
+      'Saturday': 'saturday'.tr(),
+      'Sunday': 'sunday'.tr(),
+    };
+
+    return dayTranslations[dayName] ?? dayName;
   }
 
   bool _isCurrentlyOpen(String hours) {
@@ -682,44 +723,44 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
       // Extract time range from formatted hours like "09:00 - 18:00"
       final timePattern = RegExp(r'(\d{1,2}):(\d{2})');
       final matches = timePattern.allMatches(hours).toList();
-      
+
       if (matches.length >= 2) {
         final now = DateTime.now();
         final currentHour = now.hour;
         final currentMinute = now.minute;
         final currentTimeInMinutes = currentHour * 60 + currentMinute;
-        
+
         final openHour = int.parse(matches[0].group(1)!);
         final openMinute = int.parse(matches[0].group(2)!);
         final openTimeInMinutes = openHour * 60 + openMinute;
-        
+
         final closeHour = int.parse(matches[1].group(1)!);
         final closeMinute = int.parse(matches[1].group(2)!);
         final closeTimeInMinutes = closeHour * 60 + closeMinute;
-        
-        return currentTimeInMinutes >= openTimeInMinutes && 
-               currentTimeInMinutes <= closeTimeInMinutes;
+
+        return currentTimeInMinutes >= openTimeInMinutes &&
+            currentTimeInMinutes <= closeTimeInMinutes;
       }
     } catch (e) {
       // If parsing fails, return false
     }
-    
+
     return false;
   }
 
   String _formatWorkingHours(dynamic hours) {
     // Handle different data types
     if (hours == null) {
-      return 'مغلق';
+      return 'closed'.tr();
     }
-    
+
     // If it's already a Map or Object, try to extract values
     if (hours is Map) {
       // Check if it has closed field
       if (hours.containsKey('closed') && hours['closed'] == true) {
-        return 'مغلق';
+        return 'closed'.tr();
       }
-      
+
       // Check if it has open and close times
       if (hours.containsKey('open') && hours.containsKey('close')) {
         final openTime = hours['open']?.toString() ?? '';
@@ -728,74 +769,80 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
           return '$openTime - $closeTime';
         }
       }
-      
+
       // If it's a Map but we can't extract meaningful data, convert to string
       hours = hours.toString();
     }
-    
+
     // Convert to string and remove any extra whitespace and brackets
     String cleanHours = hours.toString().trim();
-    
-    
+
     // Handle different formats of working hours
-    if (cleanHours.contains('closed') || cleanHours.contains('مغلق') || cleanHours.contains('closed: true')) {
-      return 'مغلق';
+    if (cleanHours.contains('closed') ||
+        cleanHours.contains('closed') ||
+        cleanHours.contains('closed: true')) {
+      return 'closed'.tr();
     }
-    
+
     // Handle JSON-like format: "{open: 09:00, close: 18:00, closed: false}"
     if (cleanHours.contains('open:') && cleanHours.contains('close:')) {
-      final openMatch = RegExp(r'open:\s*(\d{1,2}:\d{2})').firstMatch(cleanHours);
-      final closeMatch = RegExp(r'close:\s*(\d{1,2}:\d{2})').firstMatch(cleanHours);
-      
+      final openMatch = RegExp(
+        r'open:\s*(\d{1,2}:\d{2})',
+      ).firstMatch(cleanHours);
+      final closeMatch = RegExp(
+        r'close:\s*(\d{1,2}:\d{2})',
+      ).firstMatch(cleanHours);
+
       if (openMatch != null && closeMatch != null) {
         return '${openMatch.group(1)} - ${closeMatch.group(1)}';
       }
     }
-    
+
     // Handle simple time range like "09:00 - 18:00" or "09:00-18:00"
     if (cleanHours.contains(' - ') || cleanHours.contains('-')) {
       return cleanHours.replaceAll('-', ' - ');
     }
-    
+
     // Handle 24-hour format like "09:00" to "18:00"
     final timePattern = RegExp(r'(\d{1,2}:\d{2})');
     final matches = timePattern.allMatches(cleanHours).toList();
-    
+
     if (matches.length >= 2) {
       return '${matches[0].group(1)} - ${matches[1].group(1)}';
     }
-    
+
     // Handle single time like "09:00"
     if (matches.length == 1) {
       return '${matches[0].group(1)} - ${matches[0].group(1)}';
     }
-    
+
     // Handle boolean values
     if (cleanHours.toLowerCase() == 'true') {
       return '24/7';
     }
-    
+
     if (cleanHours.toLowerCase() == 'false' || cleanHours.isEmpty) {
-      return 'مغلق';
+      return 'closed'.tr();
     }
-    
+
     // Handle numeric values (might be minutes or hours)
     if (RegExp(r'^\d+$').hasMatch(cleanHours)) {
       final num = int.tryParse(cleanHours);
       if (num != null) {
         if (num == 0) {
-          return 'مغلق';
+          return 'closed'.tr();
         } else if (num == 1) {
           return '24/7';
         }
       }
     }
-    
+
     // Handle null or undefined
-    if (cleanHours.toLowerCase() == 'null' || cleanHours.toLowerCase() == 'undefined') {
-      return 'مغلق';
+    if (cleanHours.toLowerCase() == 'null' ||
+        cleanHours.toLowerCase() == 'undefined') {
+      return 'closed'.tr();
     }
-    
+
     // Return the original string if we can't parse it
     return cleanHours;
   }
@@ -820,11 +867,7 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
         children: [
           Row(
             children: [
-              Icon(
-                Iconsax.call,
-                color: AppColors.primaryRed,
-                size: 24,
-              ),
+              Icon(Iconsax.call, color: AppColors.primaryRed, size: 24),
               const SizedBox(width: 12),
               Text(
                 'contact_info'.tr(),
@@ -839,11 +882,7 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
           const SizedBox(height: 16),
           Row(
             children: [
-              Icon(
-                Iconsax.call,
-                size: 20,
-                color: AppColors.textSecondary,
-              ),
+              Icon(Iconsax.call, size: 20, color: AppColors.textSecondary),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -865,7 +904,10 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryRed,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -902,11 +944,7 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
               children: [
                 Row(
                   children: [
-                    Icon(
-                      Iconsax.home_2,
-                      color: AppColors.primaryRed,
-                      size: 24,
-                    ),
+                    Icon(Iconsax.home_2, color: AppColors.primaryRed, size: 24),
                     const SizedBox(width: 12),
                     Text(
                       'halls'.tr(),
@@ -920,9 +958,7 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                 ),
                 const SizedBox(height: 16),
                 const Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryRed,
-                  ),
+                  child: CircularProgressIndicator(color: AppColors.primaryRed),
                 ),
               ],
             ),
@@ -949,11 +985,7 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
               children: [
                 Row(
                   children: [
-                    Icon(
-                      Iconsax.home_2,
-                      color: AppColors.primaryRed,
-                      size: 24,
-                    ),
+                    Icon(Iconsax.home_2, color: AppColors.primaryRed, size: 24),
                     const SizedBox(width: 12),
                     Text(
                       'halls'.tr(),
@@ -1061,11 +1093,7 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   children: [
-                    Icon(
-                      Iconsax.home_2,
-                      color: AppColors.primaryRed,
-                      size: 24,
-                    ),
+                    Icon(Iconsax.home_2, color: AppColors.primaryRed, size: 24),
                     const SizedBox(width: 12),
                     Text(
                       'halls'.tr(),
@@ -1117,12 +1145,12 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
   }
 
   Widget _buildHallCard(HallEntity hall) {
-    final imageUrl = hall.images != null && hall.images!.isNotEmpty 
-        ? hall.images![0] 
+    final imageUrl = hall.images != null && hall.images!.isNotEmpty
+        ? hall.images![0]
         : null;
-    
+
     final basePrice = hall.priceConfig['basePrice'] ?? 0;
-    
+
     Color statusColor;
     String statusText;
     switch (hall.status) {
@@ -1179,7 +1207,7 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                     )
                   : null,
             ),
-            
+
             // Gradient Overlay
             Container(
               decoration: BoxDecoration(
@@ -1193,7 +1221,7 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                 ),
               ),
             ),
-            
+
             // Status Badge
             Positioned(
               top: 8,
@@ -1214,7 +1242,7 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                 ),
               ),
             ),
-            
+
             // Hall Info
             Positioned(
               bottom: 0,
@@ -1248,474 +1276,16 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                     ),
                     const SizedBox(height: 4),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.primaryRed,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        'سعر التذكرة: $basePrice ريال',
-                        style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class BranchDetailsBottomBar extends StatelessWidget {
-  final BranchEntity branch;
-
-  const BranchDetailsBottomBar({
-    Key? key,
-    required this.branch,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowColor,
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  // TODO: View on map
-                },
-                icon: const Icon(Iconsax.location),
-                label: Text('branches'.tr()),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.primaryRed,
-                  side: const BorderSide(color: AppColors.primaryRed),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  // TODO: View map
-                },
-                icon: const Icon(Iconsax.map),
-                label: Text('map'.tr()),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryRed,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHallsSection() {
-    return BlocBuilder<HallsCubit, HallsState>(
-      builder: (context, state) {
-        if (state is HallsLoading) {
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.shadowColor,
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Iconsax.home_2,
-                      color: AppColors.primaryRed,
-                      size: 24,
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'halls'.tr(),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                const Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryRed,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-
-        if (state is HallsError) {
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.shadowColor,
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Iconsax.home_2,
-                      color: AppColors.primaryRed,
-                      size: 24,
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'halls'.tr(),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Center(
-                  child: Column(
-                    children: [
-                      Icon(
-                        Iconsax.info_circle,
-                        size: 48,
-                        color: AppColors.errorColor,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        state.message,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.errorColor,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-
-        if (state is HallsLoaded) {
-          if (state.halls.isEmpty) {
-            return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.shadowColor,
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Iconsax.home_2,
-                        color: AppColors.primaryRed,
-                        size: 24,
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'halls'.tr(),
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Center(
-                    child: Column(
-                      children: [
-                        Icon(
-                          Iconsax.home_2,
-                          size: 48,
-                          color: AppColors.textSecondary,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'no_halls_available'.tr(),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    Icon(
-                      Iconsax.home_2,
-                      color: AppColors.primaryRed,
-                      size: 24,
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'halls'.tr(),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                child: SizedBox(
-                  height: 200,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: state.halls.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        width: 160,
-                        margin: EdgeInsets.only(
-                          right: index < state.halls.length - 1 ? 12 : 0,
-                        ),
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              '/hall-details',
-                              arguments: {'hallId': state.halls[index].id},
-                            );
-                          },
-                          child: _buildHallCard(state.halls[index]),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
-          );
-        }
-
-        return const SizedBox.shrink();
-      },
-    );
-  }
-
-  Widget _buildHallCard(HallEntity hall) {
-    final imageUrl = hall.images != null && hall.images!.isNotEmpty 
-        ? hall.images![0] 
-        : null;
-    
-    final basePrice = hall.priceConfig['basePrice'] ?? 0;
-    
-    Color statusColor;
-    String statusText;
-    switch (hall.status) {
-      case 'available':
-        statusColor = AppColors.availableColor;
-        statusText = 'available'.tr();
-        break;
-      case 'maintenance':
-        statusColor = AppColors.maintenanceColor;
-        statusText = 'maintenance'.tr();
-        break;
-      case 'reserved':
-        statusColor = AppColors.reservedColor;
-        statusText = 'reserved'.tr();
-        break;
-      default:
-        statusColor = AppColors.textSecondary;
-        statusText = 'unknown'.tr();
-    }
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowColor,
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Stack(
-          children: [
-            // Hall Image
-            Container(
-              height: double.infinity,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: AppColors.greyLight,
-                image: imageUrl != null
-                    ? DecorationImage(
-                        image: NetworkImage(imageUrl),
-                        fit: BoxFit.cover,
-                      )
-                    : null,
-              ),
-              child: imageUrl == null
-                  ? Icon(
-                      Iconsax.home_2,
-                      size: 48,
-                      color: AppColors.textSecondary,
-                    )
-                  : null,
-            ),
-            
-            // Gradient Overlay
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0.7),
-                  ],
-                ),
-              ),
-            ),
-            
-            // Status Badge
-            Positioned(
-              top: 8,
-              right: 8,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: statusColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  statusText,
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-            
-            // Hall Info
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.8),
-                    ],
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      hall.nameAr,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryRed,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        'سعر التذكرة: $basePrice ريال',
+                        '${'ticket_price'.tr()}: $basePrice ${'currency'.tr()}',
                         style: const TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,

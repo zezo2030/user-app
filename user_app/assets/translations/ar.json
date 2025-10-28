@@ -317,5 +317,9 @@
   "أدخل كلمة المرور": "أدخل كلمة المرور",
   "pay_now": "ادفع الآن",
   "processing": "جاري المعالجة...",
-  "complete_payment_to_view_tickets": "أكمل الدفع لعرض التذاكر"
+  "complete_payment_to_view_tickets": "أكمل الدفع لعرض التذاكر",
+  "hide_other_days": "إخفاء باقي الأيام",
+  "show_other_days": "عرض باقي الأيام",
+  "more_amenities": "مرافق إضافية",
+  "closed": "مغلق"
 }

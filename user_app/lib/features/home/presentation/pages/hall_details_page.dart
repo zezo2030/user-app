@@ -19,17 +19,14 @@ import '../../../booking/presentation/cubit/booking_cubit.dart';
 class HallDetailsPage extends StatelessWidget {
   final String hallId;
 
-  const HallDetailsPage({
-    Key? key,
-    required this.hallId,
-  }) : super(key: key);
+  const HallDetailsPage({Key? key, required this.hallId}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HallDetailsCubit(
-        getHallDetailsUseCase: sl<GetHallDetailsUseCase>(),
-      )..loadHallDetails(hallId),
+      create: (context) =>
+          HallDetailsCubit(getHallDetailsUseCase: sl<GetHallDetailsUseCase>())
+            ..loadHallDetails(hallId),
       child: HallDetailsView(hallId: hallId),
     );
   }
@@ -37,7 +34,7 @@ class HallDetailsPage extends StatelessWidget {
 
 class HallDetailsView extends StatelessWidget {
   final String hallId;
-  
+
   const HallDetailsView({Key? key, required this.hallId}) : super(key: key);
 
   @override
@@ -46,9 +43,7 @@ class HallDetailsView extends StatelessWidget {
       body: BlocBuilder<HallDetailsCubit, HallDetailsState>(
         builder: (context, state) {
           if (state is HallDetailsLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (state is HallDetailsError) {
@@ -56,18 +51,11 @@ class HallDetailsView extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Iconsax.info_circle,
-                    size: 64,
-                    color: Colors.red[300],
-                  ),
+                  Icon(Iconsax.info_circle, size: 64, color: Colors.red[300]),
                   const SizedBox(height: 16),
                   Text(
                     state.message,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.red,
-                    ),
+                    style: const TextStyle(fontSize: 16, color: Colors.red),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
@@ -106,17 +94,15 @@ class HallDetailsView extends StatelessWidget {
     return CustomScrollView(
       slivers: [
         // Header section
-        SliverToBoxAdapter(
-          child: HallHeaderSection(hall: hall),
-        ),
-        
+        SliverToBoxAdapter(child: HallHeaderSection(hall: hall)),
+
         // Content
         SliverPadding(
           padding: const EdgeInsets.all(16),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
               const SizedBox(height: 16),
-              
+
               // Description
               if (hall.descriptionAr != null || hall.descriptionEn != null)
                 Card(
@@ -148,21 +134,18 @@ class HallDetailsView extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          context.locale.languageCode == 'ar' 
+                          context.locale.languageCode == 'ar'
                               ? hall.descriptionAr ?? hall.descriptionEn ?? ''
                               : hall.descriptionEn ?? hall.descriptionAr ?? '',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            height: 1.5,
-                          ),
+                          style: const TextStyle(fontSize: 14, height: 1.5),
                         ),
                       ],
                     ),
                   ),
                 ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Hall info cards
               Row(
                 children: [
@@ -174,13 +157,9 @@ class HallDetailsView extends StatelessWidget {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              Icon(
-                                Iconsax.people,
-                                color: Colors.green,
-                                size: 32,
-                              ),
+                        child: Column(
+                          children: [
+                            Icon(Iconsax.people, color: Colors.green, size: 32),
                             const SizedBox(height: 8),
                             Text(
                               'hall_capacity'.tr(),
@@ -211,13 +190,13 @@ class HallDetailsView extends StatelessWidget {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              Icon(
-                                Iconsax.tick_circle,
-                                color: _getStatusColor(hall.status),
-                                size: 32,
-                              ),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Iconsax.tick_circle,
+                              color: _getStatusColor(hall.status),
+                              size: 32,
+                            ),
                             const SizedBox(height: 8),
                             Text(
                               'hall_status'.tr(),
@@ -242,18 +221,18 @@ class HallDetailsView extends StatelessWidget {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Pricing information
               HallPricingCard(hall: hall),
-              
+
               const SizedBox(height: 16),
-              
+
               // Features
               if (hall.features != null && hall.features!.isNotEmpty)
                 HallFeaturesList(features: hall.features!),
-              
+
               const SizedBox(height: 100), // Space for bottom action bar
             ]),
           ),
@@ -292,10 +271,7 @@ class HallDetailsView extends StatelessWidget {
 class HallDetailsBottomBar extends StatelessWidget {
   final HallEntity hall;
 
-  const HallDetailsBottomBar({
-    Key? key,
-    required this.hall,
-  }) : super(key: key);
+  const HallDetailsBottomBar({Key? key, required this.hall}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

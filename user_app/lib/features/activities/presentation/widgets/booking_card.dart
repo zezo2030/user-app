@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:iconsax/iconsax.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../home/data/datasources/home_remote_datasource.dart';
 import '../../../booking/data/models/booking_model.dart';
@@ -68,13 +69,13 @@ class _BookingCardState extends State<BookingCard> {
                               ),
                               errorWidget: (context, url, error) => Container(
                                 color: Colors.grey.shade200,
-                                child: const Icon(Icons.image_not_supported),
+                                child: const Icon(Iconsax.gallery_slash),
                               ),
                             )
                           : Container(
                               color: Colors.grey.shade200,
                               child: const Center(
-                                child: Icon(Icons.image, size: 40),
+                                child: Icon(Iconsax.gallery, size: 40),
                               ),
                             ),
                     ),
@@ -83,26 +84,43 @@ class _BookingCardState extends State<BookingCard> {
                       top: 12,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(16),
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.black.withOpacity(0.8),
+                              Colors.black.withOpacity(0.6),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
+                          horizontal: 12,
+                          vertical: 8,
                         ),
                         child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             const Icon(
-                              Icons.people,
+                              Iconsax.people,
                               color: Colors.white,
-                              size: 18,
+                              size: 20,
                             ),
-                            const SizedBox(width: 6),
+                            const SizedBox(width: 8),
                             Text(
-                              'x${widget.booking.persons}',
+                              '${widget.booking.persons}',
                               style: const TextStyle(
                                 color: Colors.white,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                                letterSpacing: 0.5,
                               ),
                             ),
                           ],

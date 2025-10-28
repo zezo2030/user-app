@@ -313,5 +313,9 @@
   "close": "Close",
   "pay_now": "Pay Now",
   "processing": "Processing...",
-  "complete_payment_to_view_tickets": "Complete payment to view tickets"
+  "complete_payment_to_view_tickets": "Complete payment to view tickets",
+  "hide_other_days": "Hide other days",
+  "show_other_days": "Show other days",
+  "more_amenities": "More Amenities",
+  "closed": "Closed"
 }

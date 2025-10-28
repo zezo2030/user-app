@@ -23,8 +23,27 @@ class MainScreen extends StatelessWidget {
   }
 }
 
-class MainScreenView extends StatelessWidget {
+class MainScreenView extends StatefulWidget {
   const MainScreenView({Key? key}) : super(key: key);
+
+  @override
+  State<MainScreenView> createState() => _MainScreenViewState();
+}
+
+class _MainScreenViewState extends State<MainScreenView> {
+  late final HomeCubit _homeCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _homeCubit = sl<HomeCubit>();
+  }
+
+  @override
+  void dispose() {
+    _homeCubit.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,8 +78,8 @@ class MainScreenView extends StatelessWidget {
             body: IndexedStack(
               index: cubit.currentIndex,
               children: [
-                BlocProvider(
-                  create: (context) => sl<HomeCubit>(),
+                BlocProvider.value(
+                  value: _homeCubit,
                   child: const HomeScreen(),
                 ),
                 const MyActivityScreen(),

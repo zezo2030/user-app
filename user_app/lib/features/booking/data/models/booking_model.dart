@@ -23,28 +23,51 @@ class BookingModel extends BookingEntity {
   });
 
   factory BookingModel.fromJson(Map<String, dynamic> json) {
+    int _asInt(dynamic v) {
+      if (v is int) return v;
+      if (v is num) return v.toInt();
+      final s = v?.toString();
+      return int.tryParse(s ?? '') ?? 0;
+    }
+
+    double _asDouble(dynamic v) {
+      if (v is double) return v;
+      if (v is num) return v.toDouble();
+      final s = v?.toString();
+      return double.tryParse(s ?? '') ?? 0.0;
+    }
+
+    DateTime _asDate(dynamic v) {
+      if (v is DateTime) return v;
+      return DateTime.tryParse(v?.toString() ?? '') ?? DateTime.now();
+    }
+
+    DateTime? _asDateOrNull(dynamic v) {
+      if (v == null) return null;
+      if (v is DateTime) return v;
+      return DateTime.tryParse(v.toString());
+    }
+
     return BookingModel(
       id: json['id'] as String,
       userId: json['userId'] as String,
       branchId: json['branchId'] as String,
       hallId: json['hallId'] as String,
-      startTime: DateTime.parse(json['startTime'] as String),
-      durationHours: json['durationHours'] as int,
-      persons: json['persons'] as int,
-      totalPrice: (json['totalPrice'] as num).toDouble(),
+      startTime: _asDate(json['startTime']),
+      durationHours: _asInt(json['durationHours']),
+      persons: _asInt(json['persons']),
+      totalPrice: _asDouble(json['totalPrice']),
       status: json['status'] as String,
       couponCode: json['couponCode'] as String?,
-      discountAmount: json['discountAmount'] != null 
-          ? (json['discountAmount'] as num).toDouble() 
+      discountAmount: json['discountAmount'] != null
+          ? _asDouble(json['discountAmount'])
           : null,
       specialRequests: json['specialRequests'] as String?,
       contactPhone: json['contactPhone'] as String?,
-      cancelledAt: json['cancelledAt'] != null 
-          ? DateTime.parse(json['cancelledAt'] as String) 
-          : null,
+      cancelledAt: _asDateOrNull(json['cancelledAt']),
       cancellationReason: json['cancellationReason'] as String?,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      createdAt: _asDate(json['createdAt']),
+      updatedAt: _asDate(json['updatedAt']),
     );
   }
 

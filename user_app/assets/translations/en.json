@@ -125,6 +125,13 @@
   "home_subtitle": "Here you will find the main content of the app",
   "my_activity_title": "My Activity",
   "my_activity_subtitle": "Here you can track your recent activities",
+  "tab_all": "All",
+  "tab_upcoming": "Upcoming",
+  "tab_past": "Past",
+  "tab_cancelled": "Cancelled",
+  "no_bookings": "No bookings",
+  "retry": "Retry",
+  "view_details": "View details",
   "category_title": "Categories",
   "category_subtitle": "Browse different categories",
   "profile_title": "Profile",
@@ -303,5 +310,8 @@
   "booking_cancelled": "Booking cancelled",
   "cancellation_reason": "Cancellation Reason",
   "no_reason_provided": "No reason provided",
-  "close": "Close"
+  "close": "Close",
+  "pay_now": "Pay Now",
+  "processing": "Processing...",
+  "complete_payment_to_view_tickets": "Complete payment to view tickets"
 }

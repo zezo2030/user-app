@@ -220,22 +220,47 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                 const SizedBox(height: 16),
               ],
 
-              // Offers Section
+              // Offers Section (branch-wide only)
               if (branch.offers != null && branch.offers!.isNotEmpty) ...[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Text(
-                    'offers'.tr(),
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
+                // Filter: show only offers that apply to whole branch (no hallId)
+                // branch.offers is dynamic list coming from API
+                // We keep a local filtered list to pass to the widget
+                // and avoid mutating original entity
+                Builder(
+                  builder: (context) {
+                    final List<dynamic> branchWideOffers = (branch.offers ?? [])
+                        .where((o) {
+                          if (o is Map) {
+                            final dynamic hallId = o['hallId'];
+                            return hallId == null ||
+                                (hallId is String && hallId.isEmpty);
+                          }
+                          return true;
+                        })
+                        .toList();
+                    if (branchWideOffers.isEmpty)
+                      return const SizedBox.shrink();
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Text(
+                            'offers'.tr(),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        OffersSection(offers: branchWideOffers),
+                        const SizedBox(height: 24),
+                      ],
+                    );
+                  },
                 ),
-                const SizedBox(height: 12),
-                OffersSection(offers: branch.offers),
-                const SizedBox(height: 24),
               ],
 
               // Branch Details Section

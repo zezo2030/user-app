@@ -164,7 +164,7 @@ class _FeaturedOffersSectionState extends State<FeaturedOffersSection>
 
   Widget _buildOffersCarousel() {
     return SizedBox(
-      height: 280,
+      height: 200,
       child: PageView.builder(
         controller: _pageController,
         onPageChanged: (index) {

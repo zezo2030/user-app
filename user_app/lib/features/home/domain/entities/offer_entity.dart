@@ -12,6 +12,8 @@ class OfferEntity extends Equatable {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String? imageUrl;
+  final String? hallName;
+  final String? branchName;
 
   const OfferEntity({
     required this.id,
@@ -25,6 +27,8 @@ class OfferEntity extends Equatable {
     required this.createdAt,
     required this.updatedAt,
     this.imageUrl,
+    this.hallName,
+    this.branchName,
   });
 
   @override
@@ -40,5 +44,7 @@ class OfferEntity extends Equatable {
     createdAt,
     updatedAt,
     imageUrl,
+    hallName,
+    branchName,
   ];
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:dio/dio.dart';
 import '../../di/home_injection.dart';
 import '../../domain/usecases/get_hall_details_usecase.dart';
 import '../../domain/entities/hall_entity.dart';
@@ -10,8 +11,9 @@ import '../cubit/hall_details_state.dart';
 import '../widgets/hall_header_section.dart';
 import '../widgets/hall_pricing_card.dart';
 import '../widgets/hall_features_list.dart';
-import '../widgets/working_hours_widget.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/constants/api_constants.dart';
+import '../../../home/presentation/widgets/offers_section.dart';
 import '../../../booking/presentation/pages/hall_booking_page.dart';
 import '../../../booking/di/booking_injection.dart' as booking;
 import '../../../booking/presentation/cubit/booking_cubit.dart';
@@ -229,6 +231,9 @@ class HallDetailsView extends StatelessWidget {
 
               const SizedBox(height: 16),
 
+              // Hall-specific Offers (fetched on-demand from /home?branchId=...)
+              _HallOffersInline(branchId: hall.branchId, hallId: hall.id),
+
               // Features
               if (hall.features != null && hall.features!.isNotEmpty)
                 HallFeaturesList(features: hall.features!),
@@ -265,6 +270,104 @@ class HallDetailsView extends StatelessWidget {
       default:
         return status;
     }
+  }
+}
+
+class _HallOffersInline extends StatefulWidget {
+  final String branchId;
+  final String hallId;
+
+  const _HallOffersInline({required this.branchId, required this.hallId});
+
+  @override
+  State<_HallOffersInline> createState() => _HallOffersInlineState();
+}
+
+class _HallOffersInlineState extends State<_HallOffersInline> {
+  List<dynamic> _offers = const [];
+  bool _loading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchOffers();
+  }
+
+  Future<void> _fetchOffers() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final dio = Dio();
+      final res = await dio.get(
+        '${ApiConstants.baseUrl}${ApiConstants.homeEndpoint}',
+        queryParameters: {'branchId': widget.branchId},
+      );
+      final data = res.data;
+      final List<dynamic> allOffers = (data is Map && data['offers'] is List)
+          ? (data['offers'] as List)
+          : const [];
+      // Filter offers that target this hallId
+      final hallOffers = allOffers.where((o) {
+        if (o is Map) {
+          final dynamic hallId = o['hallId'];
+          if (hallId == null) return false; // skip branch-wide offers here
+          return hallId.toString() == widget.hallId;
+        }
+        return false;
+      }).toList();
+      setState(() {
+        _offers = hallOffers;
+        _loading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) {
+      return const SizedBox.shrink();
+    }
+    if (_error != null) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Row(
+          children: [
+            const Icon(Iconsax.info_circle, color: Colors.red, size: 18),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(_error!, style: const TextStyle(fontSize: 12)),
+            ),
+            TextButton(onPressed: _fetchOffers, child: Text('retry'.tr())),
+          ],
+        ),
+      );
+    }
+    if (_offers.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          child: Text(
+            'offers'.tr(),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+        OffersSection(offers: _offers),
+        const SizedBox(height: 12),
+      ],
+    );
   }
 }
 

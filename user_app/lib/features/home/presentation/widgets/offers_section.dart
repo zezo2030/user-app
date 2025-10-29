@@ -25,6 +25,28 @@ class OffersSection extends StatelessWidget {
           final discount = (offer is Map && offer['discount'] != null)
               ? offer['discount'].toString()
               : null;
+          // Derive percentage/fixed discount display if not provided
+          String? discountBadge;
+          if (offer is Map) {
+            final dv = offer['discountValue'];
+            final dt = offer['discountType'];
+            if (discount != null && discount.trim().isNotEmpty) {
+              discountBadge = discount;
+            } else if (dv != null && dt != null) {
+              final num? Val = dv is num
+                  ? dv
+                  : (dv is String ? num.tryParse(dv) : null);
+              final String type = dt.toString();
+              if (Val != null) {
+                if (type == 'percentage') {
+                  discountBadge = '${Val.toString()}%';
+                } else {
+                  // fixed amount e.g. SAR 50 off -> keep as numeric here
+                  discountBadge = Val.toString();
+                }
+              }
+            }
+          }
           final imageUrl = (offer is Map && offer['imageUrl'] != null)
               ? offer['imageUrl'].toString()
               : null;
@@ -96,6 +118,49 @@ class OffersSection extends StatelessWidget {
                       ),
                     ),
                   ),
+
+                  // Discount badge (top-left)
+                  if (discountBadge != null && discountBadge.isNotEmpty)
+                    Positioned(
+                      top: 10,
+                      left: 10,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEF4444),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 6,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Iconsax.discount_shape,
+                              size: 14,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              discountBadge,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
 
                   // Content
                   Padding(

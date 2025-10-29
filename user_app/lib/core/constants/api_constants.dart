@@ -37,6 +37,7 @@ class ApiConstants {
   // Home Endpoints
   static const String homeEndpoint = '/home';
   static const String branchDetailsEndpoint = '/content/branches';
+  static const String branchesEndpoint = '/content/branches';
   static const String hallsEndpoint = '/content/halls';
 
   // Headers

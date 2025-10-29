@@ -62,23 +62,11 @@ class _ModernOfferCardState extends State<ModernOfferCard>
                 width: 320,
                 margin: const EdgeInsets.only(right: 16),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(12),
                   gradient: _getOfferGradient(),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.luxuryShadowMedium,
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
-                    ),
-                    BoxShadow(
-                      color: AppColors.glowPrimary,
-                      blurRadius: 30,
-                      offset: const Offset(0, 0),
-                    ),
-                  ],
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(12),
                   child: Stack(
                     children: [
                       // Background Image or Pattern
@@ -90,40 +78,26 @@ class _ModernOfferCardState extends State<ModernOfferCard>
                       // Gradient Overlay for better text readability
                       _buildGradientOverlay(),
 
-                      // Main Content
+                      // Main Content (simplified)
                       Padding(
                         padding: const EdgeInsets.all(20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Header with Badge
+                            // Header with Title and Venue Badge
                             _buildHeader(),
 
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 10),
 
-                            // Offer Title
-                            _buildOfferTitle(),
-
-                            const SizedBox(height: 8),
-
-                            // Offer Description
-                            if (widget.offer.description != null &&
-                                widget.offer.description!.isNotEmpty)
-                              _buildOfferDescription(),
+                            // Discount Chip
+                            _buildDiscountChip(),
 
                             const Spacer(),
-
-                            // Footer with CTA
-                            _buildFooter(),
                           ],
                         ),
                       ),
 
-                      // Countdown Timer (if applicable)
-                      if (widget.offer.endsAt != null) _buildCountdownTimer(),
-
-                      // Hot Deal Badge
-                      _buildHotDealBadge(),
+                      // Removed countdown and extra badges per simplified design
                     ],
                   ),
                 ),
@@ -171,11 +145,11 @@ class _ModernOfferCardState extends State<ModernOfferCard>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Colors.black.withOpacity(0.0),
-              Colors.black.withOpacity(0.3),
-              Colors.black.withOpacity(0.6),
+              Colors.black.withOpacity(0.15),
+              Colors.black.withOpacity(0.45),
+              Colors.black.withOpacity(0.75),
             ],
-            stops: const [0.0, 0.5, 1.0],
+            stops: const [0.0, 0.55, 1.0],
           ),
         ),
       ),
@@ -201,37 +175,19 @@ class _ModernOfferCardState extends State<ModernOfferCard>
   }
 
   Widget _buildHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        // Discount Badge
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
-          ),
-          child: Text(
-            _getDiscountText(),
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
-            ),
-          ),
-        ),
+    final String? branch = (widget.offer.branchName ?? '').trim().isNotEmpty
+        ? widget.offer.branchName!.trim()
+        : null;
+    final String? hall = (widget.offer.hallName ?? '').trim().isNotEmpty
+        ? widget.offer.hallName!.trim()
+        : null;
 
-        // Offer Type Icon
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(Icons.local_offer, color: Colors.white, size: 20),
-        ),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(child: _buildOfferTitle()),
+        const SizedBox(width: 8),
+        if (branch != null || hall != null) _venueBadge(branch, hall),
       ],
     );
   }
@@ -250,116 +206,11 @@ class _ModernOfferCardState extends State<ModernOfferCard>
     );
   }
 
-  Widget _buildOfferDescription() {
-    return Text(
-      widget.offer.description!,
-      style: TextStyle(
-        color: Colors.white.withOpacity(0.9),
-        fontSize: 14,
-        height: 1.4,
-      ),
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
-    );
-  }
+  // Description and footer removed in simplified card
 
-  Widget _buildFooter() {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.3),
-                width: 1,
-              ),
-            ),
-            child: Text(
-              'claim_offer'.tr(),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
-          ),
-          child: const Icon(Icons.arrow_forward, color: Colors.white, size: 20),
-        ),
-      ],
-    );
-  }
+  // Countdown removed in simplified card
 
-  Widget _buildCountdownTimer() {
-    if (widget.offer.endsAt == null) return const SizedBox.shrink();
-
-    final now = DateTime.now();
-    final endTime = widget.offer.endsAt!;
-    final difference = endTime.difference(now);
-
-    if (difference.isNegative) return const SizedBox.shrink();
-
-    return Positioned(
-      top: 16,
-      right: 16,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: Colors.red.withOpacity(0.9),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Text(
-          _formatCountdown(difference),
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHotDealBadge() {
-    return Positioned(
-      top: -5,
-      left: -5,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          gradient: AppColors.luxuryGoldGradient,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.luxuryGold.withOpacity(0.3),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Text(
-          'hot_deal'.tr(),
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
+  // Hot deal badge removed in simplified card
 
   LinearGradient _getOfferGradient() {
     if (widget.offer.discountValue >= 50) {
@@ -379,19 +230,80 @@ class _ModernOfferCardState extends State<ModernOfferCard>
     }
   }
 
-  String _formatCountdown(Duration duration) {
-    final days = duration.inDays;
-    final hours = duration.inHours % 24;
-    final minutes = duration.inMinutes % 60;
-
-    if (days > 0) {
-      return '${days}d ${hours}h';
-    } else if (hours > 0) {
-      return '${hours}h ${minutes}m';
-    } else {
-      return '${minutes}m';
-    }
+  Widget _buildDiscountChip() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.20),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.white.withOpacity(0.30), width: 1),
+      ),
+      child: Text(
+        _getDiscountText(),
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.3,
+        ),
+      ),
+    );
   }
+
+  // Venue composition now handled directly in header (branch above, hall below)
+
+  Widget _venueBadge(String? branch, String? hall) {
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 180),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.18),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.white.withOpacity(0.28), width: 1),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.place, color: Colors.white, size: 14),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (branch != null)
+                  Text(
+                    branch,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                if (hall != null)
+                  Text(
+                    hall,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                if (branch == null && hall != null) const SizedBox.shrink(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Countdown formatter removed
 }
 
 class _OfferPatternPainter extends CustomPainter {

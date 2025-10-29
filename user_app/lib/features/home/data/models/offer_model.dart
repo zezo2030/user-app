@@ -16,13 +16,14 @@ class OfferModel extends OfferEntity {
     required super.isActive,
     required super.createdAt,
     required super.updatedAt,
+    super.imageUrl,
   });
 
   factory OfferModel.fromJson(Map<String, dynamic> json) {
     // معالجة مخصصة لـ discountValue لتجنب خطأ تحويل النوع
     double parsedDiscountValue = 0.0;
     final discountValue = json['discountValue'];
-    
+
     if (discountValue != null) {
       if (discountValue is num) {
         parsedDiscountValue = discountValue.toDouble();
@@ -30,26 +31,27 @@ class OfferModel extends OfferEntity {
         parsedDiscountValue = double.tryParse(discountValue) ?? 0.0;
       }
     }
-    
+
     return OfferModel(
       id: json['id']?.toString() ?? '',
       title: json['title']?.toString() ?? '',
       description: json['description']?.toString(),
       discountType: json['discountType']?.toString() ?? 'percentage',
       discountValue: parsedDiscountValue,
-      startsAt: json['startsAt'] != null 
+      startsAt: json['startsAt'] != null
           ? DateTime.tryParse(json['startsAt'].toString())
           : null,
-      endsAt: json['endsAt'] != null 
+      endsAt: json['endsAt'] != null
           ? DateTime.tryParse(json['endsAt'].toString())
           : null,
       isActive: json['isActive'] == true,
-      createdAt: json['createdAt'] != null 
+      createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'].toString()) ?? DateTime.now()
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null 
+      updatedAt: json['updatedAt'] != null
           ? DateTime.tryParse(json['updatedAt'].toString()) ?? DateTime.now()
           : DateTime.now(),
+      imageUrl: json['imageUrl']?.toString(),
     );
   }
 
@@ -67,6 +69,7 @@ class OfferModel extends OfferEntity {
       isActive: entity.isActive,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
+      imageUrl: entity.imageUrl,
     );
   }
 
@@ -82,6 +85,7 @@ class OfferModel extends OfferEntity {
       isActive: isActive,
       createdAt: createdAt,
       updatedAt: updatedAt,
+      imageUrl: imageUrl,
     );
   }
 }

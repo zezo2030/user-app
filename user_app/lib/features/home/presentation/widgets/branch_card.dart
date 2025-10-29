@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../domain/entities/branch_entity.dart';
 import '../../../../core/utils/url_utils.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class BranchCard extends StatelessWidget {
   final BranchEntity branch;
@@ -234,12 +235,12 @@ class BranchCard extends StatelessWidget {
 
     return ClipRRect(
       borderRadius: border,
-      child: Image.network(
-        resolveFileUrl(img),
+      child: CachedNetworkImage(
+        imageUrl: resolveFileUrl(img),
         width: 120,
         height: 120,
         fit: BoxFit.cover,
-        errorBuilder: (c, e, s) => Container(
+        errorWidget: (c, url, e) => Container(
           width: 120,
           height: 120,
           color: Colors.grey.shade200,

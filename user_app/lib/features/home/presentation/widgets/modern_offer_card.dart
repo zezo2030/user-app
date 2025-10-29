@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../domain/entities/offer_entity.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/url_utils.dart';
 
 class ModernOfferCard extends StatefulWidget {
   final OfferEntity offer;
@@ -79,8 +81,14 @@ class _ModernOfferCardState extends State<ModernOfferCard>
                   borderRadius: BorderRadius.circular(20),
                   child: Stack(
                     children: [
-                      // Background Pattern
-                      _buildBackgroundPattern(),
+                      // Background Image or Pattern
+                      widget.offer.imageUrl != null &&
+                              widget.offer.imageUrl!.isNotEmpty
+                          ? _buildBackgroundImage()
+                          : _buildBackgroundPattern(),
+
+                      // Gradient Overlay for better text readability
+                      _buildGradientOverlay(),
 
                       // Main Content
                       Padding(
@@ -124,6 +132,53 @@ class _ModernOfferCardState extends State<ModernOfferCard>
           ),
         );
       },
+    );
+  }
+
+  Widget _buildBackgroundImage() {
+    return Positioned.fill(
+      child: CachedNetworkImage(
+        imageUrl: resolveFileUrl(widget.offer.imageUrl),
+        fit: BoxFit.cover,
+        placeholder: (context, url) => Container(
+          decoration: BoxDecoration(gradient: _getOfferGradient()),
+          child: const Center(
+            child: CircularProgressIndicator(color: Colors.white70),
+          ),
+        ),
+        errorWidget: (context, url, error) => Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white.withOpacity(0.1),
+                Colors.white.withOpacity(0.05),
+              ],
+            ),
+          ),
+          child: CustomPaint(painter: _OfferPatternPainter()),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGradientOverlay() {
+    return Positioned.fill(
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.black.withOpacity(0.0),
+              Colors.black.withOpacity(0.3),
+              Colors.black.withOpacity(0.6),
+            ],
+            stops: const [0.0, 0.5, 1.0],
+          ),
+        ),
+      ),
     );
   }
 

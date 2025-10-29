@@ -18,6 +18,7 @@ import '../widgets/map_preview_widget.dart';
 import '../widgets/ratings_section.dart';
 import '../widgets/offers_section.dart';
 import '../../../../core/utils/url_utils.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class BranchDetailsPage extends StatelessWidget {
   final String branchId;
@@ -1310,7 +1311,7 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                 color: AppColors.greyLight,
                 image: imageUrl != null
                     ? DecorationImage(
-                        image: NetworkImage(imageUrl),
+                        image: CachedNetworkImageProvider(imageUrl),
                         fit: BoxFit.cover,
                       )
                     : null,

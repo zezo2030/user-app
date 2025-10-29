@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../domain/entities/branch_entity.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/url_utils.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class PopularBranchCard extends StatefulWidget {
   final BranchEntity branch;
@@ -138,10 +139,10 @@ class _PopularBranchCardState extends State<PopularBranchCard>
     return SizedBox(
       height: 160,
       width: double.infinity,
-      child: Image.network(
-        resolveFileUrl(img),
+      child: CachedNetworkImage(
+        imageUrl: resolveFileUrl(img),
         fit: BoxFit.cover,
-        errorBuilder: (context, error, stack) {
+        errorWidget: (context, url, error) {
           return Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(

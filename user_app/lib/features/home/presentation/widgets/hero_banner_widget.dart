@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../../core/theme/app_colors.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class HeroBannerWidget extends StatelessWidget {
   final String? backgroundImageUrl;
@@ -42,7 +43,7 @@ class HeroBannerWidget extends StatelessWidget {
           gradient: backgroundImageUrl != null ? null : AppColors.heroGradient,
           image: backgroundImageUrl != null
               ? DecorationImage(
-                  image: NetworkImage(backgroundImageUrl!),
+                  image: CachedNetworkImageProvider(backgroundImageUrl!),
                   fit: BoxFit.cover,
                 )
               : null,

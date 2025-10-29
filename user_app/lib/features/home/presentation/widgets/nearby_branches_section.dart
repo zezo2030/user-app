@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../domain/entities/branch_entity.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/url_utils.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class NearbyBranchesSection extends StatefulWidget {
   final List<BranchEntity> branches;
@@ -399,12 +400,12 @@ class _NearbyBranchesSectionState extends State<NearbyBranchesSection>
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
-      child: Image.network(
-        resolveFileUrl(img),
+      child: CachedNetworkImage(
+        imageUrl: resolveFileUrl(img),
         width: 80,
         height: 80,
         fit: BoxFit.cover,
-        errorBuilder: (c, e, s) => Container(
+        errorWidget: (c, url, e) => Container(
           width: 80,
           height: 80,
           color: Colors.grey.shade200,

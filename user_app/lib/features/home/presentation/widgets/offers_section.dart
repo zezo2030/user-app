@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import '../../../../core/utils/url_utils.dart';
 
 class OffersSection extends StatelessWidget {
   final List<dynamic>? offers;
@@ -11,7 +13,7 @@ class OffersSection extends StatelessWidget {
     final list = offers ?? const [];
     if (list.isEmpty) return const SizedBox.shrink();
     return SizedBox(
-      height: 120,
+      height: 140,
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         scrollDirection: Axis.horizontal,
@@ -23,9 +25,11 @@ class OffersSection extends StatelessWidget {
           final discount = (offer is Map && offer['discount'] != null)
               ? offer['discount'].toString()
               : null;
+          final imageUrl = (offer is Map && offer['imageUrl'] != null)
+              ? offer['imageUrl'].toString()
+              : null;
           return Container(
-            width: 220,
-            padding: const EdgeInsets.all(16),
+            width: 240,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
@@ -37,49 +41,95 @@ class OffersSection extends StatelessWidget {
                 ),
               ],
             ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFEDEA),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(
-                    Iconsax.discount_shape,
-                    color: Color(0xFFEF4444),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      if (discount != null) ...[
-                        const SizedBox(height: 6),
-                        Text(
-                          discount,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.black54,
-                            fontWeight: FontWeight.w500,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Stack(
+                children: [
+                  // Background Image
+                  if (imageUrl != null && imageUrl.isNotEmpty)
+                    Positioned.fill(
+                      child: CachedNetworkImage(
+                        imageUrl: resolveFileUrl(imageUrl),
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          color: Colors.grey[200],
+                          child: const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           ),
                         ),
-                      ],
-                    ],
+                        errorWidget: (context, url, error) => Container(
+                          color: const Color(0xFFFFEDEA),
+                          child: const Center(
+                            child: Icon(
+                              Iconsax.discount_shape,
+                              color: Color(0xFFEF4444),
+                              size: 40,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  else
+                    Container(
+                      color: const Color(0xFFFFEDEA),
+                      child: const Center(
+                        child: Icon(
+                          Iconsax.discount_shape,
+                          color: Color(0xFFEF4444),
+                          size: 40,
+                        ),
+                      ),
+                    ),
+
+                  // Gradient Overlay
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.black.withOpacity(0.0),
+                            Colors.black.withOpacity(0.5),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ],
+
+                  // Content
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                        if (discount != null) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            discount,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: Colors.white70,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },

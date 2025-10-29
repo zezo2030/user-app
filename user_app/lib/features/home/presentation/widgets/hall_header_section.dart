@@ -3,14 +3,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../domain/entities/hall_entity.dart';
 import '../../../../core/theme/app_colors.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class HallHeaderSection extends StatelessWidget {
   final HallEntity hall;
 
-  const HallHeaderSection({
-    Key? key,
-    required this.hall,
-  }) : super(key: key);
+  const HallHeaderSection({Key? key, required this.hall}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,16 +31,16 @@ class HallHeaderSection extends StatelessWidget {
               ),
             ),
             child: hall.images != null && hall.images!.isNotEmpty
-                ? Image.network(
-                    hall.images!.first,
+                ? CachedNetworkImage(
+                    imageUrl: hall.images!.first,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
+                    errorWidget: (context, url, error) {
                       return _buildPlaceholderImage(context);
                     },
                   )
                 : _buildPlaceholderImage(context),
           ),
-          
+
           // Gradient overlay
           Container(
             decoration: BoxDecoration(
@@ -56,7 +54,7 @@ class HallHeaderSection extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Back button
           Positioned(
             top: 50,
@@ -68,14 +66,11 @@ class HallHeaderSection extends StatelessWidget {
               ),
               child: IconButton(
                 onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(
-                  Iconsax.arrow_left_2,
-                  color: Colors.white,
-                ),
+                icon: const Icon(Iconsax.arrow_left_2, color: Colors.white),
               ),
             ),
           ),
-          
+
           // Hall name and status
           Positioned(
             bottom: 20,
@@ -85,7 +80,9 @@ class HallHeaderSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  context.locale.languageCode == 'ar' ? hall.nameAr : hall.nameEn,
+                  context.locale.languageCode == 'ar'
+                      ? hall.nameAr
+                      : hall.nameEn,
                   style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -101,7 +98,9 @@ class HallHeaderSection extends StatelessWidget {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: _getStatusColor(hall.status).withValues(alpha: 0.9),
+                        color: _getStatusColor(
+                          hall.status,
+                        ).withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(

@@ -11,6 +11,7 @@ class OfferEntity extends Equatable {
   final bool isActive;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String? imageUrl;
 
   const OfferEntity({
     required this.id,
@@ -23,19 +24,21 @@ class OfferEntity extends Equatable {
     required this.isActive,
     required this.createdAt,
     required this.updatedAt,
+    this.imageUrl,
   });
 
   @override
   List<Object?> get props => [
-        id,
-        title,
-        description,
-        discountType,
-        discountValue,
-        startsAt,
-        endsAt,
-        isActive,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    title,
+    description,
+    discountType,
+    discountValue,
+    startsAt,
+    endsAt,
+    isActive,
+    createdAt,
+    updatedAt,
+    imageUrl,
+  ];
 }

@@ -3,7 +3,7 @@ import '../../domain/entities/branch_entity.dart';
 
 part 'branch_model.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(createToJson: false)
 class BranchModel extends BranchEntity {
   const BranchModel({
     required super.id,
@@ -20,6 +20,11 @@ class BranchModel extends BranchEntity {
     super.videoUrl,
     super.coverImage,
     super.images,
+    super.latitude,
+    super.longitude,
+    super.rating,
+    super.reviewsCount,
+    super.offers,
     required super.createdAt,
     required super.updatedAt,
   });
@@ -42,23 +47,32 @@ class BranchModel extends BranchEntity {
 
     return BranchModel(
       id: json['id']?.toString() ?? '',
-      nameAr: json['name_ar']?.toString() ?? '',
-      nameEn: json['name_en']?.toString() ?? '',
+      nameAr: (json['name_ar'] ?? json['nameAr'] ?? '').toString(),
+      nameEn: (json['name_en'] ?? json['nameEn'] ?? '').toString(),
       location: json['location']?.toString() ?? '',
       capacity: parsedCapacity,
       status: json['status']?.toString() ?? 'inactive',
-      descriptionAr: json['description_ar']?.toString(),
-      descriptionEn: json['description_en']?.toString(),
-      contactPhone: json['contactPhone']?.toString(),
-      workingHours: json['workingHours'] as Map<String, dynamic>?,
+      descriptionAr: (json['description_ar'] ?? json['descriptionAr'])
+          ?.toString(),
+      descriptionEn: (json['description_en'] ?? json['descriptionEn'])
+          ?.toString(),
+      contactPhone: (json['contact_phone'] ?? json['contactPhone'])?.toString(),
+      workingHours:
+          (json['workingHours'] ?? json['working_hours'])
+              as Map<String, dynamic>?,
       amenities: (json['amenities'] as List<dynamic>?)
           ?.map((e) => e?.toString() ?? '')
           .toList(),
       videoUrl: json['videoUrl']?.toString(),
-      coverImage: json['coverImage']?.toString(),
-      images: (json['images'] as List<dynamic>?)
+      coverImage: (json['cover'] ?? json['coverImage'])?.toString(),
+      images: ((json['images'] ?? json['gallery']) as List<dynamic>?)
           ?.map((e) => e?.toString() ?? '')
           .toList(),
+      latitude: _parseDouble(json['lat'] ?? json['latitude']),
+      longitude: _parseDouble(json['lng'] ?? json['longitude']),
+      rating: _parseDouble(json['rating']),
+      reviewsCount: _parseInt(json['reviewsCount'] ?? json['reviews_count']),
+      offers: (json['offers'] as List<dynamic>?)?.toList(),
       createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'].toString()) ?? DateTime.now()
           : DateTime.now(),
@@ -68,7 +82,46 @@ class BranchModel extends BranchEntity {
     );
   }
 
-  Map<String, dynamic> toJson() => _$BranchModelToJson(this);
+  static double? _parseDouble(dynamic v) {
+    if (v == null) return null;
+    if (v is num) return v.toDouble();
+    if (v is String) return double.tryParse(v);
+    return null;
+  }
+
+  static int? _parseInt(dynamic v) {
+    if (v == null) return null;
+    if (v is int) return v;
+    if (v is double) return v.toInt();
+    if (v is String) return int.tryParse(v.replaceAll(RegExp(r'[^\d]'), ''));
+    return null;
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name_ar': nameAr,
+      'name_en': nameEn,
+      'location': location,
+      'capacity': capacity,
+      'status': status,
+      'description_ar': descriptionAr,
+      'description_en': descriptionEn,
+      'contact_phone': contactPhone,
+      'working_hours': workingHours,
+      'amenities': amenities,
+      'videoUrl': videoUrl,
+      'cover': coverImage,
+      'images': images,
+      'lat': latitude,
+      'lng': longitude,
+      'rating': rating,
+      'reviews_count': reviewsCount,
+      'offers': offers,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
+    };
+  }
 
   factory BranchModel.fromEntity(BranchEntity entity) {
     return BranchModel(
@@ -86,6 +139,11 @@ class BranchModel extends BranchEntity {
       videoUrl: entity.videoUrl,
       coverImage: entity.coverImage,
       images: entity.images,
+      latitude: entity.latitude,
+      longitude: entity.longitude,
+      rating: entity.rating,
+      reviewsCount: entity.reviewsCount,
+      offers: entity.offers,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
     );
@@ -107,6 +165,11 @@ class BranchModel extends BranchEntity {
       videoUrl: videoUrl,
       coverImage: coverImage,
       images: images,
+      latitude: latitude,
+      longitude: longitude,
+      rating: rating,
+      reviewsCount: reviewsCount,
+      offers: offers,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );

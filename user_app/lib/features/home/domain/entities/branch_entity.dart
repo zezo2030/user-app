@@ -15,6 +15,11 @@ class BranchEntity extends Equatable {
   final String? videoUrl;
   final String? coverImage;
   final List<String>? images;
+  final double? latitude;
+  final double? longitude;
+  final double? rating;
+  final int? reviewsCount;
+  final List<dynamic>? offers;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -33,6 +38,11 @@ class BranchEntity extends Equatable {
     this.videoUrl,
     this.coverImage,
     this.images,
+    this.latitude,
+    this.longitude,
+    this.rating,
+    this.reviewsCount,
+    this.offers,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -53,6 +63,11 @@ class BranchEntity extends Equatable {
     videoUrl,
     coverImage,
     images,
+    latitude,
+    longitude,
+    rating,
+    reviewsCount,
+    offers,
     createdAt,
     updatedAt,
   ];

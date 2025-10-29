@@ -4,10 +4,8 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../../home/presentation/cubit/home_cubit.dart';
 import '../../../home/presentation/cubit/home_state.dart';
 import '../../../home/presentation/widgets/banner_carousel.dart';
-import '../../../home/presentation/widgets/branch_card.dart';
 import '../../../home/presentation/widgets/home_shimmer_loading.dart';
 import '../../../home/presentation/widgets/home_header_widget.dart';
-import '../../../home/presentation/widgets/quick_stats_widget.dart';
 import '../../../home/presentation/widgets/featured_offers_section.dart';
 import '../../../home/presentation/widgets/popular_branches_section.dart';
 import '../../../home/presentation/widgets/nearby_branches_section.dart';
@@ -35,14 +33,7 @@ class HomeScreen extends StatelessWidget {
                   // Home Header
                   SliverToBoxAdapter(child: HomeHeaderWidget()),
 
-                  // Quick Stats
-                  SliverToBoxAdapter(
-                    child: QuickStatsWidget(
-                      customersCount: 1250, // TODO: Get from backend
-                      eventsCount: 89, // TODO: Get from backend
-                      branchesCount: 12, // TODO: Get from backend
-                    ),
-                  ),
+                  // Quick Stats removed per request
 
                   // Banner Carousel
                   if (state.data.banners.isNotEmpty)
@@ -94,33 +85,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
 
-                  // All Branches Section (Original)
-                  if (state.data.featuredBranches.isNotEmpty)
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Text(
-                          'featured_branches'.tr(),
-                          style: Theme.of(context).textTheme.headlineSmall
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-
-                  if (state.data.featuredBranches.isNotEmpty)
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 6,
-                          ),
-                          child: BranchCard(
-                            branch: state.data.featuredBranches[index],
-                          ),
-                        );
-                      }, childCount: state.data.featuredBranches.length),
-                    ),
+                  // Featured branches section removed per request
 
                   // Empty state if no data
                   if (state.data.banners.isEmpty &&

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import '../../domain/entities/branch_entity.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -85,14 +86,14 @@ class _PopularBranchCardState extends State<PopularBranchCard>
                       // Branch Image Placeholder
                       _buildBranchImage(),
 
+                      // Gradient Overlay - فوق الصورة فقط
+                      _buildGradientOverlay(),
+
                       // Popular Badge
                       _buildPopularBadge(),
 
-                      // Content
+                      // Content - فوق الـ overlay
                       _buildContent(),
-
-                      // Gradient Overlay
-                      _buildGradientOverlay(),
                     ],
                   ),
                 ),
@@ -208,13 +209,7 @@ class _PopularBranchCardState extends State<PopularBranchCard>
       right: 0,
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
-          ),
-        ),
+        decoration: const BoxDecoration(color: Colors.transparent),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -308,14 +303,32 @@ class _PopularBranchCardState extends State<PopularBranchCard>
   }
 
   Widget _buildGradientOverlay() {
-    return Positioned.fill(
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.transparent, Colors.black.withOpacity(0.1)],
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: 160,
+      child: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 1.5, sigmaY: 1.5),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+              ),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.transparent,
+                  Colors.black.withOpacity(0.65),
+                  Colors.black.withOpacity(0.85),
+                  Colors.black.withOpacity(0.96),
+                ],
+                stops: const [0.0, 0.35, 0.75, 1.0],
+              ),
+            ),
           ),
         ),
       ),

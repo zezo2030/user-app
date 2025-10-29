@@ -13,6 +13,10 @@ import '../cubit/branch_details_state.dart';
 import '../cubit/halls_cubit.dart';
 import '../cubit/halls_state.dart';
 import '../widgets/hero_banner_widget.dart';
+import '../widgets/gallery_carousel_widget.dart';
+import '../widgets/map_preview_widget.dart';
+import '../widgets/ratings_section.dart';
+import '../widgets/offers_section.dart';
 import '../../../../core/utils/url_utils.dart';
 
 class BranchDetailsPage extends StatelessWidget {
@@ -153,6 +157,37 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
           ),
         ),
 
+        // Ratings row and quick facts
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            child: Row(
+              children: [
+                RatingsSection(
+                  rating: branch.rating,
+                  reviewsCount: branch.reviewsCount,
+                ),
+                const Spacer(),
+                if (branch.latitude != null && branch.longitude != null)
+                  Row(
+                    children: [
+                      const Icon(
+                        Iconsax.location,
+                        size: 18,
+                        color: AppColors.textSecondary,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'view_on_map'.tr(),
+                        style: const TextStyle(color: AppColors.textSecondary),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+        ),
+
         // Content
         SliverPadding(
           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -162,6 +197,45 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
               // _buildBranchInfoCard(branch),
 
               // const SizedBox(height: 24),
+
+              // Gallery Section (show even if there is only 1 image)
+              if (branch.images != null && branch.images!.isNotEmpty) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    'gallery'.tr(),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: GalleryCarouselWidget(images: branch.images),
+                ),
+                const SizedBox(height: 16),
+              ],
+
+              // Offers Section
+              if (branch.offers != null && branch.offers!.isNotEmpty) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    'offers'.tr(),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                OffersSection(offers: branch.offers),
+                const SizedBox(height: 24),
+              ],
 
               // Branch Details Section
               _buildBranchDetailsSection(branch),
@@ -179,6 +253,32 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
 
               const SizedBox(height: 24),
 
+              // Map Preview Section
+              if (branch.latitude != null && branch.longitude != null) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    'map'.tr(),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: MapPreviewWidget(
+                    lat: branch.latitude,
+                    lng: branch.longitude,
+                    onOpenMaps: () =>
+                        _openExternalMaps(branch.latitude, branch.longitude),
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
+
               // Branch Contact Section
               if (branch.contactPhone != null)
                 _buildBranchContactSection(branch),
@@ -192,6 +292,15 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
         ),
       ],
     );
+  }
+
+  void _openExternalMaps(double? lat, double? lng) {
+    if (lat == null || lng == null) return;
+    final url = Uri.parse(
+      'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+    );
+    // TODO: use url_launcher canLaunchUrl/launchUrl
+    debugPrint('Open maps: $url');
   }
 
   Widget _buildBranchDetailsSection(BranchEntity branch) {

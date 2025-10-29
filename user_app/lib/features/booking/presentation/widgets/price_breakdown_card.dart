@@ -123,7 +123,7 @@ class PriceBreakdownCard extends StatelessWidget {
             _buildPriceRow(
               context,
               'hourly_rate'.tr(),
-              '${_getHourlyRate()} ${'currency'.tr()} ${'per_hour'.tr()}',
+              '${_computeHourlyRate()} ${'currency'.tr()} ${'per_hour'.tr()}',
               Iconsax.clock,
               color: Colors.blue,
             ),
@@ -142,7 +142,7 @@ class PriceBreakdownCard extends StatelessWidget {
             _buildPriceRow(
               context,
               'hourly_price'.tr(),
-              '${_getHourlyPrice()} ${'currency'.tr()}',
+              '${_computeHourlyTotal()} ${'currency'.tr()}',
               Iconsax.calculator,
               color: Colors.orange,
             ),
@@ -253,47 +253,8 @@ class PriceBreakdownCard extends StatelessWidget {
                 ),
               ],
             ],
-            // معادلة الحساب
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Iconsax.calculator,
-                        size: 16,
-                        color: Colors.grey.shade600,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'calculation_formula'.tr(),
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey.shade700,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'formula_text_persons'.tr(),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey.shade600,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ],
-              ),
-            ),
 
+            // تم إخفاء قسم معادلة الحساب بناءً على طلب التصميم
             const SizedBox(height: 12),
             Container(
               height: 2,
@@ -451,18 +412,37 @@ class PriceBreakdownCard extends StatelessWidget {
     return personsPrice?.toStringAsFixed(2) ?? '0';
   }
 
-  // دالة للحصول على السعر بالساعة من الباك إند
-  String _getHourlyRate() {
-    if (quote == null) return '0';
-    final hourlyRate = quote!.pricing['hourlyRate'];
-    return hourlyRate?.toStringAsFixed(2) ?? '0';
+  double _numOrZero(dynamic v) {
+    if (v is num) return v.toDouble();
+    if (v is String) return double.tryParse(v) ?? 0.0;
+    return 0.0;
   }
 
-  // دالة للحصول على السعر الإجمالي للساعات من الباك إند
-  String _getHourlyPrice() {
-    if (quote == null) return '0';
-    final hourlyPrice = quote!.pricing['hourlyPrice'];
-    return hourlyPrice?.toStringAsFixed(2) ?? '0';
+  // حساب سعر الساعة مع بدائل: إن لم يتوفر hourlyRate وكان لدينا hourlyPrice والمدة
+  String _computeHourlyRate() {
+    if (quote == null) return '0.00';
+    final hourlyRateRaw = quote!.pricing['hourlyRate'];
+    double hourlyRate = _numOrZero(hourlyRateRaw);
+    if (hourlyRate == 0.0) {
+      final hourlyTotal = _numOrZero(quote!.pricing['hourlyPrice']);
+      if (durationHours > 0 && hourlyTotal > 0) {
+        hourlyRate = hourlyTotal / durationHours;
+      }
+    }
+    return hourlyRate.toStringAsFixed(2);
+  }
+
+  // حساب الإجمالي للساعات مع بدائل: إن لم يتوفر hourlyPrice وكان لدينا hourlyRate والمدة
+  String _computeHourlyTotal() {
+    if (quote == null) return '0.00';
+    double hourlyTotal = _numOrZero(quote!.pricing['hourlyPrice']);
+    if (hourlyTotal == 0.0) {
+      final hourlyRate = _numOrZero(quote!.pricing['hourlyRate']);
+      if (hourlyRate > 0 && durationHours > 0) {
+        hourlyTotal = hourlyRate * durationHours;
+      }
+    }
+    return hourlyTotal.toStringAsFixed(2);
   }
 
   // دالة للحصول على سعر الديكور من الباك إند

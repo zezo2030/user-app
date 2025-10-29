@@ -16,32 +16,68 @@ class QuoteModel extends QuoteEntity {
     // معالجة بيانات التسعير من الباك إند
     final pricing = json['pricing'] as Map<String, dynamic>? ?? {};
 
-    // استخراج جميع حقول التسعير من الباك إند
+    double _readNum(
+      Map<String, dynamic> map,
+      List<String> keys, {
+      double defaultValue = 0.0,
+    }) {
+      for (final k in keys) {
+        if (map.containsKey(k) && map[k] != null) {
+          final v = map[k];
+          if (v is num) return v.toDouble();
+          if (v is String) {
+            final parsed = double.tryParse(v);
+            if (parsed != null) return parsed;
+          }
+        }
+      }
+      return defaultValue;
+    }
+
+    // استخراج جميع حقول التسعير من الباك إند مع دعم مفاتيح بديلة
     final processedPricing = <String, dynamic>{
-      'basePrice': pricing['basePrice'] != null
-          ? (pricing['basePrice'] as num).toDouble()
-          : 0.0,
-      'hourlyPrice': pricing['hourlyPrice'] != null
-          ? (pricing['hourlyPrice'] as num).toDouble()
-          : 0.0,
-      'hourlyRate': pricing['hourlyRate'] != null
-          ? (pricing['hourlyRate'] as num).toDouble()
-          : 0.0,
-      'pricePerPerson': pricing['pricePerPerson'] != null
-          ? (pricing['pricePerPerson'] as num).toDouble()
-          : 0.0,
-      'personsPrice': pricing['personsPrice'] != null
-          ? (pricing['personsPrice'] as num).toDouble()
-          : 0.0,
-      'multiplier': pricing['multiplier'] != null
-          ? (pricing['multiplier'] as num).toDouble()
-          : 1.0,
-      'decorationPrice': pricing['decorationPrice'] != null
-          ? (pricing['decorationPrice'] as num).toDouble()
-          : 0.0,
-      'totalPrice': pricing['totalPrice'] != null
-          ? (pricing['totalPrice'] as num).toDouble()
-          : 0.0,
+      'basePrice': _readNum(pricing, ['basePrice', 'base_price', 'base']),
+      'hourlyPrice': _readNum(pricing, [
+        'hourlyPrice',
+        'hourly_price',
+        'totalHourly',
+        'hoursTotal',
+      ]),
+      'hourlyRate': _readNum(pricing, [
+        'hourlyRate',
+        'hourly_rate',
+        'perHour',
+        'per_hour',
+        'hour_rate',
+      ]),
+      'pricePerPerson': _readNum(pricing, [
+        'pricePerPerson',
+        'price_per_person',
+        'perPerson',
+        'per_person',
+      ]),
+      'personsPrice': _readNum(pricing, [
+        'personsPrice',
+        'persons_price',
+        'peopleTotal',
+        'persons_total',
+      ]),
+      'multiplier': _readNum(pricing, [
+        'multiplier',
+        'dayMultiplier',
+        'factor',
+      ], defaultValue: 1.0),
+      'decorationPrice': _readNum(pricing, [
+        'decorationPrice',
+        'decoration_price',
+        'decorPrice',
+        'decor_price',
+      ]),
+      'totalPrice': _readNum(pricing, [
+        'totalPrice',
+        'total_price',
+        'grandTotal',
+      ]),
     };
 
     // معلومات تشخيصية للتحقق من البيانات

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:iconsax/iconsax.dart';
+import '../../../../core/network/dio_client.dart';
+import '../../../../core/constants/api_constants.dart';
 import '../cubit/booking_cubit.dart';
 import '../cubit/booking_state.dart';
 import '../widgets/date_time_selector.dart';
@@ -56,20 +58,25 @@ class _HallBookingPageState extends State<HallBookingPage> {
   // Mock add-ons data - in real app, this would come from API
   final List<AddOnEntity> availableAddOns = [
     const AddOnEntity(
-      id: '1',
+      id: '11111111-1111-1111-1111-111111111111',
       name: 'Decoration Package',
       price: 150.0,
       quantity: 1,
     ),
-    const AddOnEntity(id: '2', name: 'Sound System', price: 100.0, quantity: 1),
     const AddOnEntity(
-      id: '3',
+      id: '22222222-2222-2222-2222-222222222222',
+      name: 'Sound System',
+      price: 100.0,
+      quantity: 1,
+    ),
+    const AddOnEntity(
+      id: '33333333-3333-3333-3333-333333333333',
       name: 'Lighting Package',
       price: 80.0,
       quantity: 1,
     ),
     const AddOnEntity(
-      id: '4',
+      id: '44444444-4444-4444-4444-444444444444',
       name: 'Catering Service',
       price: 200.0,
       quantity: 1,
@@ -81,8 +88,36 @@ class _HallBookingPageState extends State<HallBookingPage> {
     super.initState();
     // Initial quote request
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadAddOns();
       _requestQuote();
     });
+  }
+
+  Future<void> _loadAddOns() async {
+    try {
+      final response = await DioClient.instance.get(
+        '${ApiConstants.baseUrl}/content/halls/${widget.hallId}/addons',
+      );
+      final data = response.data;
+      if (data is List) {
+        setState(() {
+          availableAddOns
+            ..clear()
+            ..addAll(
+              data.map(
+                (e) => AddOnEntity(
+                  id: e['id'] as String,
+                  name: (e['name'] ?? '') as String,
+                  price: (e['price'] as num?)?.toDouble() ?? 0.0,
+                  quantity: (e['defaultQuantity'] as int?) ?? 1,
+                ),
+              ),
+            );
+        });
+      }
+    } catch (_) {
+      // keep mock add-ons as fallback silently
+    }
   }
 
   @override
@@ -241,14 +276,7 @@ class _HallBookingPageState extends State<HallBookingPage> {
                       selectedAddOnIds = addOnIds;
                       selectedAddOns = availableAddOns
                           .where((addOn) => addOnIds.contains(addOn.id))
-                          .map(
-                            (addOn) => {
-                              'id': addOn.id,
-                              'name': addOn.name,
-                              'price': addOn.price,
-                              'quantity': 1,
-                            },
-                          )
+                          .map((addOn) => {'id': addOn.id, 'quantity': 1})
                           .toList();
                     });
                     _onBookingDetailsChanged();

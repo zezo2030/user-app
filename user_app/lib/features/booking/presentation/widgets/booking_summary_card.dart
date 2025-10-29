@@ -122,12 +122,7 @@ class BookingSummaryCard extends StatelessWidget {
                 Iconsax.call,
               ),
             ],
-            if (quote != null) ...[
-              const SizedBox(height: 16),
-              const Divider(),
-              const SizedBox(height: 8),
-              _buildPriceSummary(context),
-            ],
+            // تم إخفاء ملخص السعر أسفل ملخص الحجز بناءً على طلب التصميم
           ],
         ),
       ),
@@ -163,113 +158,7 @@ class BookingSummaryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildPriceSummary(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'price_summary'.tr(),
-          style: Theme.of(
-            context,
-          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
-        _buildPriceRow(
-          context,
-          'base_price'.tr(),
-          '${_getBasePrice()} ${'currency'.tr()}',
-        ),
-        if (_getPricePerPerson() > 0) ...[
-          _buildPriceRow(
-            context,
-            'price_per_person'.tr(),
-            '${_getPricePerPerson()} ${'currency'.tr()} ${'per_person'.tr()}',
-          ),
-          _buildPriceRow(
-            context,
-            'persons_total_price'.tr(),
-            '${_getPersonsPrice()} ${'currency'.tr()}',
-          ),
-        ],
-        if (quote!.discount > 0) ...[
-          _buildPriceRow(
-            context,
-            'discount'.tr(),
-            '-${quote!.discount.toStringAsFixed(2)} ${'currency'.tr()}',
-            color: Colors.green,
-          ),
-        ],
-        const Divider(),
-        _buildPriceRow(
-          context,
-          'total_price'.tr(),
-          '${quote!.totalPrice.toStringAsFixed(2)} ${'currency'.tr()}',
-          isTotal: true,
-        ),
-      ],
-    );
-  }
+  // تم إزالة دوال ملخص السعر (_buildPriceSummary و _buildPriceRow) لعدم الحاجة إليها
 
-  Widget _buildPriceRow(
-    BuildContext context,
-    String label,
-    String value, {
-    Color? color,
-    bool isTotal = false,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: isTotal ? FontWeight.bold : FontWeight.w500,
-              color: color,
-            ),
-          ),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: isTotal ? FontWeight.bold : FontWeight.w500,
-              color: color,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // دالة للحصول على السعر الأساسي
-  String _getBasePrice() {
-    if (quote == null) return '0';
-
-    // أولاً نحاول الحصول على السعر الأساسي من البيانات المرسلة
-    final basePrice = quote!.pricing['basePrice'];
-    if (basePrice != null && basePrice != 0) {
-      return basePrice.toString();
-    }
-
-    // إذا لم يكن هناك سعر أساسي، نستخدم السعر الإجمالي
-    if (quote!.totalPrice > 0) {
-      return quote!.totalPrice.toStringAsFixed(2);
-    }
-
-    return '0';
-  }
-
-  // دالة للحصول على السعر لكل شخص
-  double _getPricePerPerson() {
-    if (quote == null) return 0.0;
-    final pricePerPerson = quote!.pricing['pricePerPerson'];
-    return pricePerPerson?.toDouble() ?? 0.0;
-  }
-
-  // دالة للحصول على السعر الإجمالي للأشخاص
-  String _getPersonsPrice() {
-    if (quote == null) return '0';
-    final personsPrice = quote!.pricing['personsPrice'];
-    return personsPrice?.toStringAsFixed(2) ?? '0';
-  }
+  // تم إزالة دوال المساعدة الخاصة بملخص السعر لعدم استخدامها
 }

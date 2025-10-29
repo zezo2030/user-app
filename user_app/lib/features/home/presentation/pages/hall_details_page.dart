@@ -394,23 +394,6 @@ class HallDetailsBottomBar extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  // TODO: Share hall
-                },
-                icon: const Icon(Iconsax.send_2),
-                label: Text('share'.tr()),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              flex: 2,
               child: ElevatedButton.icon(
                 onPressed: () {
                   Navigator.push(

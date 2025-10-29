@@ -129,7 +129,7 @@ class BookingDetailsPage extends StatelessWidget {
             _buildInfoRow(
               context,
               'hall'.tr(),
-              'Hall Name', // TODO: إضافة اسم القاعة من البيانات
+              'hall'.tr(), // TODO: إضافة اسم القاعة من البيانات
               Iconsax.home_2,
             ),
             const SizedBox(height: 8),
@@ -528,7 +528,7 @@ class BookingDetailsPage extends StatelessWidget {
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Text('QR'),
+                                      Text('qr_code'.tr()),
                                       const SizedBox(height: 12),
                                       _buildQrWidget(qr),
                                     ],

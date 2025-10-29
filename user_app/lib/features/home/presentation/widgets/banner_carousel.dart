@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../../core/utils/url_utils.dart';
 import '../../domain/entities/banner_entity.dart';
 
 class BannerCarousel extends StatefulWidget {
   final List<BannerEntity> banners;
 
-  const BannerCarousel({
-    super.key,
-    required this.banners,
-  });
+  const BannerCarousel({super.key, required this.banners});
 
   @override
   State<BannerCarousel> createState() => _BannerCarouselState();
@@ -63,7 +61,9 @@ class _BannerCarouselState extends State<BannerCarousel> {
                     shape: BoxShape.circle,
                     color: _currentIndex == index
                         ? Theme.of(context).primaryColor
-                        : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                        : Theme.of(
+                            context,
+                          ).colorScheme.outline.withOpacity(0.3),
                   ),
                 ),
               ),
@@ -98,15 +98,13 @@ class _BannerItem extends StatelessWidget {
         child: Stack(
           children: [
             CachedNetworkImage(
-              imageUrl: banner.imageUrl,
+              imageUrl: resolveFileUrl(banner.imageUrl),
               width: double.infinity,
               height: double.infinity,
               fit: BoxFit.fill,
               placeholder: (context, url) => Container(
                 color: Colors.grey[300],
-                child: const Center(
-                  child: CircularProgressIndicator(),
-                ),
+                child: const Center(child: CircularProgressIndicator()),
               ),
               errorWidget: (context, url, error) => Container(
                 color: Colors.grey[300],

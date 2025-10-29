@@ -1,54 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../domain/entities/branch_entity.dart';
+import '../../../../core/utils/url_utils.dart';
 
 class BranchCard extends StatelessWidget {
   final BranchEntity branch;
 
-  const BranchCard({
-    Key? key,
-    required this.branch,
-  }) : super(key: key);
+  const BranchCard({Key? key, required this.branch}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    print('🔍 BranchCard: Building card for branch ${branch.nameAr} with capacity: ${branch.capacity}');
-    
+    print(
+      '🔍 BranchCard: Building card for branch ${branch.nameAr} with capacity: ${branch.capacity}',
+    );
+
     return Card(
       elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: SizedBox(
         width: double.infinity,
         child: Row(
           children: [
-            // Branch image placeholder
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  bottomLeft: Radius.circular(16),
-                ),
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                    Theme.of(context).primaryColor.withValues(alpha: 0.05),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.location_on,
-                  size: 40,
-                  color: Theme.of(context).primaryColor.withValues(alpha: 0.7),
-                ),
-              ),
-            ),
+            // Branch image
+            _buildSideImage(context),
             // Branch details
             Expanded(
               child: Padding(
@@ -62,7 +36,9 @@ class BranchCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          context.locale.languageCode == 'ar' ? branch.nameAr : branch.nameEn,
+                          context.locale.languageCode == 'ar'
+                              ? branch.nameAr
+                              : branch.nameEn,
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -77,15 +53,17 @@ class BranchCard extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: branch.status == 'active' 
+                            color: branch.status == 'active'
                                 ? Colors.green.withValues(alpha: 0.1)
                                 : Colors.orange.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            branch.status == 'active' ? 'active'.tr() : 'inactive'.tr(),
+                            branch.status == 'active'
+                                ? 'active'.tr()
+                                : 'inactive'.tr(),
                             style: TextStyle(
-                              color: branch.status == 'active' 
+                              color: branch.status == 'active'
                                   ? Colors.green[700]
                                   : Colors.orange[700],
                               fontSize: 10,
@@ -95,9 +73,9 @@ class BranchCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 8),
-                    
+
                     // Location and capacity
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,28 +111,29 @@ class BranchCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              branch.capacity > 0 
-                                ? 'capacity'.tr(args: ['${branch.capacity}'])
-                                : 'capacity_not_available'.tr(),
+                              branch.capacity > 0
+                                  ? 'capacity'.tr(args: ['${branch.capacity}'])
+                                  : 'capacity_not_available'.tr(),
                               style: TextStyle(
-                                color: branch.capacity > 0 
-                                  ? Colors.grey[600]
-                                  : Colors.orange[600],
+                                color: branch.capacity > 0
+                                    ? Colors.grey[600]
+                                    : Colors.orange[600],
                                 fontSize: 12,
-                                fontWeight: branch.capacity > 0 
-                                  ? FontWeight.normal
-                                  : FontWeight.w500,
+                                fontWeight: branch.capacity > 0
+                                    ? FontWeight.normal
+                                    : FontWeight.w500,
                               ),
                             ),
                           ],
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 8),
-                    
+
                     // Amenities
-                    if (branch.amenities != null && branch.amenities!.isNotEmpty)
+                    if (branch.amenities != null &&
+                        branch.amenities!.isNotEmpty)
                       Wrap(
                         spacing: 4,
                         runSpacing: 2,
@@ -165,7 +144,9 @@ class BranchCard extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                              color: Theme.of(
+                                context,
+                              ).primaryColor.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -179,9 +160,9 @@ class BranchCard extends StatelessWidget {
                           );
                         }).toList(),
                       ),
-                    
+
                     const SizedBox(height: 12),
-                    
+
                     // Action buttons
                     Row(
                       children: [
@@ -212,6 +193,57 @@ class BranchCard extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSideImage(BuildContext context) {
+    final img =
+        branch.coverImage ??
+        (branch.images?.isNotEmpty == true ? branch.images!.first : null);
+    final border = const BorderRadius.only(
+      topLeft: Radius.circular(16),
+      bottomLeft: Radius.circular(16),
+    );
+
+    if (img == null || img.isEmpty) {
+      return Container(
+        width: 120,
+        height: 120,
+        decoration: BoxDecoration(
+          borderRadius: border,
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).primaryColor.withValues(alpha: 0.1),
+              Theme.of(context).primaryColor.withValues(alpha: 0.05),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Center(
+          child: Icon(
+            Icons.location_on,
+            size: 40,
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.7),
+          ),
+        ),
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: border,
+      child: Image.network(
+        resolveFileUrl(img),
+        width: 120,
+        height: 120,
+        fit: BoxFit.cover,
+        errorBuilder: (c, e, s) => Container(
+          width: 120,
+          height: 120,
+          color: Colors.grey.shade200,
+          child: const Icon(Icons.broken_image, size: 36, color: Colors.grey),
         ),
       ),
     );

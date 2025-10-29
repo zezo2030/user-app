@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../tickets/data/datasources/tickets_remote_datasource.dart';
 import '../../../core/network/dio_client.dart';
 import '../../activities/data/bookings_api.dart';
@@ -59,7 +60,7 @@ class _ActivitiesViewState extends State<_ActivitiesView> {
                   onPressed: () => context.read<ActivitiesCubit>().loadTab(
                     BookingStatusFilter.all,
                   ),
-                  child: const Text('إعادة المحاولة'),
+                  child: Text('retry'.tr()),
                 ),
               ],
             ),
@@ -67,7 +68,7 @@ class _ActivitiesViewState extends State<_ActivitiesView> {
         }
 
         if (state.bookings.isEmpty) {
-          return const Center(child: Text('لا توجد حجوزات'));
+          return Center(child: Text('no_bookings_found'.tr()));
         }
 
         return RefreshIndicator(

@@ -62,7 +62,7 @@ class _TicketsPageState extends State<TicketsPage> {
           }
           final tickets = snapshot.data ?? const <TicketModel>[];
           if (tickets.isEmpty) {
-            return Center(child: Text('No tickets'));
+            return Center(child: Text('no_tickets'.tr()));
           }
           return ListView.separated(
             padding: const EdgeInsets.all(16),
@@ -96,7 +96,7 @@ class _TicketsPageState extends State<TicketsPage> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text('QR'),
+                                  Text('qr_code'.tr()),
                                   const SizedBox(height: 12),
                                   if (qr.startsWith('data:image'))
                                     Image.memory(

@@ -13,6 +13,7 @@ import '../cubit/branch_details_state.dart';
 import '../cubit/halls_cubit.dart';
 import '../cubit/halls_state.dart';
 import '../widgets/hero_banner_widget.dart';
+import '../../../../core/utils/url_utils.dart';
 
 class BranchDetailsPage extends StatelessWidget {
   final String branchId;
@@ -137,6 +138,12 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
         // Hero Banner with Branch Info
         SliverToBoxAdapter(
           child: HeroBannerWidget(
+            backgroundImageUrl: resolveFileUrl(
+              branch.coverImage ??
+                  ((branch.images != null && branch.images!.isNotEmpty)
+                      ? branch.images!.first
+                      : null),
+            ),
             title: branch.nameAr,
             subtitle: branch.descriptionAr ?? 'with_tornado_entertainment'.tr(),
             amenities: branch.amenities,

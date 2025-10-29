@@ -13,6 +13,8 @@ class BranchEntity extends Equatable {
   final Map<String, dynamic>? workingHours;
   final List<String>? amenities;
   final String? videoUrl;
+  final String? coverImage;
+  final List<String>? images;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -29,25 +31,29 @@ class BranchEntity extends Equatable {
     this.workingHours,
     this.amenities,
     this.videoUrl,
+    this.coverImage,
+    this.images,
     required this.createdAt,
     required this.updatedAt,
   });
 
   @override
   List<Object?> get props => [
-        id,
-        nameAr,
-        nameEn,
-        location,
-        capacity,
-        status,
-        descriptionAr,
-        descriptionEn,
-        contactPhone,
-        workingHours,
-        amenities,
-        videoUrl,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    nameAr,
+    nameEn,
+    location,
+    capacity,
+    status,
+    descriptionAr,
+    descriptionEn,
+    contactPhone,
+    workingHours,
+    amenities,
+    videoUrl,
+    coverImage,
+    images,
+    createdAt,
+    updatedAt,
+  ];
 }

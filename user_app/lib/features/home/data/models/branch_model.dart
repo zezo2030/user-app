@@ -18,6 +18,8 @@ class BranchModel extends BranchEntity {
     super.workingHours,
     super.amenities,
     super.videoUrl,
+    super.coverImage,
+    super.images,
     required super.createdAt,
     required super.updatedAt,
   });
@@ -26,7 +28,7 @@ class BranchModel extends BranchEntity {
     // التحقق من وجود السعة ومعالجتها بشكل صحيح
     final capacity = json['capacity'];
     int parsedCapacity = 0;
-    
+
     if (capacity != null) {
       if (capacity is int) {
         parsedCapacity = capacity;
@@ -37,7 +39,7 @@ class BranchModel extends BranchEntity {
         parsedCapacity = int.tryParse(cleanValue) ?? 0;
       }
     }
-    
+
     return BranchModel(
       id: json['id']?.toString() ?? '',
       nameAr: json['name_ar']?.toString() ?? '',
@@ -53,10 +55,14 @@ class BranchModel extends BranchEntity {
           ?.map((e) => e?.toString() ?? '')
           .toList(),
       videoUrl: json['videoUrl']?.toString(),
-      createdAt: json['createdAt'] != null 
+      coverImage: json['coverImage']?.toString(),
+      images: (json['images'] as List<dynamic>?)
+          ?.map((e) => e?.toString() ?? '')
+          .toList(),
+      createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'].toString()) ?? DateTime.now()
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null 
+      updatedAt: json['updatedAt'] != null
           ? DateTime.tryParse(json['updatedAt'].toString()) ?? DateTime.now()
           : DateTime.now(),
     );
@@ -78,6 +84,8 @@ class BranchModel extends BranchEntity {
       workingHours: entity.workingHours,
       amenities: entity.amenities,
       videoUrl: entity.videoUrl,
+      coverImage: entity.coverImage,
+      images: entity.images,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
     );
@@ -97,6 +105,8 @@ class BranchModel extends BranchEntity {
       workingHours: workingHours,
       amenities: amenities,
       videoUrl: videoUrl,
+      coverImage: coverImage,
+      images: images,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );

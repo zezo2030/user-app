@@ -65,6 +65,13 @@ dependencies:
   # UI Components for Home Screen
   cached_network_image: ^3.3.1
   shimmer: ^3.0.0
+  
+  # Advanced Animations
+  flutter_animate: ^4.5.0
+  glassmorphism: ^3.0.0
+  flutter_staggered_animations: ^1.1.1
+  scroll_to_index: ^3.0.1
+  lottie: ^3.1.0
 
 dev_dependencies:
   flutter_test:

@@ -68,3 +68,43 @@ class AuthError extends AuthState {
   @override
   List<Object> get props => [message];
 }
+
+class ProfileUpdating extends AuthState {}
+
+class ProfileUpdated extends AuthState {
+  final UserEntity user;
+
+  const ProfileUpdated({required this.user});
+
+  @override
+  List<Object> get props => [user];
+}
+
+class ProfileUpdateError extends AuthState {
+  final String message;
+
+  const ProfileUpdateError({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}
+
+class LanguageUpdating extends AuthState {}
+
+class LanguageUpdated extends AuthState {
+  final String language;
+
+  const LanguageUpdated({required this.language});
+
+  @override
+  List<Object> get props => [language];
+}
+
+class LanguageUpdateError extends AuthState {
+  final String message;
+
+  const LanguageUpdateError({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}

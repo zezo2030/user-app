@@ -11,6 +11,9 @@ import '../domain/usecases/register_send_otp_usecase.dart';
 import '../domain/usecases/register_verify_otp_usecase.dart';
 import '../domain/usecases/get_profile_usecase.dart';
 import '../domain/usecases/refresh_token_usecase.dart';
+import '../domain/usecases/update_profile_usecase.dart';
+import '../domain/usecases/refresh_profile_usecase.dart';
+import '../domain/usecases/update_language_usecase.dart';
 import '../presentation/cubit/auth_cubit.dart';
 import '../../home/di/home_injection.dart';
 import '../../booking/di/booking_injection.dart';
@@ -20,20 +23,20 @@ final GetIt sl = GetIt.instance;
 Future<void> init() async {
   // Core
   sl.registerLazySingleton<SecureStorageService>(() => SecureStorageService());
-  
+
   // Network
   sl.registerLazySingleton(() => DioClient.instance);
-  
+
   // Data sources
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(dio: sl()),
   );
-  
+
   // Repository
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(remoteDataSource: sl()),
   );
-  
+
   // Use cases
   sl.registerLazySingleton(() => LoginUseCase(sl()));
   sl.registerLazySingleton(() => SendOtpUseCase(sl()));
@@ -42,22 +45,29 @@ Future<void> init() async {
   sl.registerLazySingleton(() => RegisterVerifyOtpUseCase(sl()));
   sl.registerLazySingleton(() => GetProfileUseCase(sl()));
   sl.registerLazySingleton(() => RefreshTokenUseCase(sl()));
-  
+  sl.registerLazySingleton(() => UpdateProfileUseCase(repository: sl()));
+  sl.registerLazySingleton(() => RefreshProfileUseCase(repository: sl()));
+  sl.registerLazySingleton(() => UpdateLanguageUseCase(repository: sl()));
+
   // Cubit
-  sl.registerFactory(() => AuthCubit(
-    loginUseCase: sl(),
-    sendOtpUseCase: sl(),
-    verifyOtpUseCase: sl(),
-    registerSendOtpUseCase: sl(),
-    registerVerifyOtpUseCase: sl(),
-    getProfileUseCase: sl(),
-    refreshTokenUseCase: sl(),
-  ));
+  sl.registerFactory(
+    () => AuthCubit(
+      loginUseCase: sl(),
+      sendOtpUseCase: sl(),
+      verifyOtpUseCase: sl(),
+      registerSendOtpUseCase: sl(),
+      registerVerifyOtpUseCase: sl(),
+      getProfileUseCase: sl(),
+      refreshTokenUseCase: sl(),
+      updateProfileUseCase: sl(),
+      refreshProfileUseCase: sl(),
+      updateLanguageUseCase: sl(),
+    ),
+  );
 
   // Initialize Home feature
   await initHome();
-  
+
   // Initialize Booking feature
   initBookingInjection();
 }
-

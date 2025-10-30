@@ -6,11 +6,13 @@ import 'package:iconsax/iconsax.dart';
 class DurationSelector extends StatelessWidget {
   final int selectedDuration;
   final Function(int) onDurationChanged;
+  final int? maxDuration; // حد أعلى اختياري اعتماداً على ساعات العمل
 
   const DurationSelector({
     Key? key,
     required this.selectedDuration,
     required this.onDurationChanged,
+    this.maxDuration,
   }) : super(key: key);
 
   @override
@@ -24,33 +26,45 @@ class DurationSelector extends StatelessWidget {
           children: [
             Text(
               'duration'.tr(),
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Row(
               children: [
                 const Icon(Iconsax.clock, size: 20),
                 const SizedBox(width: 8),
-                Expanded(
-                  child: Text('${selectedDuration} ${'hours'.tr()}'),
-                ),
+                Expanded(child: Text('${selectedDuration} ${'hours'.tr()}')),
                 Row(
                   children: [
                     IconButton(
-                      onPressed: selectedDuration > 1 ? () => onDurationChanged(selectedDuration - 1) : null,
+                      onPressed: selectedDuration > 1
+                          ? () => onDurationChanged(selectedDuration - 1)
+                          : null,
                       icon: const Icon(Iconsax.minus),
                       style: IconButton.styleFrom(
-                        backgroundColor: selectedDuration > 1 ? Theme.of(context).primaryColor.withOpacity(0.1) : Colors.grey.shade200,
+                        backgroundColor: selectedDuration > 1
+                            ? Theme.of(context).primaryColor.withOpacity(0.1)
+                            : Colors.grey.shade200,
                       ),
                     ),
                     const SizedBox(width: 8),
                     IconButton(
-                      onPressed: selectedDuration < 12 ? () => onDurationChanged(selectedDuration + 1) : null,
+                      onPressed:
+                          (maxDuration == null
+                              ? selectedDuration < 12
+                              : selectedDuration < maxDuration!)
+                          ? () => onDurationChanged(selectedDuration + 1)
+                          : null,
                       icon: const Icon(Iconsax.add),
                       style: IconButton.styleFrom(
-                        backgroundColor: selectedDuration < 12 ? Theme.of(context).primaryColor.withOpacity(0.1) : Colors.grey.shade200,
+                        backgroundColor:
+                            (maxDuration == null
+                                ? selectedDuration < 12
+                                : selectedDuration < maxDuration!)
+                            ? Theme.of(context).primaryColor.withOpacity(0.1)
+                            : Colors.grey.shade200,
                       ),
                     ),
                   ],
@@ -58,12 +72,20 @@ class DurationSelector extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              'duration_note'.tr(),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey.shade600,
+            if (maxDuration != null)
+              Text(
+                '${'max'.tr()}: $maxDuration ${'hours'.tr()}',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
+              )
+            else
+              Text(
+                'duration_note'.tr(),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
               ),
-            ),
           ],
         ),
       ),

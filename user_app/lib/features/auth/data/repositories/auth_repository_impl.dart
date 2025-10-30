@@ -6,6 +6,7 @@ import '../../domain/entities/auth_response_entity.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_remote_datasource.dart';
+import '../models/update_profile_dto.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
@@ -139,6 +140,44 @@ class AuthRepositoryImpl implements AuthRepository {
         refreshToken: refreshToken,
       );
       return Right(result.toEntity());
+    } on DioException catch (e) {
+      return Left(e.toFailure());
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity>> updateProfile(
+    UpdateProfileDto updateProfileDto,
+  ) async {
+    try {
+      final result = await remoteDataSource.updateProfile(updateProfileDto);
+      return Right(result.toEntity());
+    } on DioException catch (e) {
+      return Left(e.toFailure());
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity>> refreshProfile() async {
+    try {
+      final result = await remoteDataSource.refreshProfile();
+      return Right(result.toEntity());
+    } on DioException catch (e) {
+      return Left(e.toFailure());
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> updateLanguage(String language) async {
+    try {
+      final result = await remoteDataSource.updateLanguage(language);
+      return Right(result);
     } on DioException catch (e) {
       return Left(e.toFailure());
     } catch (e) {

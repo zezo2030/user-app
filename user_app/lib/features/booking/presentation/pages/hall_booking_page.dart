@@ -54,6 +54,9 @@ class _HallBookingPageState extends State<HallBookingPage> {
   bool isAvailable = true;
   bool isLoadingQuote = false;
   bool isLoadingAvailability = false;
+  int? maxDurationForSlot;
+  bool isClosedAtSelectedTime = false;
+  String? availabilityMessage;
 
   // Mock add-ons data - in real app, this would come from API
   final List<AddOnEntity> availableAddOns = [
@@ -117,6 +120,136 @@ class _HallBookingPageState extends State<HallBookingPage> {
       }
     } catch (_) {
       // keep mock add-ons as fallback silently
+    }
+  }
+
+  Future<void> _updateMaxDuration() async {
+    if (selectedDate == null || selectedTime == null) {
+      setState(() {
+        maxDurationForSlot = null;
+        isClosedAtSelectedTime = false;
+        availabilityMessage = null;
+      });
+      return;
+    }
+    try {
+      // احضر بيانات الفرع للحصول على ساعات العمل
+      final response = await DioClient.instance.get(
+        '${ApiConstants.baseUrl}${ApiConstants.branchDetailsEndpoint}/${widget.branchId}',
+      );
+      final data = response.data;
+      final wh = (data is Map)
+          ? data['workingHours'] as Map<String, dynamic>?
+          : null;
+      if (wh == null) {
+        setState(() {
+          maxDurationForSlot = null;
+          isClosedAtSelectedTime = false;
+          availabilityMessage = null;
+        });
+        return;
+      }
+      final DateTime start = DateTime(
+        selectedDate!.year,
+        selectedDate!.month,
+        selectedDate!.day,
+        selectedTime!.hour,
+        selectedTime!.minute,
+      );
+      final day =
+          start.weekday %
+          7; // Monday=1..Sunday=7 → 0..6 with %7, where Sunday->0
+      final dayKeys = <String>[
+        '$day',
+        const [
+          'sun',
+          'mon',
+          'tue',
+          'wed',
+          'thu',
+          'fri',
+          'sat',
+        ][0], // will be replaced below
+      ];
+      // Map weekday to english key
+      const names = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+      dayKeys[1] = names[day];
+      final fullNames = [
+        'sunday',
+        'monday',
+        'tuesday',
+        'wednesday',
+        'thursday',
+        'friday',
+        'saturday',
+      ];
+      dayKeys.add(fullNames[day]);
+
+      Map<String, dynamic>? dayCfg;
+      for (final k in dayKeys) {
+        final v = wh[k];
+        if (v != null && v is Map) {
+          dayCfg = v.cast<String, dynamic>();
+          break;
+        }
+      }
+      if (dayCfg == null || dayCfg['closed'] == true) {
+        setState(() {
+          maxDurationForSlot = 0;
+          isClosedAtSelectedTime = true;
+          availabilityMessage = 'الصالة مغلقة في هذا اليوم';
+        });
+        return;
+      }
+      String? openStr = dayCfg['open']?.toString();
+      String? closeStr = dayCfg['close']?.toString();
+      if (openStr == null || closeStr == null) {
+        setState(() {
+          maxDurationForSlot = null;
+          isClosedAtSelectedTime = false;
+          availabilityMessage = null;
+        });
+        return;
+      }
+      final oParts = openStr.split(':');
+      final cParts = closeStr.split(':');
+      final openAt = DateTime(
+        start.year,
+        start.month,
+        start.day,
+        int.tryParse(oParts[0]) ?? 0,
+        int.tryParse(oParts[1]) ?? 0,
+      );
+      final closeAt = DateTime(
+        start.year,
+        start.month,
+        start.day,
+        int.tryParse(cParts[0]) ?? 0,
+        int.tryParse(cParts[1]) ?? 0,
+      );
+      if (start.isBefore(openAt)) {
+        // إن اختار وقت قبل الفتح، اجعل الحد الأقصى من الفتح حتى الإغلاق
+        final total = closeAt.difference(openAt).inMinutes ~/ 60;
+        setState(() {
+          maxDurationForSlot = total > 0 ? total : 0;
+          isClosedAtSelectedTime = total <= 0;
+          availabilityMessage = total <= 0 ? 'الصالة مغلقة في هذا الوقت' : null;
+        });
+      } else {
+        final total = closeAt.difference(start).inMinutes ~/ 60;
+        setState(() {
+          maxDurationForSlot = total > 0 ? total : 0;
+          isClosedAtSelectedTime = total <= 0;
+          availabilityMessage = total <= 0 ? 'الصالة مغلقة في هذا الوقت' : null;
+        });
+      }
+    } catch (_) {
+      // في حال فشل الجلب، لا نضع حد أعلى
+      setState(() {
+        maxDurationForSlot = null;
+        isClosedAtSelectedTime = false;
+        availabilityMessage = 'تعذر التحقق من ساعات العمل حالياً';
+      });
     }
   }
 
@@ -242,21 +375,50 @@ class _HallBookingPageState extends State<HallBookingPage> {
                   onDateChanged: (date) {
                     setState(() => selectedDate = date);
                     _onBookingDetailsChanged();
+                    _updateMaxDuration();
                   },
                   onTimeChanged: (time) {
                     setState(() => selectedTime = time);
                     _onBookingDetailsChanged();
+                    _updateMaxDuration();
                   },
                 ),
 
                 // Duration Selector
                 DurationSelector(
                   selectedDuration: durationHours,
+                  maxDuration: maxDurationForSlot,
                   onDurationChanged: (duration) {
                     setState(() => durationHours = duration);
                     _onBookingDetailsChanged();
                   },
                 ),
+
+                // Closed message if outside working hours
+                if (isClosedAtSelectedTime ||
+                    (maxDurationForSlot != null && maxDurationForSlot == 0))
+                  Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.only(top: 8),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.red.shade200),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Iconsax.close_circle, color: Colors.red.shade700),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            availabilityMessage ?? 'الصالة مغلقة في هذا الوقت',
+                            style: TextStyle(color: Colors.red.shade700),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
 
                 // Persons Input
                 PersonsInput(
@@ -384,7 +546,13 @@ class _HallBookingPageState extends State<HallBookingPage> {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed:
-                        _canBook() && state is! BookingLoading && isAvailable
+                        _canBook() &&
+                            state is! BookingLoading &&
+                            isAvailable &&
+                            (maxDurationForSlot == null
+                                ? true
+                                : (maxDurationForSlot ?? 0) > 0) &&
+                            !isClosedAtSelectedTime
                         ? () => _bookHall(context)
                         : null,
                     icon: state is BookingLoading

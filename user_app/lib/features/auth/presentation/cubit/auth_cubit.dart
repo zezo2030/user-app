@@ -8,6 +8,10 @@ import '../../domain/usecases/register_send_otp_usecase.dart';
 import '../../domain/usecases/register_verify_otp_usecase.dart';
 import '../../domain/usecases/get_profile_usecase.dart';
 import '../../domain/usecases/refresh_token_usecase.dart';
+import '../../domain/usecases/update_profile_usecase.dart';
+import '../../domain/usecases/refresh_profile_usecase.dart';
+import '../../domain/usecases/update_language_usecase.dart';
+import '../../data/models/update_profile_dto.dart';
 import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
@@ -18,6 +22,9 @@ class AuthCubit extends Cubit<AuthState> {
   final RegisterVerifyOtpUseCase registerVerifyOtpUseCase;
   final GetProfileUseCase getProfileUseCase;
   final RefreshTokenUseCase refreshTokenUseCase;
+  final UpdateProfileUseCase updateProfileUseCase;
+  final RefreshProfileUseCase refreshProfileUseCase;
+  final UpdateLanguageUseCase updateLanguageUseCase;
   final SecureStorageService _storageService =
       GetIt.instance<SecureStorageService>();
 
@@ -29,6 +36,9 @@ class AuthCubit extends Cubit<AuthState> {
     required this.registerVerifyOtpUseCase,
     required this.getProfileUseCase,
     required this.refreshTokenUseCase,
+    required this.updateProfileUseCase,
+    required this.refreshProfileUseCase,
+    required this.updateLanguageUseCase,
   }) : super(AuthInitial());
 
   // Login with email/phone and password
@@ -210,5 +220,61 @@ class AuthCubit extends Cubit<AuthState> {
     } else {
       emit(Unauthenticated());
     }
+  }
+
+  // Update user profile
+  Future<void> updateProfile({
+    String? name,
+    String? email,
+    String? language,
+    String? phone,
+  }) async {
+    emit(ProfileUpdating());
+
+    final updateProfileDto = UpdateProfileDto(
+      name: name,
+      email: email,
+      language: language,
+      phone: phone,
+    );
+
+    final result = await updateProfileUseCase(updateProfileDto);
+
+    result.fold(
+      (failure) => emit(ProfileUpdateError(message: failure.message)),
+      (user) {
+        emit(ProfileUpdated(user: user));
+        // Also update the authenticated state with new user data
+        emit(Authenticated(user: user));
+      },
+    );
+  }
+
+  // Refresh user profile
+  Future<void> refreshProfile() async {
+    emit(AuthLoading());
+
+    final result = await refreshProfileUseCase();
+
+    result.fold(
+      (failure) => emit(AuthError(message: failure.message)),
+      (user) => emit(Authenticated(user: user)),
+    );
+  }
+
+  // Update user language
+  Future<void> updateLanguage(String language) async {
+    emit(LanguageUpdating());
+
+    final result = await updateLanguageUseCase(language);
+
+    result.fold(
+      (failure) => emit(LanguageUpdateError(message: failure.message)),
+      (success) {
+        emit(LanguageUpdated(language: language));
+        // Refresh profile to get updated user data
+        refreshProfile();
+      },
+    );
   }
 }

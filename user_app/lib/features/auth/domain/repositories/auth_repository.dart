@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/errors/failures.dart';
 import '../entities/auth_response_entity.dart';
 import '../entities/user_entity.dart';
+import '../../data/models/update_profile_dto.dart';
 
 abstract class AuthRepository {
   // Login with email/phone and password
@@ -45,4 +46,15 @@ abstract class AuthRepository {
   Future<Either<Failure, AuthResponseEntity>> refreshToken({
     required String refreshToken,
   });
+
+  // Update user profile
+  Future<Either<Failure, UserEntity>> updateProfile(
+    UpdateProfileDto updateProfileDto,
+  );
+
+  // Refresh user profile data
+  Future<Either<Failure, UserEntity>> refreshProfile();
+
+  // Update user language
+  Future<Either<Failure, bool>> updateLanguage(String language);
 }

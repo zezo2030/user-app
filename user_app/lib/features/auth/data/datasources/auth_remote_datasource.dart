@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../models/auth_response_model.dart';
 import '../models/user_model.dart';
+import '../models/update_profile_dto.dart';
 
 abstract class AuthRemoteDataSource {
   Future<AuthResponseModel> login({
@@ -33,6 +34,12 @@ abstract class AuthRemoteDataSource {
   Future<UserModel> getProfile();
 
   Future<AuthResponseModel> refreshToken({required String refreshToken});
+
+  Future<UserModel> updateProfile(UpdateProfileDto updateProfileDto);
+
+  Future<UserModel> refreshProfile();
+
+  Future<bool> updateLanguage(String language);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -253,6 +260,55 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return AuthResponseModel.fromJson(normalized);
     } catch (e) {
       throw Exception('Refresh token failed: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<UserModel> updateProfile(UpdateProfileDto updateProfileDto) async {
+    try {
+      // Backend does not accept phone in update profile; send supported fields only
+      final Map<String, dynamic> payload = <String, dynamic>{
+        if (updateProfileDto.name != null) 'name': updateProfileDto.name,
+        if (updateProfileDto.email != null) 'email': updateProfileDto.email,
+        if (updateProfileDto.language != null)
+          'language': updateProfileDto.language,
+      };
+
+      final response = await dio.put(
+        ApiConstants.updateProfileEndpoint,
+        data: payload,
+      );
+
+      final dynamic responseData = response.data;
+      final Map<String, dynamic> json = responseData is Map<String, dynamic>
+          ? (responseData['data'] is Map<String, dynamic>
+                ? responseData['data'] as Map<String, dynamic>
+                : responseData)
+          : <String, dynamic>{};
+
+      final normalizedUser = _normalizeUserPayload(json);
+      return UserModel.fromJson(normalizedUser);
+    } catch (e) {
+      throw Exception('Update profile failed: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<UserModel> refreshProfile() async {
+    return getProfile();
+  }
+
+  @override
+  Future<bool> updateLanguage(String language) async {
+    try {
+      final response = await dio.post(
+        ApiConstants.updateLanguageEndpoint,
+        data: {'language': language},
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      throw Exception('Update language failed: ${e.toString()}');
     }
   }
 }

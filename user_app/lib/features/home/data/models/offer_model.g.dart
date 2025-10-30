@@ -21,6 +21,9 @@ OfferModel _$OfferModelFromJson(Map<String, dynamic> json) => OfferModel(
   isActive: json['isActive'] as bool,
   createdAt: DateTime.parse(json['createdAt'] as String),
   updatedAt: DateTime.parse(json['updatedAt'] as String),
+  imageUrl: json['imageUrl'] as String?,
+  hallName: json['hallName'] as String?,
+  branchName: json['branchName'] as String?,
 );
 
 Map<String, dynamic> _$OfferModelToJson(OfferModel instance) =>
@@ -35,4 +38,7 @@ Map<String, dynamic> _$OfferModelToJson(OfferModel instance) =>
       'isActive': instance.isActive,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
+      'imageUrl': instance.imageUrl,
+      'hallName': instance.hallName,
+      'branchName': instance.branchName,
     };

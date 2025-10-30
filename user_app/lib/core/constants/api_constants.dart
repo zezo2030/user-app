@@ -33,6 +33,10 @@ class ApiConstants {
   static const String profileEndpoint = '/auth/me';
   static const String refreshTokenEndpoint = '/auth/refresh';
   static const String emailConfigEndpoint = '/auth/email-config';
+  static const String updateLanguageEndpoint = '/auth/language';
+
+  // User Profile Endpoints
+  static const String updateProfileEndpoint = '/users/profile';
 
   // Home Endpoints
   static const String homeEndpoint = '/home';

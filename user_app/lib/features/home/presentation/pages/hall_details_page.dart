@@ -15,6 +15,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../home/presentation/widgets/offers_section.dart';
 import '../../../booking/presentation/pages/hall_booking_page.dart';
+import '../../../../core/realtime/socket_service.dart';
 import '../../../booking/di/booking_injection.dart' as booking;
 import '../../../booking/presentation/cubit/booking_cubit.dart';
 
@@ -34,10 +35,26 @@ class HallDetailsPage extends StatelessWidget {
   }
 }
 
-class HallDetailsView extends StatelessWidget {
+class HallDetailsView extends StatefulWidget {
   final String hallId;
 
   const HallDetailsView({Key? key, required this.hallId}) : super(key: key);
+
+  @override
+  State<HallDetailsView> createState() => _HallDetailsViewState();
+}
+
+class _HallDetailsViewState extends State<HallDetailsView> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // best-effort leave; we don't know current hallId until loaded
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +80,9 @@ class HallDetailsView extends StatelessWidget {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      context.read<HallDetailsCubit>().loadHallDetails(hallId);
+                      context.read<HallDetailsCubit>().loadHallDetails(
+                        widget.hallId,
+                      );
                     },
                     child: Text('retry'.tr()),
                   ),
@@ -73,6 +92,17 @@ class HallDetailsView extends StatelessWidget {
           }
 
           if (state is HallDetailsLoaded) {
+            // Join realtime room and listen for updates
+            SocketService.instance.joinHall(state.hall.id);
+            SocketService.instance.onHallUpdated(state.hall.id).listen((
+              payload,
+            ) {
+              final status = payload['status']?.toString();
+              if (status != null && status.isNotEmpty) {
+                // Trigger UI rebuild by reloading details (cheap approach)
+                context.read<HallDetailsCubit>().loadHallDetails(state.hall.id);
+              }
+            });
             return Stack(
               children: [
                 _buildHallDetails(context, state.hall),
@@ -394,30 +424,74 @@ class HallDetailsBottomBar extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => BlocProvider(
-                        create: (context) => booking.sl<BookingCubit>(),
-                        child: HallBookingPage(
-                          hallId: hall.id,
-                          branchId: hall.branchId,
-                          hallName: hall.nameAr,
-                        ),
+              child: Builder(
+                builder: (context) {
+                  final isBookable = hall.status.toLowerCase() == 'available';
+                  final label = isBookable
+                      ? 'book_hall'.tr()
+                      : 'hall_not_available'.tr();
+
+                  return ElevatedButton.icon(
+                    onPressed: isBookable
+                        ? () async {
+                            try {
+                              final dio = Dio();
+                              final res = await dio.get(
+                                '${ApiConstants.baseUrl}${ApiConstants.hallsEndpoint}/${hall.id}',
+                              );
+                              String latestStatus = hall.status;
+                              if (res.data is Map) {
+                                final data = res.data as Map;
+                                final status = data['status'];
+                                if (status is String) {
+                                  latestStatus = status;
+                                }
+                              }
+
+                              if (latestStatus.toLowerCase() != 'available') {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('hall_not_available'.tr()),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                                return;
+                              }
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => BlocProvider(
+                                    create: (context) =>
+                                        booking.sl<BookingCubit>(),
+                                    child: HallBookingPage(
+                                      hallId: hall.id,
+                                      branchId: hall.branchId,
+                                      hallName: hall.nameAr,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            } catch (_) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('hall_not_available'.tr()),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
+                        : null,
+                    icon: const Icon(Iconsax.calendar_1),
+                    label: Text(label),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                   );
                 },
-                icon: const Icon(Iconsax.calendar_1),
-                label: Text('book_hall'.tr()),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
               ),
             ),
           ],

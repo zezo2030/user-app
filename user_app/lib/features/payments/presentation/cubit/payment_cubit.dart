@@ -46,11 +46,22 @@ class PaymentCubit extends Cubit<PaymentState> {
       );
       emit(PaymentIntentCreated(intent));
 
-      // Here we would open a payment sheet; for now, directly confirm using clientSecret
+      // افتح Tap Checkout SDK هنا (استبدل الدالة أدناه بتكامل SDK الحقيقي)
+      final bool sdkSuccess = await _openTapCheckout(
+        amount: booking.totalPrice,
+        currency: 'SAR',
+        chargeId: intent.chargeId,
+      );
+
+      if (!sdkSuccess) {
+        emit(PaymentFailure('تم إلغاء الدفع'));
+        return;
+      }
+
       final confirmResult = await confirmPaymentUseCase(
         bookingId: booking.id,
         paymentId: intent.paymentId,
-        clientSecret: intent.clientSecret,
+        chargeId: intent.chargeId,
       );
 
       if (confirmResult.success) {
@@ -61,5 +72,15 @@ class PaymentCubit extends Cubit<PaymentState> {
     } catch (e) {
       emit(PaymentFailure(e.toString()));
     }
+  }
+
+  // Placeholder: استبدلها باستدعاء Tap SDK الفعلي
+  Future<bool> _openTapCheckout({
+    required double amount,
+    required String currency,
+    required String chargeId,
+  }) async {
+    // TODO: دمج Tap Flutter SDK وارجاع true عند نجاح الدفع
+    return true;
   }
 }

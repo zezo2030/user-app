@@ -464,4 +464,9 @@
   ,"upcoming":"القادمة"
   ,"today_bookings":"حجوزات اليوم"
   ,"pull_to_refresh":"اسحب للتحديث"
+  ,"copy":"نسخ"
+  ,"show_qr":"عرض QR"
+  ,"ticket":"تذكرة"
+  ,"copy_ticket_id":"نسخ رقم التذكرة"
+  ,"copied":"تم النسخ"
 }

@@ -41,8 +41,23 @@ class BranchGridCard extends StatelessWidget {
                       ),
                     )
                   : CachedNetworkImage(
-                      imageUrl: resolveFileUrl(img),
+                      imageUrl: (() {
+                        final u = resolveFileUrl(img);
+                        // ignore: avoid_print
+                        print('🖼️ BranchGridCard URL => ' + u);
+                        return u;
+                      })(),
                       fit: BoxFit.cover,
+                      placeholder: (c, u) =>
+                          Container(color: Colors.grey.shade300),
+                      errorWidget: (c, u, e) => Container(
+                        color: Colors.grey.shade200,
+                        child: const Icon(
+                          Icons.broken_image,
+                          size: 36,
+                          color: Colors.grey,
+                        ),
+                      ),
                     ),
             ),
 

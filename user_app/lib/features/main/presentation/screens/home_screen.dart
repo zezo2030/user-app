@@ -9,7 +9,6 @@ import '../../../home/presentation/widgets/home_header_widget.dart';
 import '../../../home/presentation/widgets/featured_offers_section.dart';
 import '../../../home/presentation/widgets/popular_branches_section.dart';
 import '../../../home/presentation/widgets/nearby_branches_section.dart';
-import '../../../home/presentation/widgets/recommendations_section.dart';
 import '../cubit/main_navigation_cubit.dart';
 import '../../../home/presentation/pages/all_offers_page.dart';
 
@@ -83,16 +82,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
 
-                  // Recommendations Section
-                  if (state.data.featuredBranches.isNotEmpty)
-                    SliverToBoxAdapter(
-                      child: RecommendationsSection(
-                        branches: state.data.featuredBranches.take(2).toList(),
-                        onViewAll: () {
-                          // TODO: Navigate to recommendations
-                        },
-                      ),
-                    ),
+                  // Recommendations Section removed per request
 
                   // Featured branches section removed per request
 

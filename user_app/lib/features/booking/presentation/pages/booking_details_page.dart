@@ -10,9 +10,15 @@ import '../widgets/price_breakdown_card.dart';
 import '../../domain/entities/quote_entity.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../tickets/data/datasources/tickets_remote_datasource.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../tickets/data/models/ticket_model.dart';
+import 'package:dio/dio.dart';
+import '../../../activities/data/bookings_api.dart';
+import '../widgets/ticket_card.dart';
+import '../../../../core/utils/share_utils.dart';
+// removed duplicate import
 
 class BookingDetailsPage extends StatelessWidget {
   final BookingEntity booking;
@@ -36,8 +42,30 @@ class BookingDetailsPage extends StatelessWidget {
           // زر المشاركة
           IconButton(
             icon: const Icon(Iconsax.share),
-            onPressed: () {
-              // TODO: تنفيذ مشاركة تفاصيل الحجز
+            onPressed: () async {
+              // مشاركة مختصرة لتفاصيل الحجز
+              final msg =
+                  'booking_details'.tr() +
+                  ' - ' +
+                  'hall'.tr() +
+                  ': ' +
+                  'hall'.tr() +
+                  ' | ' +
+                  'date_time'.tr() +
+                  ': ' +
+                  DateFormat('yyyy-MM-dd HH:mm').format(booking.startTime) +
+                  ' | ' +
+                  'duration'.tr() +
+                  ': ' +
+                  '${booking.durationHours} ${'hours'.tr()}';
+              try {
+                await Share.share(msg);
+              } catch (e) {
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('unknown_error'.tr())));
+              }
             },
           ),
         ],
@@ -392,6 +420,20 @@ class BookingDetailsPage extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () {
+                final now = DateTime.now();
+                final hoursUntil = booking.startTime.difference(now).inHours;
+                if (hoursUntil < 24) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        // رسالة عربية واضحة لحالة أقل من 24 ساعة
+                        'لا يمكن إلغاء الحجز قبل 24 ساعة من موعده',
+                      ),
+                      backgroundColor: Colors.orange,
+                    ),
+                  );
+                  return;
+                }
                 _showCancelBookingDialog(context);
               },
               icon: const Icon(Iconsax.close_circle),
@@ -459,7 +501,20 @@ class BookingDetailsPage extends StatelessWidget {
               future: ticketsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState != ConnectionState.done) {
-                  return const Center(child: CircularProgressIndicator());
+                  // Skeleton بسيط
+                  return Column(
+                    children: List.generate(
+                      3,
+                      (_) => Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        height: 88,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  );
                 }
                 if (snapshot.hasError) {
                   return Text(snapshot.error.toString());
@@ -477,7 +532,23 @@ class BookingDetailsPage extends StatelessWidget {
                 }
 
                 if (myTickets.isEmpty) {
-                  return Text('no_tickets'.tr());
+                  return Column(
+                    children: [
+                      const SizedBox(height: 8),
+                      Icon(
+                        Iconsax.ticket,
+                        size: 40,
+                        color: Colors.grey.shade400,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'no_tickets'.tr(),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  );
                 }
                 final countText = '${'tickets'.tr()} (${myTickets.length})';
                 return Column(
@@ -497,93 +568,44 @@ class BookingDetailsPage extends StatelessWidget {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: myTickets.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 8),
+                      separatorBuilder: (_, __) => const SizedBox(height: 10),
                       itemBuilder: (context, index) {
                         final t = myTickets[index];
-                        Color statusColor;
-                        switch (t.status.toLowerCase()) {
-                          case 'valid':
-                            statusColor = Colors.green;
-                            break;
-                          case 'used':
-                            statusColor = Colors.blueGrey;
-                            break;
-                          case 'expired':
-                            statusColor = Colors.orange;
-                            break;
-                          case 'cancelled':
-                            statusColor = Colors.red;
-                            break;
-                          default:
-                            statusColor = Colors.grey;
-                        }
-                        return InkWell(
-                          onTap: () async {
+                        return TicketCard(
+                          id: t.id,
+                          status: t.status,
+                          onViewQr: () async {
                             final qr = await ds.getTicketQr(t.id);
                             if (!context.mounted) return;
-                            showDialog(
-                              context: context,
-                              builder: (_) => AlertDialog(
-                                content: SingleChildScrollView(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text('qr_code'.tr()),
-                                      const SizedBox(height: 12),
-                                      _buildQrWidget(qr),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                            _showQrBottomSheet(context, qr, t.id);
+                          },
+                          onCopyId: () async {
+                            await Clipboard.setData(ClipboardData(text: t.id));
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('copied'.tr())),
                             );
                           },
-                          child: Card(
-                            elevation: 4,
-                            shadowColor: Colors.black26,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 6,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: statusColor.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(
-                                            16,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          t.status,
-                                          style: TextStyle(
-                                            color: statusColor,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                      const Spacer(),
-                                      Text(
-                                        '#${index + 1}',
-                                        style: TextStyle(
-                                          color: Colors.grey.shade600,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 4),
-                                ],
-                              ),
-                            ),
-                          ),
+                          onShare: () async {
+                            try {
+                              HapticFeedback.selectionClick();
+                              final qr = await ds.getTicketQr(t.id);
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('share'.tr())),
+                              );
+                              await shareTicketQrPreferWhatsApp(
+                                context: context,
+                                ticketId: t.id,
+                                qrData: qr,
+                              );
+                            } catch (e) {
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('unknown_error'.tr())),
+                              );
+                            }
+                          },
                         );
                       },
                     ),
@@ -594,6 +616,96 @@ class BookingDetailsPage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _showQrBottomSheet(
+    BuildContext context,
+    String qrData,
+    String ticketId,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Iconsax.scan_barcode),
+                  const SizedBox(width: 8),
+                  Text(
+                    'qr_code'.tr(),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Iconsax.close_circle),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Center(child: _buildQrWidget(qrData)),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: () async {
+                      await Clipboard.setData(ClipboardData(text: ticketId));
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text('copied'.tr())));
+                    },
+                    icon: const Icon(Iconsax.copy),
+                    label: Text('copy_ticket_id'.tr()),
+                  ),
+                  const SizedBox(width: 8),
+                  OutlinedButton.icon(
+                    onPressed: () async {
+                      try {
+                        HapticFeedback.selectionClick();
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text('share'.tr())));
+                        await shareTicketQrPreferWhatsApp(
+                          context: context,
+                          ticketId: ticketId,
+                          qrData: qrData,
+                        );
+                      } catch (e) {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('unknown_error'.tr())),
+                        );
+                      }
+                    },
+                    icon: const Icon(Iconsax.export_1),
+                    label: Text('share'.tr()),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'لا تشارك رمز الـ QR إلا مع الشخص المخوّل باستخدام التذكرة',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -677,15 +789,45 @@ class BookingDetailsPage extends StatelessWidget {
             child: Text('no'.tr()),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              // TODO: تنفيذ إلغاء الحجز
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('booking_cancelled'.tr()),
-                  backgroundColor: Colors.orange,
-                ),
+              // مؤشر انتظار
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) =>
+                    const Center(child: CircularProgressIndicator()),
               );
+              try {
+                await BookingsApi().cancelBooking(id: booking.id);
+                if (!context.mounted) return;
+                Navigator.pop(context); // اغلاق مؤشر الانتظار
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('booking_cancelled'.tr()),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                Navigator.pop(context, true); // عودة مع نتيجة للتحديث
+              } catch (e) {
+                if (!context.mounted) return;
+                Navigator.pop(context); // اغلاق مؤشر الانتظار
+                String message = e.toString();
+                if (e is DioException) {
+                  final data = e.response?.data;
+                  if (data is Map && data['message'] is String) {
+                    final serverMsg = data['message'] as String;
+                    if (serverMsg.contains('24 hours')) {
+                      message = 'لا يمكن إلغاء الحجز قبل 24 ساعة من موعده';
+                    } else {
+                      message = serverMsg;
+                    }
+                  }
+                }
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(message), backgroundColor: Colors.red),
+                );
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,

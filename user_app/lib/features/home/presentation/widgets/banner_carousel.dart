@@ -101,7 +101,7 @@ class _BannerItem extends StatelessWidget {
         child: Stack(
           children: [
             CachedNetworkImage(
-              imageUrl: resolveFileUrl(banner.imageUrl),
+              imageUrl: resolveFileUrlWithBust(banner.imageUrl),
               width: double.infinity,
               height: double.infinity,
               fit: BoxFit.fill,

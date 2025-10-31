@@ -2,25 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../../core/utils/url_utils.dart';
 import '../../domain/entities/hall_entity.dart';
 
 class HallCard extends StatelessWidget {
   final HallEntity hall;
   final VoidCallback? onTap;
 
-  const HallCard({
-    Key? key,
-    required this.hall,
-    this.onTap,
-  }) : super(key: key);
+  const HallCard({Key? key, required this.hall, this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
@@ -47,7 +42,7 @@ class HallCard extends StatelessWidget {
                   child: _buildImageWidget(context),
                 ),
               ),
-              
+
               // Hall details
               Padding(
                 padding: const EdgeInsets.all(16),
@@ -56,7 +51,9 @@ class HallCard extends StatelessWidget {
                   children: [
                     // Hall name
                     Text(
-                      context.locale.languageCode == 'ar' ? hall.nameAr : hall.nameEn,
+                      context.locale.languageCode == 'ar'
+                          ? hall.nameAr
+                          : hall.nameEn,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -64,17 +61,13 @@ class HallCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    
+
                     const SizedBox(height: 8),
-                    
+
                     // Capacity
                     Row(
                       children: [
-                        Icon(
-                          Iconsax.people,
-                          size: 16,
-                          color: Colors.grey[600],
-                        ),
+                        Icon(Iconsax.people, size: 16, color: Colors.grey[600]),
                         const SizedBox(width: 4),
                         Text(
                           'hall_capacity'.tr(args: ['${hall.capacity}']),
@@ -85,9 +78,9 @@ class HallCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 8),
-                    
+
                     // Price
                     Row(
                       children: [
@@ -98,7 +91,9 @@ class HallCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          'starting_from'.tr(args: ['${hall.priceConfig['basePrice'] ?? 0}']),
+                          'starting_from'.tr(
+                            args: ['${hall.priceConfig['basePrice'] ?? 0}'],
+                          ),
                           style: TextStyle(
                             color: Theme.of(context).primaryColor,
                             fontSize: 12,
@@ -107,9 +102,9 @@ class HallCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 8),
-                    
+
                     // Features
                     if (hall.features != null && hall.features!.isNotEmpty)
                       Wrap(
@@ -122,7 +117,9 @@ class HallCard extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                              color: Theme.of(
+                                context,
+                              ).primaryColor.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -179,7 +176,12 @@ class HallCard extends StatelessWidget {
         children: [
           // Main image
           CachedNetworkImage(
-            imageUrl: hall.images!.first,
+            imageUrl: (() {
+              final u = resolveFileUrlWithBust(hall.images!.first);
+              // ignore: avoid_print
+              print('🖼️ HallCard URL => ' + u);
+              return u;
+            })(),
             width: double.infinity,
             height: 140,
             fit: BoxFit.cover,
@@ -222,16 +224,13 @@ class HallCard extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Status badge
           Positioned(
             top: 12,
             right: 12,
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 4,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: _getStatusColor(hall.status).withValues(alpha: 0.9),
                 borderRadius: BorderRadius.circular(12),
@@ -246,17 +245,14 @@ class HallCard extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Decoration badge
           if (hall.isDecorated)
             Positioned(
               top: 12,
               left: 12,
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 6,
-                  vertical: 3,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                 decoration: BoxDecoration(
                   color: Colors.amber.withValues(alpha: 0.9),
                   borderRadius: BorderRadius.circular(8),
@@ -268,17 +264,14 @@ class HallCard extends StatelessWidget {
                 ),
               ),
             ),
-          
+
           // Images count badge (if more than 1 image)
           if (hall.images!.length > 1)
             Positioned(
               bottom: 12,
               left: 12,
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 4,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.7),
                   borderRadius: BorderRadius.circular(12),
@@ -286,11 +279,7 @@ class HallCard extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Iconsax.gallery,
-                      color: Colors.white,
-                      size: 12,
-                    ),
+                    const Icon(Iconsax.gallery, color: Colors.white, size: 12),
                     const SizedBox(width: 4),
                     Text(
                       '${hall.images!.length}',
@@ -333,10 +322,7 @@ class HallCard extends StatelessWidget {
               top: 12,
               right: 12,
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 4,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: _getStatusColor(hall.status).withValues(alpha: 0.9),
                   borderRadius: BorderRadius.circular(12),

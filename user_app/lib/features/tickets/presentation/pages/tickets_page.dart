@@ -4,6 +4,8 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../data/datasources/tickets_remote_datasource.dart';
 import '../../data/models/ticket_model.dart';
+import 'package:flutter/services.dart';
+import '../../../../core/utils/share_utils.dart';
 
 class TicketsPage extends StatefulWidget {
   final String bookingId;
@@ -95,6 +97,7 @@ class _TicketsPageState extends State<TicketsPage> {
                             child: SingleChildScrollView(
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   Text('qr_code'.tr()),
                                   const SizedBox(height: 12),
@@ -104,6 +107,61 @@ class _TicketsPageState extends State<TicketsPage> {
                                     )
                                   else
                                     SelectableText(qr),
+                                  const SizedBox(height: 16),
+                                  Row(
+                                    children: [
+                                      OutlinedButton.icon(
+                                        onPressed: () async {
+                                          await Clipboard.setData(
+                                            ClipboardData(text: t.id),
+                                          );
+                                          if (!mounted) return;
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text('copied'.tr()),
+                                            ),
+                                          );
+                                        },
+                                        icon: const Icon(Icons.copy),
+                                        label: Text('copy_ticket_id'.tr()),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      OutlinedButton.icon(
+                                        onPressed: () async {
+                                          try {
+                                            HapticFeedback.selectionClick();
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text('share'.tr()),
+                                              ),
+                                            );
+                                            await shareTicketQrPreferWhatsApp(
+                                              context: context,
+                                              ticketId: t.id,
+                                              qrData: qr,
+                                            );
+                                          } catch (e) {
+                                            if (!mounted) return;
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  'unknown_error'.tr(),
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        icon: const Icon(Icons.share),
+                                        label: Text('share'.tr()),
+                                      ),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ),

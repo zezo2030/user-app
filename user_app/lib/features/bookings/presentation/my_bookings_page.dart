@@ -7,6 +7,7 @@ import '../../activities/data/bookings_repository.dart';
 import '../../activities/domain/booking_status.dart';
 import '../../activities/presentation/widgets/booking_card.dart';
 import '../../booking/data/models/booking_model.dart';
+import '../../booking/presentation/pages/booking_details_page.dart';
 import '../../tickets/data/datasources/tickets_remote_datasource.dart';
 import '../../../core/network/dio_client.dart';
 
@@ -186,7 +187,27 @@ class _MyBookingsViewState extends State<_MyBookingsView> {
                   child: BookingCard(
                     booking: b,
                     ticketsDs: widget.ticketsDs,
-                    onDetails: () {},
+                    onDetails: () {
+                      Navigator.of(context).push(
+                        PageRouteBuilder(
+                          transitionDuration: const Duration(milliseconds: 200),
+                          pageBuilder: (_, animation, __) => FadeTransition(
+                            opacity: animation,
+                            child: BookingDetailsPage(booking: b),
+                          ),
+                          transitionsBuilder: (_, animation, __, child) {
+                            final offsetAnimation = Tween<Offset>(
+                              begin: const Offset(0.1, 0),
+                              end: Offset.zero,
+                            ).animate(animation);
+                            return SlideTransition(
+                              position: offsetAnimation,
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),

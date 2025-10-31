@@ -459,5 +459,10 @@
   "sync_completed": "Sync Completed",
   "sync_error": "Sync Error",
   "retry_sync": "Retry Sync",
-  "cancel_sync": "Cancel Sync"
+  "cancel_sync": "Cancel Sync",
+  "copy": "Copy",
+  "show_qr": "Show QR",
+  "ticket": "Ticket",
+  "copy_ticket_id": "Copy ticket ID",
+  "copied": "Copied"
 }

@@ -9,12 +9,12 @@ class ConfirmPaymentUseCase {
   Future<ConfirmPaymentResultEntity> call({
     required String bookingId,
     required String paymentId,
-    required String clientSecret,
+    String? chargeId,
   }) {
     return repository.confirm(
       bookingId: bookingId,
       paymentId: paymentId,
-      clientSecret: clientSecret,
+      chargeId: chargeId,
     );
   }
 }

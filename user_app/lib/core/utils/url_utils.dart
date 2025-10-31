@@ -24,3 +24,11 @@ String resolveFileUrl(String? path) {
   if (path.startsWith('/')) return '$root$path';
   return '$root/$path';
 }
+
+/// Cache-busting helper for previews/just-uploaded images
+String resolveFileUrlWithBust(String? path) {
+  final url = resolveFileUrl(path);
+  if (url.isEmpty) return '';
+  final sep = url.contains('?') ? '&' : '?';
+  return '$url${sep}v=${DateTime.now().millisecondsSinceEpoch}';
+}

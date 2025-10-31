@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../../core/theme/app_colors.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../../core/utils/url_utils.dart';
 
 class HeroBannerWidget extends StatelessWidget {
   final String? backgroundImageUrl;
@@ -41,12 +42,6 @@ class HeroBannerWidget extends StatelessWidget {
             bottomRight: Radius.circular(24),
           ),
           gradient: backgroundImageUrl != null ? null : AppColors.heroGradient,
-          image: backgroundImageUrl != null
-              ? DecorationImage(
-                  image: CachedNetworkImageProvider(backgroundImageUrl!),
-                  fit: BoxFit.cover,
-                )
-              : null,
           boxShadow: [
             BoxShadow(
               color: AppColors.shadowColor,
@@ -57,6 +52,25 @@ class HeroBannerWidget extends StatelessWidget {
         ),
         child: Stack(
           children: [
+            // Background image with error handling
+            if (backgroundImageUrl != null)
+              Positioned.fill(
+                child: CachedNetworkImage(
+                  imageUrl: resolveFileUrlWithBust(backgroundImageUrl!),
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) =>
+                      Container(color: Colors.grey.shade300),
+                  errorWidget: (context, url, error) => Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Color(0x22000000), Color(0x11000000)],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             // Full-cover soft gradient over image
             if (backgroundImageUrl != null)
               Container(

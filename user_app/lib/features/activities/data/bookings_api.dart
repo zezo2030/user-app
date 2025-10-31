@@ -45,4 +45,11 @@ class BookingsApi {
 
     return (items: items, hasMore: hasMore, nextPage: page + 1);
   }
+
+  Future<void> cancelBooking({required String id, String? reason}) async {
+    await _dio.post(
+      '${core.ApiConstants.baseUrl}/bookings/$id/cancel',
+      data: reason != null && reason.isNotEmpty ? {'reason': reason} : null,
+    );
+  }
 }

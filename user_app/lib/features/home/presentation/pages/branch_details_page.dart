@@ -1288,7 +1288,7 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
 
   Widget _buildHallCard(HallEntity hall) {
     final imageUrl = hall.images != null && hall.images!.isNotEmpty
-        ? hall.images![0]
+        ? resolveFileUrlWithBust(hall.images![0])
         : null;
 
     final basePrice = hall.priceConfig['basePrice'] ?? 0;
@@ -1328,26 +1328,31 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
         borderRadius: BorderRadius.circular(16),
         child: Stack(
           children: [
-            // Hall Image
-            Container(
-              height: double.infinity,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: AppColors.greyLight,
-                image: imageUrl != null
-                    ? DecorationImage(
-                        image: CachedNetworkImageProvider(imageUrl),
-                        fit: BoxFit.cover,
-                      )
-                    : null,
-              ),
+            // Hall Image with error handling
+            Positioned.fill(
               child: imageUrl == null
-                  ? Icon(
-                      Iconsax.home_2,
-                      size: 48,
-                      color: AppColors.textSecondary,
+                  ? Container(
+                      color: AppColors.greyLight,
+                      child: Icon(
+                        Iconsax.home_2,
+                        size: 48,
+                        color: AppColors.textSecondary,
+                      ),
                     )
-                  : null,
+                  : CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (_, __) =>
+                          Container(color: AppColors.greyLight),
+                      errorWidget: (_, __, ___) => Container(
+                        color: AppColors.greyLight,
+                        child: Icon(
+                          Iconsax.home_2,
+                          size: 48,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
             ),
 
             // Gradient Overlay

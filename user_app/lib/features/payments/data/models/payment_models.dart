@@ -13,12 +13,9 @@ class CreatePaymentIntentRequestModel {
 
 class PaymentIntentResponseModel {
   final String paymentId;
-  final String clientSecret;
+  final String chargeId;
 
-  PaymentIntentResponseModel({
-    required this.paymentId,
-    required this.clientSecret,
-  });
+  PaymentIntentResponseModel({required this.paymentId, required this.chargeId});
 
   factory PaymentIntentResponseModel.fromJson(Map<String, dynamic> json) {
     // API may wrap data with { data: {...} }
@@ -27,7 +24,8 @@ class PaymentIntentResponseModel {
         : json;
     return PaymentIntentResponseModel(
       paymentId: data['paymentId']?.toString() ?? data['id']?.toString() ?? '',
-      clientSecret: data['clientSecret']?.toString() ?? '',
+      chargeId:
+          data['chargeId']?.toString() ?? data['gatewayRef']?.toString() ?? '',
     );
   }
 }
@@ -35,18 +33,19 @@ class PaymentIntentResponseModel {
 class ConfirmPaymentRequestModel {
   final String bookingId;
   final String paymentId;
-  final String clientSecret;
+  final String? chargeId;
 
   ConfirmPaymentRequestModel({
     required this.bookingId,
     required this.paymentId,
-    required this.clientSecret,
+    this.chargeId,
   });
 
   Map<String, dynamic> toJson() => {
     'bookingId': bookingId,
     'paymentId': paymentId,
-    'gatewayPayload': {'clientSecret': clientSecret},
+    // backend لا يعتمد على payload الآن؛ نرسل chargeId اختيارياً
+    if (chargeId != null) 'gatewayPayload': {'chargeId': chargeId},
   };
 }
 

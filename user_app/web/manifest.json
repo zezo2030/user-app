@@ -1,6 +1,6 @@
 {
-    "name": "user_app",
-    "short_name": "user_app",
+    "name": "Kinetic",
+    "short_name": "Kinetic",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

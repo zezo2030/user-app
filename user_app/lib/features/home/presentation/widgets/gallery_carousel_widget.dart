@@ -30,7 +30,7 @@ class _GalleryCarouselWidgetState extends State<GalleryCarouselWidget> {
             onPageChanged: (i) => setState(() => _current = i),
             controller: PageController(viewportFraction: 0.92),
             itemBuilder: (_, i) {
-              final url = resolveFileUrl(list[i]);
+              final url = resolveFileUrlWithBust(list[i]);
               return Padding(
                 padding: EdgeInsets.only(right: i < list.length - 1 ? 16 : 0),
                 child: ClipRRect(

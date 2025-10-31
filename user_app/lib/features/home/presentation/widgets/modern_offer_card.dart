@@ -112,7 +112,7 @@ class _ModernOfferCardState extends State<ModernOfferCard>
   Widget _buildBackgroundImage() {
     return Positioned.fill(
       child: CachedNetworkImage(
-        imageUrl: resolveFileUrl(widget.offer.imageUrl),
+        imageUrl: resolveFileUrlWithBust(widget.offer.imageUrl),
         fit: BoxFit.cover,
         placeholder: (context, url) => Container(
           decoration: BoxDecoration(gradient: _getOfferGradient()),

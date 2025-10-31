@@ -4,6 +4,7 @@ import 'package:iconsax/iconsax.dart';
 import '../../domain/entities/hall_entity.dart';
 import '../../../../core/theme/app_colors.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../../core/utils/url_utils.dart';
 
 class HallHeaderSection extends StatelessWidget {
   final HallEntity hall;
@@ -32,7 +33,13 @@ class HallHeaderSection extends StatelessWidget {
             ),
             child: hall.images != null && hall.images!.isNotEmpty
                 ? CachedNetworkImage(
-                    imageUrl: hall.images!.first,
+                    imageUrl: (() {
+                      final u = resolveFileUrlWithBust(hall.images!.first);
+                      // Debug final URL
+                      // ignore: avoid_print
+                      print('🖼️ HallHeaderSection URL => ' + u);
+                      return u;
+                    })(),
                     fit: BoxFit.cover,
                     errorWidget: (context, url, error) {
                       return _buildPlaceholderImage(context);

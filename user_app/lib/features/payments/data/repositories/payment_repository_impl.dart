@@ -20,7 +20,7 @@ class PaymentRepositoryImpl implements PaymentRepository {
     final res = await remote.createPaymentIntent(req);
     return PaymentIntentEntity(
       paymentId: res.paymentId,
-      clientSecret: res.clientSecret,
+      chargeId: res.chargeId,
       method: method,
     );
   }
@@ -29,12 +29,12 @@ class PaymentRepositoryImpl implements PaymentRepository {
   Future<ConfirmPaymentResultEntity> confirm({
     required String bookingId,
     required String paymentId,
-    required String clientSecret,
+    String? chargeId,
   }) async {
     final req = ConfirmPaymentRequestModel(
       bookingId: bookingId,
       paymentId: paymentId,
-      clientSecret: clientSecret,
+      chargeId: chargeId,
     );
     final res = await remote.confirmPayment(req);
     return ConfirmPaymentResultEntity(

@@ -626,6 +626,30 @@ class _HallBookingPageState extends State<HallBookingPage> {
   void _checkAvailability() {
     if (!_canBook()) return;
 
+    // منع التحقق إذا كان الوقت المحدد في الماضي
+    final now = DateTime.now();
+    final candidate = DateTime(
+      selectedDate!.year,
+      selectedDate!.month,
+      selectedDate!.day,
+      selectedTime!.hour,
+      selectedTime!.minute,
+    );
+    if (!candidate.isAfter(now)) {
+      setState(() {
+        isLoadingAvailability = false;
+        isAvailable = false;
+        availabilityMessage = 'لا يمكن الحجز في وقتٍ ماضٍ';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('لا يمكن الحجز في وقتٍ ماضٍ'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
     setState(() {
       isLoadingAvailability = true;
     });
@@ -647,6 +671,28 @@ class _HallBookingPageState extends State<HallBookingPage> {
 
   void _requestQuote() {
     if (!_canBook()) return;
+
+    // تحقق من عدم كون الوقت في الماضي قبل طلب التسعير
+    final now = DateTime.now();
+    final candidate = DateTime(
+      selectedDate!.year,
+      selectedDate!.month,
+      selectedDate!.day,
+      selectedTime!.hour,
+      selectedTime!.minute,
+    );
+    if (!candidate.isAfter(now)) {
+      setState(() {
+        isLoadingQuote = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('لا يمكن الحجز في وقتٍ ماضٍ'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
 
     setState(() {
       isLoadingQuote = true;
@@ -673,6 +719,25 @@ class _HallBookingPageState extends State<HallBookingPage> {
 
   void _bookHall(BuildContext context) {
     if (!_canBook() || !isAvailable) return;
+
+    // تحقق نهائي قبل الإرسال
+    final now = DateTime.now();
+    final candidate = DateTime(
+      selectedDate!.year,
+      selectedDate!.month,
+      selectedDate!.day,
+      selectedTime!.hour,
+      selectedTime!.minute,
+    );
+    if (!candidate.isAfter(now)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('لا يمكن الحجز في وقتٍ ماضٍ'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
 
     final DateTime startTime = DateTime(
       selectedDate!.year,

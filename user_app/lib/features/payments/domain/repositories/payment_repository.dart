@@ -9,6 +9,6 @@ abstract class PaymentRepository {
   Future<ConfirmPaymentResultEntity> confirm({
     required String bookingId,
     required String paymentId,
-    required String clientSecret,
+    String? chargeId,
   });
 }

@@ -59,8 +59,8 @@ class _ModernOfferCardState extends State<ModernOfferCard>
             child: GestureDetector(
               onTap: widget.onTap,
               child: Container(
-                width: 320,
-                margin: const EdgeInsets.only(right: 16),
+                width: double.infinity,
+                margin: const EdgeInsets.symmetric(horizontal: 0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   gradient: _getOfferGradient(),

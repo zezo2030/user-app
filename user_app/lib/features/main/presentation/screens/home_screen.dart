@@ -10,6 +10,8 @@ import '../../../home/presentation/widgets/featured_offers_section.dart';
 import '../../../home/presentation/widgets/popular_branches_section.dart';
 import '../../../home/presentation/widgets/nearby_branches_section.dart';
 import '../../../home/presentation/widgets/recommendations_section.dart';
+import '../cubit/main_navigation_cubit.dart';
+import '../../../home/presentation/pages/all_offers_page.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -47,7 +49,12 @@ class HomeScreen extends StatelessWidget {
                       child: FeaturedOffersSection(
                         offers: state.data.offers,
                         onViewAll: () {
-                          // TODO: Navigate to all offers
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  AllOffersPage(offers: state.data.offers),
+                            ),
+                          );
                         },
                       ),
                     ),
@@ -58,7 +65,8 @@ class HomeScreen extends StatelessWidget {
                       child: PopularBranchesSection(
                         branches: state.data.featuredBranches.take(5).toList(),
                         onViewAll: () {
-                          // TODO: Navigate to all branches
+                          // الانتقال لتبويب الفروع/التصنيفات
+                          context.read<MainNavigationCubit>().changeTab(2);
                         },
                       ),
                     ),
@@ -69,7 +77,8 @@ class HomeScreen extends StatelessWidget {
                       child: NearbyBranchesSection(
                         branches: state.data.featuredBranches.take(3).toList(),
                         onViewAll: () {
-                          // TODO: Navigate to map view
+                          // الانتقال لتبويب الفروع/التصنيفات
+                          context.read<MainNavigationCubit>().changeTab(2);
                         },
                       ),
                     ),

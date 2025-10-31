@@ -43,7 +43,8 @@ class _FeaturedOffersSectionState extends State<FeaturedOffersSection>
           ),
         );
 
-    _pageController = PageController(viewportFraction: 0.85);
+    // اجعل الكارد بعرض كامل مثل البانرات
+    _pageController = PageController(viewportFraction: 1.0);
     _animationController.forward();
   }
 
@@ -95,7 +96,7 @@ class _FeaturedOffersSectionState extends State<FeaturedOffersSection>
 
   Widget _buildSectionHeader() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -163,28 +164,26 @@ class _FeaturedOffersSectionState extends State<FeaturedOffersSection>
   }
 
   Widget _buildOffersCarousel() {
-    return SizedBox(
-      height: 200,
-      child: PageView.builder(
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        itemCount: widget.offers.length,
-        itemBuilder: (context, index) {
-          final offer = widget.offers[index];
-          return Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: index == _currentIndex ? 0 : 8,
-            ),
-            child: ModernOfferCard(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: SizedBox(
+        height: 200,
+        child: PageView.builder(
+          controller: _pageController,
+          onPageChanged: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          itemCount: widget.offers.length,
+          itemBuilder: (context, index) {
+            final offer = widget.offers[index];
+            return ModernOfferCard(
               offer: offer,
               onTap: () => _onOfferTap(offer),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

@@ -28,48 +28,51 @@ class _BannerCarouselState extends State<BannerCarousel> {
       return const SizedBox.shrink();
     }
 
-    return Column(
-      children: [
-        SizedBox(
-          height: 200,
-          child: PageView.builder(
-            controller: _pageController,
-            onPageChanged: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
-            itemCount: widget.banners.length,
-            itemBuilder: (context, index) {
-              final banner = widget.banners[index];
-              return _BannerItem(banner: banner);
-            },
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          SizedBox(
+            height: 200,
+            child: PageView.builder(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              itemCount: widget.banners.length,
+              itemBuilder: (context, index) {
+                final banner = widget.banners[index];
+                return _BannerItem(banner: banner);
+              },
+            ),
           ),
-        ),
-        if (widget.banners.length > 1)
-          Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                widget.banners.length,
-                (index) => Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _currentIndex == index
-                        ? Theme.of(context).primaryColor
-                        : Theme.of(
-                            context,
-                          ).colorScheme.outline.withOpacity(0.3),
+          if (widget.banners.length > 1)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  widget.banners.length,
+                  (index) => Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _currentIndex == index
+                          ? Theme.of(context).primaryColor
+                          : Theme.of(
+                              context,
+                            ).colorScheme.outline.withOpacity(0.3),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -82,7 +85,7 @@ class _BannerItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8.0),
+      margin: EdgeInsets.zero,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         boxShadow: [

@@ -16,6 +16,7 @@ class ApiConstants {
     print('🌐 API Endpoints:');
     print('   Base URL: $baseUrl');
     print('   Login: $baseUrl$loginEndpoint');
+    print('   Register: $baseUrl$registerEndpoint');
     print('   Send OTP: $baseUrl$sendOtpEndpoint');
     print('   Verify OTP: $baseUrl$verifyOtpEndpoint');
     print('   Register Send OTP: $baseUrl$registerSendOtpEndpoint');
@@ -26,6 +27,7 @@ class ApiConstants {
 
   // Authentication Endpoints
   static const String loginEndpoint = '/auth/login';
+  static const String registerEndpoint = '/auth/register';
   static const String sendOtpEndpoint = '/auth/otp/send';
   static const String verifyOtpEndpoint = '/auth/otp/verify';
   static const String registerSendOtpEndpoint = '/auth/register/otp/send';

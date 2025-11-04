@@ -9,11 +9,11 @@ class SeasonalOffersSection extends StatelessWidget {
   final Function(OfferEntity)? onOfferTap;
 
   const SeasonalOffersSection({
-    Key? key,
+    super.key,
     required this.offers,
     this.onViewMore,
     this.onOfferTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class SeasonalOffersSection extends StatelessWidget {
             ],
           ),
         ),
-        
+
         // Offers List
         SizedBox(
           height: 200,
@@ -77,11 +77,7 @@ class SeasonalOfferCard extends StatelessWidget {
   final OfferEntity offer;
   final VoidCallback? onTap;
 
-  const SeasonalOfferCard({
-    Key? key,
-    required this.offer,
-    this.onTap,
-  }) : super(key: key);
+  const SeasonalOfferCard({super.key, required this.offer, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -107,9 +103,7 @@ class SeasonalOfferCard extends StatelessWidget {
               Container(
                 width: double.infinity,
                 height: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: AppColors.cardGradient,
-                ),
+                decoration: BoxDecoration(gradient: AppColors.cardGradient),
                 child: offer.title.isNotEmpty
                     ? Center(
                         child: Text(
@@ -124,7 +118,7 @@ class SeasonalOfferCard extends StatelessWidget {
                       )
                     : null,
               ),
-              
+
               // Discount Badge
               Positioned(
                 top: 12,
@@ -148,7 +142,7 @@ class SeasonalOfferCard extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               // Bottom Content
               Positioned(
                 bottom: 0,
@@ -209,10 +203,10 @@ class MockSeasonalOffersSection extends StatelessWidget {
   final Function(String)? onOfferTap;
 
   const MockSeasonalOffersSection({
-    Key? key,
+    super.key,
     this.onViewMore,
     this.onOfferTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -268,7 +262,7 @@ class MockSeasonalOffersSection extends StatelessWidget {
             ],
           ),
         ),
-        
+
         // Offers List
         SizedBox(
           height: 200,
@@ -297,11 +291,7 @@ class MockSeasonalOfferCard extends StatelessWidget {
   final Map<String, dynamic> offer;
   final VoidCallback? onTap;
 
-  const MockSeasonalOfferCard({
-    Key? key,
-    required this.offer,
-    this.onTap,
-  }) : super(key: key);
+  const MockSeasonalOfferCard({super.key, required this.offer, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -338,7 +328,7 @@ class MockSeasonalOfferCard extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               // Discount Badge
               Positioned(
                 top: 12,
@@ -362,7 +352,7 @@ class MockSeasonalOfferCard extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               // Bottom Content
               Positioned(
                 bottom: 0,

@@ -23,7 +23,9 @@ class SocketService {
   }
 
   void dispose() {
-    _hallControllers.values.forEach((c) => c.close());
+    for (var c in _hallControllers.values) {
+      c.close();
+    }
     _hallControllers.clear();
     _socket?.dispose();
     _socket = null;

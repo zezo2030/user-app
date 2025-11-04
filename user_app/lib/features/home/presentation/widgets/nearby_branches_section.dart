@@ -10,10 +10,10 @@ class NearbyBranchesSection extends StatefulWidget {
   final VoidCallback? onViewAll;
 
   const NearbyBranchesSection({
-    Key? key,
+    super.key,
     required this.branches,
     this.onViewAll,
-  }) : super(key: key);
+  });
 
   @override
   State<NearbyBranchesSection> createState() => _NearbyBranchesSectionState();

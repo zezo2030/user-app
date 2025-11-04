@@ -5,10 +5,11 @@ import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
+import '../widgets/otp_input_field.dart';
 import '../widgets/loading_overlay.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -16,14 +17,17 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _identifierController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
+  final _emailController = TextEditingController();
+  final _otpController = TextEditingController();
+  final _nameController = TextEditingController();
+  bool _otpSent = false;
+  bool _isNewUser = false;
 
   @override
   void dispose() {
-    _identifierController.dispose();
-    _passwordController.dispose();
+    _emailController.dispose();
+    _otpController.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 
@@ -33,7 +37,31 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(title: Text('login'.tr()), centerTitle: true),
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
-          if (state is Authenticated) {
+          if (state is OtpSent) {
+            setState(() {
+              _otpSent = true;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('otp_sent'.tr()),
+                backgroundColor: Colors.green,
+              ),
+            );
+          } else if (state is OtpVerified) {
+            if (state.authResponse.isNewUser == true) {
+              setState(() {
+                _isNewUser = true;
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('new_user_detected'.tr()),
+                  backgroundColor: Colors.blue,
+                ),
+              );
+            } else {
+              Navigator.pushReplacementNamed(context, '/main');
+            }
+          } else if (state is Authenticated) {
             Navigator.pushReplacementNamed(context, '/main');
           } else if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -66,7 +94,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 8),
 
                     Text(
-                      'login_subtitle'.tr(),
+                      _otpSent
+                          ? 'otp_enter_code_message'.tr()
+                          : 'login_subtitle'.tr(),
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
@@ -75,103 +105,93 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     const SizedBox(height: 32),
 
-                    // Email/Phone Field
-                    CustomTextField(
-                      label: 'email_or_phone'.tr(),
-                      hint: 'email_or_phone_hint'.tr(),
-                      controller: _identifierController,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'email_or_phone_required'.tr();
-                        }
-                        return null;
-                      },
-                    ),
+                    if (!_otpSent) ...[
+                      // Email Field
+                      CustomTextField(
+                        label: 'email'.tr(),
+                        hint: 'email_hint'.tr(),
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'email_required'.tr();
+                          }
+                          if (!value.contains('@')) {
+                            return 'email_invalid'.tr();
+                          }
+                          return null;
+                        },
+                      ),
 
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 24),
 
-                    // Password Field
-                    CustomTextField(
-                      label: 'password'.tr(),
-                      hint: 'password_hint'.tr(),
-                      controller: _passwordController,
-                      obscureText: _obscurePassword,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'password_required'.tr();
-                        }
-                        if (value.length < 6) {
-                          return 'password_too_short'.tr();
-                        }
-                        return null;
-                      },
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                        ),
+                      // Send OTP Button
+                      CustomButton(
+                        text: 'send_otp',
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            context.read<AuthCubit>().sendOtp(
+                              email: _emailController.text.trim(),
+                            );
+                          }
+                        },
+                        icon: const Icon(Icons.email, size: 20),
+                      ),
+                    ] else ...[
+                      // OTP Input Field
+                      OtpInputField(
+                        controller: _otpController,
+                        onCompleted: (otp) {
+                          if (_isNewUser) {
+                            _showNameDialog();
+                          } else {
+                            _verifyOtp();
+                          }
+                        },
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Verify OTP Button
+                      CustomButton(
+                        text: 'verify_otp',
+                        onPressed: () {
+                          if (_otpController.text.length == 6) {
+                            if (_isNewUser) {
+                              _showNameDialog();
+                            } else {
+                              _verifyOtp();
+                            }
+                          }
+                        },
+                        icon: const Icon(Icons.verified, size: 20),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Resend OTP Button
+                      TextButton(
+                        onPressed: () {
+                          context.read<AuthCubit>().sendOtp(
+                            email: _emailController.text.trim(),
+                          );
+                        },
+                        child: Text('resend_otp'.tr()),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Back Button
+                      TextButton(
                         onPressed: () {
                           setState(() {
-                            _obscurePassword = !_obscurePassword;
+                            _otpSent = false;
+                            _otpController.clear();
                           });
                         },
+                        child: Text('back'.tr()),
                       ),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    // Forgot Password
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          // TODO: Implement forgot password
-                        },
-                        child: Text('forgot_password'.tr()),
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Login Button
-                    CustomButton(
-                      text: 'login',
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          context.read<AuthCubit>().login(
-                            identifier: _identifierController.text.trim(),
-                            password: _passwordController.text,
-                          );
-                        }
-                      },
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Divider
-                    Row(
-                      children: [
-                        Expanded(child: Divider()),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text('or'.tr()),
-                        ),
-                        Expanded(child: Divider()),
-                      ],
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // OTP Login Button
-                    CustomOutlinedButton(
-                      text: 'login_with_otp',
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/otp-login');
-                      },
-                      icon: const Icon(Icons.sms, size: 20),
-                    ),
+                    ],
 
                     const SizedBox(height: 24),
 
@@ -194,6 +214,46 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  void _verifyOtp() {
+    context.read<AuthCubit>().verifyOtp(
+      email: _emailController.text.trim(),
+      otp: _otpController.text,
+      name: _isNewUser ? _nameController.text.trim() : null,
+    );
+  }
+
+  void _showNameDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('name_required'.tr()),
+        content: CustomTextField(
+          label: 'name'.tr(),
+          controller: _nameController,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'name_required'.tr();
+            }
+            return null;
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('cancel'.tr()),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _verifyOtp();
+            },
+            child: Text('confirm'.tr()),
+          ),
+        ],
       ),
     );
   }

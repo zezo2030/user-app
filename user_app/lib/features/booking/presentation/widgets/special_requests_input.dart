@@ -8,10 +8,10 @@ class SpecialRequestsInput extends StatefulWidget {
   final Function(String?) onRequestsChanged;
 
   const SpecialRequestsInput({
-    Key? key,
+    super.key,
     this.initialValue,
     required this.onRequestsChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<SpecialRequestsInput> createState() => _SpecialRequestsInputState();
@@ -66,7 +66,8 @@ class _SpecialRequestsInputState extends State<SpecialRequestsInput> {
               ),
               maxLines: 3,
               maxLength: 500,
-              onChanged: (value) => widget.onRequestsChanged(value.isEmpty ? null : value),
+              onChanged: (value) =>
+                  widget.onRequestsChanged(value.isEmpty ? null : value),
             ),
           ],
         ),
@@ -74,4 +75,3 @@ class _SpecialRequestsInputState extends State<SpecialRequestsInput> {
     );
   }
 }
-

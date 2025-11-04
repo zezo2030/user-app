@@ -45,19 +45,7 @@ class BookingDetailsPage extends StatelessWidget {
             onPressed: () async {
               // مشاركة مختصرة لتفاصيل الحجز
               final msg =
-                  'booking_details'.tr() +
-                  ' - ' +
-                  'hall'.tr() +
-                  ': ' +
-                  'hall'.tr() +
-                  ' | ' +
-                  'date_time'.tr() +
-                  ': ' +
-                  DateFormat('yyyy-MM-dd HH:mm').format(booking.startTime) +
-                  ' | ' +
-                  'duration'.tr() +
-                  ': ' +
-                  '${booking.durationHours} ${'hours'.tr()}';
+                  '${'booking_details'.tr()} - ${'hall'.tr()}: ${'hall'.tr()} | ${'date_time'.tr()}: ${DateFormat('yyyy-MM-dd HH:mm').format(booking.startTime)} | ${'duration'.tr()}: ${booking.durationHours} ${'hours'.tr()}';
               try {
                 await Share.share(msg);
               } catch (e) {

@@ -23,26 +23,26 @@ class BookingModel extends BookingEntity {
   });
 
   factory BookingModel.fromJson(Map<String, dynamic> json) {
-    int _asInt(dynamic v) {
+    int asInt(dynamic v) {
       if (v is int) return v;
       if (v is num) return v.toInt();
       final s = v?.toString();
       return int.tryParse(s ?? '') ?? 0;
     }
 
-    double _asDouble(dynamic v) {
+    double asDouble(dynamic v) {
       if (v is double) return v;
       if (v is num) return v.toDouble();
       final s = v?.toString();
       return double.tryParse(s ?? '') ?? 0.0;
     }
 
-    DateTime _asDate(dynamic v) {
+    DateTime asDate(dynamic v) {
       if (v is DateTime) return v;
       return DateTime.tryParse(v?.toString() ?? '') ?? DateTime.now();
     }
 
-    DateTime? _asDateOrNull(dynamic v) {
+    DateTime? asDateOrNull(dynamic v) {
       if (v == null) return null;
       if (v is DateTime) return v;
       return DateTime.tryParse(v.toString());
@@ -53,21 +53,21 @@ class BookingModel extends BookingEntity {
       userId: json['userId'] as String,
       branchId: json['branchId'] as String,
       hallId: json['hallId'] as String,
-      startTime: _asDate(json['startTime']),
-      durationHours: _asInt(json['durationHours']),
-      persons: _asInt(json['persons']),
-      totalPrice: _asDouble(json['totalPrice']),
+      startTime: asDate(json['startTime']),
+      durationHours: asInt(json['durationHours']),
+      persons: asInt(json['persons']),
+      totalPrice: asDouble(json['totalPrice']),
       status: json['status'] as String,
       couponCode: json['couponCode'] as String?,
       discountAmount: json['discountAmount'] != null
-          ? _asDouble(json['discountAmount'])
+          ? asDouble(json['discountAmount'])
           : null,
       specialRequests: json['specialRequests'] as String?,
       contactPhone: json['contactPhone'] as String?,
-      cancelledAt: _asDateOrNull(json['cancelledAt']),
+      cancelledAt: asDateOrNull(json['cancelledAt']),
       cancellationReason: json['cancellationReason'] as String?,
-      createdAt: _asDate(json['createdAt']),
-      updatedAt: _asDate(json['updatedAt']),
+      createdAt: asDate(json['createdAt']),
+      updatedAt: asDate(json['updatedAt']),
     );
   }
 

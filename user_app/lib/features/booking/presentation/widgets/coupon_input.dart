@@ -9,11 +9,11 @@ class CouponInputWidget extends StatefulWidget {
   final bool isLoading;
 
   const CouponInputWidget({
-    Key? key,
+    super.key,
     this.initialValue,
     required this.onCouponChanged,
     this.isLoading = false,
-  }) : super(key: key);
+  });
 
   @override
   State<CouponInputWidget> createState() => _CouponInputWidgetState();
@@ -49,7 +49,7 @@ class _CouponInputWidgetState extends State<CouponInputWidget> {
         _errorMessage = null;
       }
     });
-    
+
     widget.onCouponChanged(_isValid ? value : null);
   }
 
@@ -64,9 +64,9 @@ class _CouponInputWidgetState extends State<CouponInputWidget> {
           children: [
             Text(
               'coupon_code'.tr(),
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Row(
@@ -80,8 +80,8 @@ class _CouponInputWidgetState extends State<CouponInputWidget> {
                       suffixIcon: _isValid
                           ? const Icon(Iconsax.tick_circle, color: Colors.green)
                           : _errorMessage != null
-                              ? const Icon(Iconsax.close_circle, color: Colors.red)
-                              : null,
+                          ? const Icon(Iconsax.close_circle, color: Colors.red)
+                          : null,
                       errorText: _errorMessage,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -131,4 +131,3 @@ class _CouponInputWidgetState extends State<CouponInputWidget> {
     );
   }
 }
-

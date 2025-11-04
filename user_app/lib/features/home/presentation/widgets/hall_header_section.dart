@@ -9,11 +9,11 @@ import '../../../../core/utils/url_utils.dart';
 class HallHeaderSection extends StatelessWidget {
   final HallEntity hall;
 
-  const HallHeaderSection({Key? key, required this.hall}) : super(key: key);
+  const HallHeaderSection({super.key, required this.hall});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 300,
       child: Stack(
         children: [
@@ -37,7 +37,7 @@ class HallHeaderSection extends StatelessWidget {
                       final u = resolveFileUrlWithBust(hall.images!.first);
                       // Debug final URL
                       // ignore: avoid_print
-                      print('🖼️ HallHeaderSection URL => ' + u);
+                      print('🖼️ HallHeaderSection URL => $u');
                       return u;
                     })(),
                     fit: BoxFit.cover,

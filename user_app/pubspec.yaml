@@ -114,6 +114,29 @@ flutter:
   assets:
     - assets/translations/
 
+  # Custom fonts configuration
+  fonts:
+    - family: MontserratArabic
+      fonts:
+        - asset: assets/fonts/ArbFONTS-Montserrat-Arabic-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/ArbFONTS-Montserrat-Arabic-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/ArbFONTS-Montserrat-Arabic-Light.ttf
+          weight: 300
+        - asset: assets/fonts/ArbFONTS-Montserrat-Arabic-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/ArbFONTS-Montserrat-Arabic-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/ArbFONTS-Montserrat-Arabic-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/ArbFONTS-Montserrat-Arabic-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/ArbFONTS-Montserrat-Arabic-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/ArbFONTS-Montserrat-Arabic-Black.ttf
+          weight: 900
+
 # Flutter Launcher Icons configuration
 flutter_icons:
   image_path: assets/imgs/kinetic.png

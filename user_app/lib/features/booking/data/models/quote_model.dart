@@ -16,7 +16,7 @@ class QuoteModel extends QuoteEntity {
     // معالجة بيانات التسعير من الباك إند
     final pricing = json['pricing'] as Map<String, dynamic>? ?? {};
 
-    double _readNum(
+    double readNum(
       Map<String, dynamic> map,
       List<String> keys, {
       double defaultValue = 0.0,
@@ -36,44 +36,44 @@ class QuoteModel extends QuoteEntity {
 
     // استخراج جميع حقول التسعير من الباك إند مع دعم مفاتيح بديلة
     final processedPricing = <String, dynamic>{
-      'basePrice': _readNum(pricing, ['basePrice', 'base_price', 'base']),
-      'hourlyPrice': _readNum(pricing, [
+      'basePrice': readNum(pricing, ['basePrice', 'base_price', 'base']),
+      'hourlyPrice': readNum(pricing, [
         'hourlyPrice',
         'hourly_price',
         'totalHourly',
         'hoursTotal',
       ]),
-      'hourlyRate': _readNum(pricing, [
+      'hourlyRate': readNum(pricing, [
         'hourlyRate',
         'hourly_rate',
         'perHour',
         'per_hour',
         'hour_rate',
       ]),
-      'pricePerPerson': _readNum(pricing, [
+      'pricePerPerson': readNum(pricing, [
         'pricePerPerson',
         'price_per_person',
         'perPerson',
         'per_person',
       ]),
-      'personsPrice': _readNum(pricing, [
+      'personsPrice': readNum(pricing, [
         'personsPrice',
         'persons_price',
         'peopleTotal',
         'persons_total',
       ]),
-      'multiplier': _readNum(pricing, [
+      'multiplier': readNum(pricing, [
         'multiplier',
         'dayMultiplier',
         'factor',
       ], defaultValue: 1.0),
-      'decorationPrice': _readNum(pricing, [
+      'decorationPrice': readNum(pricing, [
         'decorationPrice',
         'decoration_price',
         'decorPrice',
         'decor_price',
       ]),
-      'totalPrice': _readNum(pricing, [
+      'totalPrice': readNum(pricing, [
         'totalPrice',
         'total_price',
         'grandTotal',

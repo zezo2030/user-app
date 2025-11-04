@@ -9,10 +9,10 @@ class RecommendationsSection extends StatefulWidget {
   final VoidCallback? onViewAll;
 
   const RecommendationsSection({
-    Key? key,
+    super.key,
     required this.branches,
     this.onViewAll,
-  }) : super(key: key);
+  });
 
   @override
   State<RecommendationsSection> createState() => _RecommendationsSectionState();

@@ -9,7 +9,7 @@ import '../widgets/otp_input_field.dart';
 import '../widgets/loading_overlay.dart';
 
 class OtpLoginScreen extends StatefulWidget {
-  const OtpLoginScreen({Key? key}) : super(key: key);
+  const OtpLoginScreen({super.key});
 
   @override
   State<OtpLoginScreen> createState() => _OtpLoginScreenState();
@@ -140,7 +140,7 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
                             );
                           }
                         },
-                        icon: const Icon(Icons.send, size: 20),
+                        icon: const Icon(Icons.email, size: 20),
                       ),
                     ] else ...[
                       // OTP Input Field

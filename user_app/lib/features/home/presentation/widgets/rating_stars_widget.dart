@@ -10,35 +10,35 @@ class RatingStarsWidget extends StatelessWidget {
   final Color? emptyStarColor;
 
   const RatingStarsWidget({
-    Key? key,
+    super.key,
     required this.rating,
     this.maxStars = 5,
     this.starSize = 16.0,
     this.showRatingNumber = false,
     this.starColor,
     this.emptyStarColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final filledStars = rating.floor();
     final hasHalfStar = rating - filledStars >= 0.5;
-    
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         // Display filled stars
         ...List.generate(filledStars, (index) => _buildStar(true)),
-        
+
         // Display half star if needed
         if (hasHalfStar) _buildHalfStar(),
-        
+
         // Display empty stars
         ...List.generate(
           maxStars - filledStars - (hasHalfStar ? 1 : 0),
           (index) => _buildStar(false),
         ),
-        
+
         // Show rating number if requested
         if (showRatingNumber) ...[
           const SizedBox(width: 4),
@@ -59,7 +59,7 @@ class RatingStarsWidget extends StatelessWidget {
     return Icon(
       Icons.star,
       size: starSize,
-      color: filled 
+      color: filled
           ? (starColor ?? AppColors.starColor)
           : (emptyStarColor ?? AppColors.starEmptyColor),
     );

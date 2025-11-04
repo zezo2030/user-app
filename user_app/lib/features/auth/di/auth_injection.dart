@@ -5,6 +5,7 @@ import '../data/datasources/auth_remote_datasource.dart';
 import '../data/repositories/auth_repository_impl.dart';
 import '../domain/repositories/auth_repository.dart';
 import '../domain/usecases/login_usecase.dart';
+import '../domain/usecases/register_usecase.dart';
 import '../domain/usecases/send_otp_usecase.dart';
 import '../domain/usecases/verify_otp_usecase.dart';
 import '../domain/usecases/register_send_otp_usecase.dart';
@@ -39,6 +40,7 @@ Future<void> init() async {
 
   // Use cases
   sl.registerLazySingleton(() => LoginUseCase(sl()));
+  sl.registerLazySingleton(() => RegisterUseCase(sl()));
   sl.registerLazySingleton(() => SendOtpUseCase(sl()));
   sl.registerLazySingleton(() => VerifyOtpUseCase(sl()));
   sl.registerLazySingleton(() => RegisterSendOtpUseCase(sl()));
@@ -53,6 +55,7 @@ Future<void> init() async {
   sl.registerFactory(
     () => AuthCubit(
       loginUseCase: sl(),
+      registerUseCase: sl(),
       sendOtpUseCase: sl(),
       verifyOtpUseCase: sl(),
       registerSendOtpUseCase: sl(),

@@ -9,10 +9,10 @@ class PopularBranchesSection extends StatefulWidget {
   final VoidCallback? onViewAll;
 
   const PopularBranchesSection({
-    Key? key,
+    super.key,
     required this.branches,
     this.onViewAll,
-  }) : super(key: key);
+  });
 
   @override
   State<PopularBranchesSection> createState() => _PopularBranchesSectionState();

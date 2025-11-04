@@ -8,8 +8,11 @@ class FeaturedOffersSection extends StatefulWidget {
   final List<OfferEntity> offers;
   final VoidCallback? onViewAll;
 
-  const FeaturedOffersSection({Key? key, required this.offers, this.onViewAll})
-    : super(key: key);
+  const FeaturedOffersSection({
+    super.key,
+    required this.offers,
+    this.onViewAll,
+  });
 
   @override
   State<FeaturedOffersSection> createState() => _FeaturedOffersSectionState();

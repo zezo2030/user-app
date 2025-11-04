@@ -8,10 +8,10 @@ class PersonsInput extends StatelessWidget {
   final Function(int) onPersonsChanged;
 
   const PersonsInput({
-    Key? key,
+    super.key,
     required this.personsCount,
     required this.onPersonsChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,33 +24,39 @@ class PersonsInput extends StatelessWidget {
           children: [
             Text(
               'number_of_persons'.tr(),
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Row(
               children: [
                 const Icon(Iconsax.people, size: 20),
                 const SizedBox(width: 8),
-                Expanded(
-                  child: Text('$personsCount ${'persons'.tr()}'),
-                ),
+                Expanded(child: Text('$personsCount ${'persons'.tr()}')),
                 Row(
                   children: [
                     IconButton(
-                      onPressed: personsCount > 1 ? () => onPersonsChanged(personsCount - 1) : null,
+                      onPressed: personsCount > 1
+                          ? () => onPersonsChanged(personsCount - 1)
+                          : null,
                       icon: const Icon(Iconsax.minus),
                       style: IconButton.styleFrom(
-                        backgroundColor: personsCount > 1 ? Theme.of(context).primaryColor.withOpacity(0.1) : Colors.grey.shade200,
+                        backgroundColor: personsCount > 1
+                            ? Theme.of(context).primaryColor.withOpacity(0.1)
+                            : Colors.grey.shade200,
                       ),
                     ),
                     const SizedBox(width: 8),
                     IconButton(
-                      onPressed: personsCount < 200 ? () => onPersonsChanged(personsCount + 1) : null,
+                      onPressed: personsCount < 200
+                          ? () => onPersonsChanged(personsCount + 1)
+                          : null,
                       icon: const Icon(Iconsax.add),
                       style: IconButton.styleFrom(
-                        backgroundColor: personsCount < 200 ? Theme.of(context).primaryColor.withOpacity(0.1) : Colors.grey.shade200,
+                        backgroundColor: personsCount < 200
+                            ? Theme.of(context).primaryColor.withOpacity(0.1)
+                            : Colors.grey.shade200,
                       ),
                     ),
                   ],
@@ -60,9 +66,9 @@ class PersonsInput extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'persons_note'.tr(),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey.shade600,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
             ),
           ],
         ),

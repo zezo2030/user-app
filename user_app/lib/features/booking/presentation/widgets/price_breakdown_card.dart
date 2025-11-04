@@ -10,11 +10,11 @@ class PriceBreakdownCard extends StatelessWidget {
   final int durationHours; // إضافة المدة كمعامل منفصل
 
   const PriceBreakdownCard({
-    Key? key,
+    super.key,
     this.quote,
     this.isLoading = false,
     required this.durationHours, // جعل المدة مطلوبة
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

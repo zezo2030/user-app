@@ -6,7 +6,7 @@ import '../../domain/entities/hall_entity.dart';
 class HallPricingCard extends StatelessWidget {
   final HallEntity hall;
 
-  const HallPricingCard({Key? key, required this.hall}) : super(key: key);
+  const HallPricingCard({super.key, required this.hall});
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +50,7 @@ class HallPricingCard extends StatelessWidget {
             _buildPriceRow(
               context,
               'base_price'.tr(),
-              '${basePrice} ${'currency'.tr()}',
+              '$basePrice ${'currency'.tr()}',
               Iconsax.calendar_1,
             ),
 
@@ -60,7 +60,7 @@ class HallPricingCard extends StatelessWidget {
             _buildPriceRow(
               context,
               'hourly_rate'.tr(),
-              '${hourlyRate} ${'currency'.tr()} ${'per_hour'.tr()}',
+              '$hourlyRate ${'currency'.tr()} ${'per_hour'.tr()}',
               Iconsax.clock,
             ),
 
@@ -71,7 +71,7 @@ class HallPricingCard extends StatelessWidget {
               _buildPriceRow(
                 context,
                 'price_per_person'.tr(),
-                '${pricePerPerson} ${'currency'.tr()} ${'per_person'.tr()}',
+                '$pricePerPerson ${'currency'.tr()} ${'per_person'.tr()}',
                 Iconsax.people,
               ),
 
@@ -108,7 +108,7 @@ class HallPricingCard extends StatelessWidget {
               _buildPriceRow(
                 context,
                 'decoration_price'.tr(),
-                '${decorationPrice} ${'currency'.tr()}',
+                '$decorationPrice ${'currency'.tr()}',
                 Iconsax.star_1,
                 subtitle: 'optional'.tr(),
               ),

@@ -12,7 +12,7 @@ import '../../../home/presentation/cubit/home_cubit.dart';
 import '../../../home/di/home_injection.dart';
 
 class MainScreen extends StatelessWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  const MainScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class MainScreen extends StatelessWidget {
 }
 
 class MainScreenView extends StatefulWidget {
-  const MainScreenView({Key? key}) : super(key: key);
+  const MainScreenView({super.key});
 
   @override
   State<MainScreenView> createState() => _MainScreenViewState();

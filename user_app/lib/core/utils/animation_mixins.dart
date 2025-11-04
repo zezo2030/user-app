@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../constants/animation_constants.dart';
 
 /// Mixin for Parallax scrolling animations
@@ -404,4 +403,3 @@ mixin MicroInteractionMixin<T extends StatefulWidget> on State<T> {
     );
   }
 }
-

@@ -17,7 +17,7 @@ class BookingSummaryCard extends StatelessWidget {
   final String? contactPhone;
 
   const BookingSummaryCard({
-    Key? key,
+    super.key,
     required this.hallName,
     required this.selectedDate,
     required this.selectedTime,
@@ -28,7 +28,7 @@ class BookingSummaryCard extends StatelessWidget {
     this.selectedAddOns,
     this.specialRequests,
     this.contactPhone,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

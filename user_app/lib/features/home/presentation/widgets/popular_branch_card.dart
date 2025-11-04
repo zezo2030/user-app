@@ -13,12 +13,12 @@ class PopularBranchCard extends StatefulWidget {
   final VoidCallback? onTap;
 
   const PopularBranchCard({
-    Key? key,
+    super.key,
     required this.branch,
     required this.bookingsCount,
     required this.rating,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   State<PopularBranchCard> createState() => _PopularBranchCardState();

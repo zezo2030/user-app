@@ -32,6 +32,34 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, AuthResponseEntity>> register({
+    required String name,
+    required String email,
+    required String password,
+    String? phone,
+    String language = 'ar',
+  }) async {
+    try {
+      print('🔄 Repository: Calling register for email: $email, name: $name');
+      final result = await remoteDataSource.register(
+        name: name,
+        email: email,
+        password: password,
+        phone: phone,
+        language: language,
+      );
+      print('✅ Repository: Register result: ${result.toEntity()}');
+      return Right(result.toEntity());
+    } on DioException catch (e) {
+      print('❌ Repository: Register DioException: ${e.toString()}');
+      return Left(e.toFailure());
+    } catch (e) {
+      print('❌ Repository: Register Exception: ${e.toString()}');
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, bool>> sendOtp({
     required String email,
     String language = 'ar',
@@ -82,7 +110,6 @@ class AuthRepositoryImpl implements AuthRepository {
     required String name,
     required String email,
     required String password,
-    String? phone,
     String language = 'ar',
   }) async {
     try {
@@ -90,7 +117,6 @@ class AuthRepositoryImpl implements AuthRepository {
         name: name,
         email: email,
         password: password,
-        phone: phone,
         language: language,
       );
       return Right(result);

@@ -8,7 +8,7 @@ import '../../../auth/presentation/screens/edit_profile_screen.dart';
 import '../../../../core/theme/app_colors.dart';
 
 class ProfileTabScreen extends StatelessWidget {
-  const ProfileTabScreen({Key? key}) : super(key: key);
+  const ProfileTabScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

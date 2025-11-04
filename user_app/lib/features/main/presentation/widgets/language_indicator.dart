@@ -3,7 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../../../core/theme/app_colors.dart';
 
 class LanguageIndicator extends StatelessWidget {
-  const LanguageIndicator({Key? key}) : super(key: key);
+  const LanguageIndicator({super.key});
 
   @override
   Widget build(BuildContext context) {

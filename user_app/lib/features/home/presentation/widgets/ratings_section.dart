@@ -22,7 +22,7 @@ class RatingsSection extends StatelessWidget {
         if (reviewsCount != null) ...[
           const SizedBox(width: 6),
           Text(
-            '(${reviewsCount})',
+            '($reviewsCount)',
             style: const TextStyle(fontSize: 12, color: Colors.black54),
           ),
         ],

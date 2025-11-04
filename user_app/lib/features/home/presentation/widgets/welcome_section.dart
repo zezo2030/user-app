@@ -11,11 +11,11 @@ class WelcomeSection extends StatelessWidget {
   final Function(BranchEntity)? onBranchTap;
 
   const WelcomeSection({
-    Key? key,
+    super.key,
     required this.branches,
     this.onViewMore,
     this.onBranchTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +50,7 @@ class WelcomeSection extends StatelessWidget {
             ],
           ),
         ),
-        
+
         // Branches List
         ListView.builder(
           shrinkWrap: true,
@@ -77,11 +77,7 @@ class WelcomeBranchCard extends StatelessWidget {
   final BranchEntity branch;
   final VoidCallback? onTap;
 
-  const WelcomeBranchCard({
-    Key? key,
-    required this.branch,
-    this.onTap,
-  }) : super(key: key);
+  const WelcomeBranchCard({super.key, required this.branch, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -122,15 +118,11 @@ class WelcomeBranchCard extends StatelessWidget {
                           ),
                         ),
                       )
-                    : const Icon(
-                        Icons.business,
-                        size: 32,
-                        color: Colors.white,
-                      ),
+                    : const Icon(Icons.business, size: 32, color: Colors.white),
               ),
-              
+
               const SizedBox(width: 16),
-              
+
               // Content Section
               Expanded(
                 child: Column(
@@ -147,14 +139,11 @@ class WelcomeBranchCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
-                    
+
                     // Rating (using default rating since BranchEntity doesn't have rating field)
-                    const RatingStarsWidget(
-                      rating: 4.0,
-                      starSize: 14,
-                    ),
+                    const RatingStarsWidget(rating: 4.0, starSize: 14),
                     const SizedBox(height: 8),
-                    
+
                     // Description
                     Text(
                       branch.descriptionAr ?? 'entertainment_center'.tr(),
@@ -167,7 +156,7 @@ class WelcomeBranchCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 8),
-                    
+
                     // Working Hours
                     Row(
                       children: [
@@ -191,7 +180,7 @@ class WelcomeBranchCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 4),
-                    
+
                     // Location
                     Row(
                       children: [
@@ -215,12 +204,13 @@ class WelcomeBranchCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    
+
                     // Price and Book Button
                     Row(
                       children: [
                         PriceTagWidget(
-                          price: 40.0, // Default price since BranchEntity doesn't have price field
+                          price:
+                              40.0, // Default price since BranchEntity doesn't have price field
                           backgroundColor: AppColors.primaryRed,
                         ),
                         const Spacer(),
@@ -231,7 +221,9 @@ class WelcomeBranchCard extends StatelessWidget {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primaryRed,
                               foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
@@ -263,11 +255,7 @@ class MockWelcomeSection extends StatelessWidget {
   final VoidCallback? onViewMore;
   final Function(String)? onBranchTap;
 
-  const MockWelcomeSection({
-    Key? key,
-    this.onViewMore,
-    this.onBranchTap,
-  }) : super(key: key);
+  const MockWelcomeSection({super.key, this.onViewMore, this.onBranchTap});
 
   @override
   Widget build(BuildContext context) {
@@ -276,7 +264,7 @@ class MockWelcomeSection extends StatelessWidget {
         'name': 'عنوان المركز الترفيهي',
         'rating': 4.0,
         'description': 'entertainment_center'.tr(),
-        'location': 'madinah_location'.tr() + ' - ' + 'al_salam_district'.tr(),
+        'location': '${'madinah_location'.tr()} - ${'al_salam_district'.tr()}',
         'price': 40.0,
         'color': AppColors.primaryRed,
       },
@@ -284,7 +272,7 @@ class MockWelcomeSection extends StatelessWidget {
         'name': 'صالة الترامبولين',
         'rating': 4.5,
         'description': 'trampoline_hall'.tr(),
-        'location': 'madinah_location'.tr() + ' - ' + 'al_salam_district'.tr(),
+        'location': '${'madinah_location'.tr()} - ${'al_salam_district'.tr()}',
         'price': 35.0,
         'color': AppColors.primaryPink,
       },
@@ -292,7 +280,7 @@ class MockWelcomeSection extends StatelessWidget {
         'name': 'مركز الألعاب التفاعلية',
         'rating': 4.2,
         'description': 'entertainment_center'.tr(),
-        'location': 'madinah_location'.tr() + ' - ' + 'al_salam_district'.tr(),
+        'location': '${'madinah_location'.tr()} - ${'al_salam_district'.tr()}',
         'price': 45.0,
         'color': AppColors.lightRed,
       },
@@ -329,7 +317,7 @@ class MockWelcomeSection extends StatelessWidget {
             ],
           ),
         ),
-        
+
         // Branches List
         ListView.builder(
           shrinkWrap: true,
@@ -356,11 +344,7 @@ class MockWelcomeBranchCard extends StatelessWidget {
   final Map<String, dynamic> branch;
   final VoidCallback? onTap;
 
-  const MockWelcomeBranchCard({
-    Key? key,
-    required this.branch,
-    this.onTap,
-  }) : super(key: key);
+  const MockWelcomeBranchCard({super.key, required this.branch, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -408,9 +392,9 @@ class MockWelcomeBranchCard extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               const SizedBox(width: 16),
-              
+
               // Content Section
               Expanded(
                 child: Column(
@@ -427,14 +411,14 @@ class MockWelcomeBranchCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
-                    
+
                     // Rating
                     RatingStarsWidget(
                       rating: branch['rating'] as double,
                       starSize: 14,
                     ),
                     const SizedBox(height: 8),
-                    
+
                     // Description
                     Text(
                       branch['description'] as String,
@@ -447,7 +431,7 @@ class MockWelcomeBranchCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 8),
-                    
+
                     // Working Hours
                     Row(
                       children: [
@@ -471,7 +455,7 @@ class MockWelcomeBranchCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 4),
-                    
+
                     // Location
                     Row(
                       children: [
@@ -495,7 +479,7 @@ class MockWelcomeBranchCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    
+
                     // Price and Book Button
                     Row(
                       children: [
@@ -511,7 +495,9 @@ class MockWelcomeBranchCard extends StatelessWidget {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primaryRed,
                               foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),

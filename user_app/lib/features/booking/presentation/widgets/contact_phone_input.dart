@@ -8,10 +8,10 @@ class ContactPhoneInput extends StatefulWidget {
   final Function(String?) onPhoneChanged;
 
   const ContactPhoneInput({
-    Key? key,
+    super.key,
     this.initialValue,
     required this.onPhoneChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<ContactPhoneInput> createState() => _ContactPhoneInputState();
@@ -50,7 +50,7 @@ class _ContactPhoneInputState extends State<ContactPhoneInput> {
         _errorMessage = null;
       }
     });
-    
+
     widget.onPhoneChanged(_isValid ? value : null);
   }
 
@@ -76,9 +76,9 @@ class _ContactPhoneInputState extends State<ContactPhoneInput> {
                 const SizedBox(width: 8),
                 Text(
                   '(${'optional'.tr()})',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey.shade600,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: Colors.grey.shade600),
                 ),
               ],
             ),
@@ -91,8 +91,8 @@ class _ContactPhoneInputState extends State<ContactPhoneInput> {
                 suffixIcon: _isValid
                     ? const Icon(Iconsax.tick_circle, color: Colors.green)
                     : _errorMessage != null
-                        ? const Icon(Iconsax.close_circle, color: Colors.red)
-                        : null,
+                    ? const Icon(Iconsax.close_circle, color: Colors.red)
+                    : null,
                 errorText: _errorMessage,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -108,4 +108,3 @@ class _ContactPhoneInputState extends State<ContactPhoneInput> {
     );
   }
 }
-

@@ -3,75 +3,50 @@ import 'package:equatable/equatable.dart';
 abstract class Failure extends Equatable {
   final String message;
   final int? statusCode;
-  
-  const Failure({
-    required this.message,
-    this.statusCode,
-  });
-  
+
+  const Failure({required this.message, this.statusCode});
+
   @override
   List<Object?> get props => [message, statusCode];
 }
 
 // Network Failures
 class NetworkFailure extends Failure {
-  const NetworkFailure({
-    required String message,
-    int? statusCode,
-  }) : super(message: message, statusCode: statusCode);
+  const NetworkFailure({required super.message, super.statusCode});
 }
 
 class ServerFailure extends Failure {
-  const ServerFailure({
-    required String message,
-    int? statusCode,
-  }) : super(message: message, statusCode: statusCode);
+  const ServerFailure({required super.message, super.statusCode});
 }
 
 class TimeoutFailure extends Failure {
-  const TimeoutFailure({
-    required String message,
-  }) : super(message: message);
+  const TimeoutFailure({required super.message});
 }
 
 // Authentication Failures
 class AuthenticationFailure extends Failure {
-  const AuthenticationFailure({
-    required String message,
-    int? statusCode,
-  }) : super(message: message, statusCode: statusCode);
+  const AuthenticationFailure({required super.message, super.statusCode});
 }
 
 class InvalidCredentialsFailure extends Failure {
-  const InvalidCredentialsFailure({
-    required String message,
-  }) : super(message: message);
+  const InvalidCredentialsFailure({required super.message});
 }
 
 class TokenExpiredFailure extends Failure {
-  const TokenExpiredFailure({
-    required String message,
-  }) : super(message: message);
+  const TokenExpiredFailure({required super.message});
 }
 
 // Validation Failures
 class ValidationFailure extends Failure {
-  const ValidationFailure({
-    required String message,
-  }) : super(message: message);
+  const ValidationFailure({required super.message});
 }
 
 // Storage Failures
 class StorageFailure extends Failure {
-  const StorageFailure({
-    required String message,
-  }) : super(message: message);
+  const StorageFailure({required super.message});
 }
 
 // Unknown Failure
 class UnknownFailure extends Failure {
-  const UnknownFailure({
-    required String message,
-  }) : super(message: message);
+  const UnknownFailure({required super.message});
 }
-

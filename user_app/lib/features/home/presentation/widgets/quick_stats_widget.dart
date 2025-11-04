@@ -8,11 +8,11 @@ class QuickStatsWidget extends StatefulWidget {
   final int branchesCount;
 
   const QuickStatsWidget({
-    Key? key,
+    super.key,
     required this.customersCount,
     required this.eventsCount,
     required this.branchesCount,
-  }) : super(key: key);
+  });
 
   @override
   State<QuickStatsWidget> createState() => _QuickStatsWidgetState();

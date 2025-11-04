@@ -22,7 +22,7 @@ import '../../../booking/presentation/cubit/booking_cubit.dart';
 class HallDetailsPage extends StatelessWidget {
   final String hallId;
 
-  const HallDetailsPage({Key? key, required this.hallId}) : super(key: key);
+  const HallDetailsPage({super.key, required this.hallId});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class HallDetailsPage extends StatelessWidget {
 class HallDetailsView extends StatefulWidget {
   final String hallId;
 
-  const HallDetailsView({Key? key, required this.hallId}) : super(key: key);
+  const HallDetailsView({super.key, required this.hallId});
 
   @override
   State<HallDetailsView> createState() => _HallDetailsViewState();
@@ -404,7 +404,7 @@ class _HallOffersInlineState extends State<_HallOffersInline> {
 class HallDetailsBottomBar extends StatelessWidget {
   final HallEntity hall;
 
-  const HallDetailsBottomBar({Key? key, required this.hall}) : super(key: key);
+  const HallDetailsBottomBar({super.key, required this.hall});
 
   @override
   Widget build(BuildContext context) {

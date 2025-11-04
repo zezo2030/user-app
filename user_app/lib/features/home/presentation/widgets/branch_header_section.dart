@@ -5,10 +5,7 @@ import '../../domain/entities/branch_entity.dart';
 class BranchHeaderSection extends StatelessWidget {
   final BranchEntity branch;
 
-  const BranchHeaderSection({
-    Key? key,
-    required this.branch,
-  }) : super(key: key);
+  const BranchHeaderSection({super.key, required this.branch});
 
   @override
   Widget build(BuildContext context) {
@@ -29,11 +26,9 @@ class BranchHeaderSection extends StatelessWidget {
         children: [
           // Background pattern
           Positioned.fill(
-            child: CustomPaint(
-              painter: _BackgroundPatternPainter(),
-            ),
+            child: CustomPaint(painter: _BackgroundPatternPainter()),
           ),
-          
+
           // Content
           Positioned(
             bottom: 0,
@@ -56,7 +51,9 @@ class BranchHeaderSection extends StatelessWidget {
                 children: [
                   // Branch name
                   Text(
-                    context.locale.languageCode == 'ar' ? branch.nameAr : branch.nameEn,
+                    context.locale.languageCode == 'ar'
+                        ? branch.nameAr
+                        : branch.nameEn,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 28,
@@ -65,9 +62,9 @@ class BranchHeaderSection extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   // Status badge
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -75,13 +72,15 @@ class BranchHeaderSection extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: branch.status == 'active' 
+                      color: branch.status == 'active'
                           ? Colors.green.withValues(alpha: 0.9)
                           : Colors.orange.withValues(alpha: 0.9),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      branch.status == 'active' ? 'open_now'.tr() : 'closed_now'.tr(),
+                      branch.status == 'active'
+                          ? 'open_now'.tr()
+                          : 'closed_now'.tr(),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12,
@@ -89,9 +88,9 @@ class BranchHeaderSection extends StatelessWidget {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 12),
-                  
+
                   // Location
                   Row(
                     children: [
@@ -118,7 +117,7 @@ class BranchHeaderSection extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Back button
           Positioned(
             top: MediaQuery.of(context).padding.top + 16,
@@ -130,14 +129,11 @@ class BranchHeaderSection extends StatelessWidget {
               ),
               child: IconButton(
                 onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                ),
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
               ),
             ),
           ),
-          
+
           // Action buttons
           Positioned(
             top: MediaQuery.of(context).padding.top + 16,
@@ -169,10 +165,7 @@ class BranchHeaderSection extends StatelessWidget {
                     onPressed: () {
                       // TODO: Share branch
                     },
-                    icon: const Icon(
-                      Icons.share,
-                      color: Colors.white,
-                    ),
+                    icon: const Icon(Icons.share, color: Colors.white),
                   ),
                 ),
               ],

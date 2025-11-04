@@ -9,8 +9,7 @@ class ModernOfferCard extends StatefulWidget {
   final OfferEntity offer;
   final VoidCallback? onTap;
 
-  const ModernOfferCard({Key? key, required this.offer, this.onTap})
-    : super(key: key);
+  const ModernOfferCard({super.key, required this.offer, this.onTap});
 
   @override
   State<ModernOfferCard> createState() => _ModernOfferCardState();

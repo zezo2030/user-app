@@ -6,15 +6,15 @@ class LanguageSwitcher extends StatelessWidget {
   final void Function(String)? onLanguageChanged;
 
   const LanguageSwitcher({
-    Key? key,
+    super.key,
     this.currentLanguage,
     this.onLanguageChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final currentLocale = currentLanguage ?? context.locale.languageCode;
-    
+
     return PopupMenuButton<String>(
       icon: Row(
         mainAxisSize: MainAxisSize.min,
@@ -27,9 +27,9 @@ class LanguageSwitcher extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             currentLocale.toUpperCase(),
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -45,10 +45,7 @@ class LanguageSwitcher extends StatelessWidget {
           value: 'ar',
           child: Row(
             children: [
-              Text(
-                '🇸🇦',
-                style: const TextStyle(fontSize: 20),
-              ),
+              Text('🇸🇦', style: const TextStyle(fontSize: 20)),
               const SizedBox(width: 8),
               Text('arabic'.tr()),
               if (currentLocale == 'ar') ...[
@@ -66,10 +63,7 @@ class LanguageSwitcher extends StatelessWidget {
           value: 'en',
           child: Row(
             children: [
-              Text(
-                '🇺🇸',
-                style: const TextStyle(fontSize: 20),
-              ),
+              Text('🇺🇸', style: const TextStyle(fontSize: 20)),
               const SizedBox(width: 8),
               Text('english'.tr()),
               if (currentLocale == 'en') ...[
@@ -93,15 +87,15 @@ class LanguageSwitcherButton extends StatelessWidget {
   final void Function(String)? onLanguageChanged;
 
   const LanguageSwitcherButton({
-    Key? key,
+    super.key,
     this.currentLanguage,
     this.onLanguageChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final currentLocale = currentLanguage ?? context.locale.languageCode;
-    
+
     return OutlinedButton.icon(
       onPressed: () {
         final newLanguage = currentLocale == 'ar' ? 'en' : 'ar';
@@ -111,23 +105,17 @@ class LanguageSwitcherButton extends StatelessWidget {
           context.setLocale(Locale(newLanguage));
         }
       },
-      icon: Icon(
-        Icons.language,
-        size: 18,
-      ),
+      icon: Icon(Icons.language, size: 18),
       label: Text(
         currentLocale == 'ar' ? 'English' : 'العربية',
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          fontWeight: FontWeight.w500,
-        ),
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
       ),
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
     );
   }
 }
-

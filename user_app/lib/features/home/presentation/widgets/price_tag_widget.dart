@@ -14,7 +14,7 @@ class PriceTagWidget extends StatelessWidget {
   final BorderRadius? borderRadius;
 
   const PriceTagWidget({
-    Key? key,
+    super.key,
     required this.price,
     this.currency,
     this.showDiscount = false,
@@ -24,17 +24,15 @@ class PriceTagWidget extends StatelessWidget {
     this.textColor,
     this.padding,
     this.borderRadius,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final effectiveCurrency = currency ?? 'riyal'.tr();
     final effectiveBackgroundColor = backgroundColor ?? AppColors.primaryRed;
     final effectiveTextColor = textColor ?? Colors.white;
-    final effectivePadding = padding ?? const EdgeInsets.symmetric(
-      horizontal: 12,
-      vertical: 6,
-    );
+    final effectivePadding =
+        padding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 6);
     final effectiveBorderRadius = borderRadius ?? BorderRadius.circular(16);
 
     return Container(
@@ -65,7 +63,7 @@ class PriceTagWidget extends StatelessWidget {
             ),
             const SizedBox(width: 8),
           ],
-          
+
           Text(
             '${price.toStringAsFixed(0)} $effectiveCurrency',
             style: TextStyle(
@@ -74,7 +72,7 @@ class PriceTagWidget extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          
+
           if (showDiscount && discountPercentage != null) ...[
             const SizedBox(width: 4),
             Container(
@@ -108,37 +106,35 @@ class PriceDisplayWidget extends StatelessWidget {
   final CrossAxisAlignment alignment;
 
   const PriceDisplayWidget({
-    Key? key,
+    super.key,
     required this.price,
     this.currency,
     this.label,
     this.priceStyle,
     this.labelStyle,
     this.alignment = CrossAxisAlignment.start,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final effectiveCurrency = currency ?? 'riyal'.tr();
-    final effectivePriceStyle = priceStyle ?? const TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.bold,
-      color: AppColors.textPrimary,
-    );
-    final effectiveLabelStyle = labelStyle ?? const TextStyle(
-      fontSize: 12,
-      color: AppColors.textSecondary,
-    );
+    final effectivePriceStyle =
+        priceStyle ??
+        const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: AppColors.textPrimary,
+        );
+    final effectiveLabelStyle =
+        labelStyle ??
+        const TextStyle(fontSize: 12, color: AppColors.textSecondary);
 
     return Column(
       crossAxisAlignment: alignment,
       mainAxisSize: MainAxisSize.min,
       children: [
         if (label != null) ...[
-          Text(
-            label!,
-            style: effectiveLabelStyle,
-          ),
+          Text(label!, style: effectiveLabelStyle),
           const SizedBox(height: 2),
         ],
         Text(

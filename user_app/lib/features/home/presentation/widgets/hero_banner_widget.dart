@@ -15,7 +15,7 @@ class HeroBannerWidget extends StatelessWidget {
   final List<String>? amenities;
 
   const HeroBannerWidget({
-    Key? key,
+    super.key,
     this.backgroundImageUrl,
     this.title,
     this.subtitle,
@@ -23,7 +23,7 @@ class HeroBannerWidget extends StatelessWidget {
     this.height = 200.0,
     this.padding,
     this.amenities,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -243,7 +243,7 @@ class HeroBannerWithImageWidget extends StatelessWidget {
   final List<String>? amenities;
 
   const HeroBannerWithImageWidget({
-    Key? key,
+    super.key,
     required this.imageUrl,
     this.title,
     this.subtitle,
@@ -251,7 +251,7 @@ class HeroBannerWithImageWidget extends StatelessWidget {
     this.height = 200.0,
     this.padding,
     this.amenities,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

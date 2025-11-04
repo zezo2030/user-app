@@ -44,7 +44,7 @@ class BranchGridCard extends StatelessWidget {
                       imageUrl: (() {
                         final u = resolveFileUrl(img);
                         // ignore: avoid_print
-                        print('🖼️ BranchGridCard URL => ' + u);
+                        print('🖼️ BranchGridCard URL => $u');
                         return u;
                       })(),
                       fit: BoxFit.cover,

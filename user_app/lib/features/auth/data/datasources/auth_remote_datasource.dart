@@ -10,6 +10,14 @@ abstract class AuthRemoteDataSource {
     required String password,
   });
 
+  Future<AuthResponseModel> register({
+    required String name,
+    required String email,
+    required String password,
+    String? phone,
+    String language = 'ar',
+  });
+
   Future<bool> sendOtp({required String email, String language = 'ar'});
 
   Future<AuthResponseModel> verifyOtp({
@@ -22,7 +30,6 @@ abstract class AuthRemoteDataSource {
     required String name,
     required String email,
     required String password,
-    String? phone,
     String language = 'ar',
   });
 
@@ -118,6 +125,47 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
+  Future<AuthResponseModel> register({
+    required String name,
+    required String email,
+    required String password,
+    String? phone,
+    String language = 'ar',
+  }) async {
+    try {
+      print('📤 Sending register request to: ${ApiConstants.registerEndpoint}');
+      print('📤 Request data: {name: $name, email: $email, phone: $phone}');
+
+      final response = await dio.post(
+        ApiConstants.registerEndpoint,
+        data: {
+          'name': name,
+          'email': email,
+          'password': password,
+          if (phone != null && phone.isNotEmpty) 'phone': phone,
+          'language': language,
+        },
+      );
+
+      print('📥 Register Response status: ${response.statusCode}');
+      print('📥 Register Response data: ${response.data}');
+
+      final dynamic responseData = response.data;
+      final Map<String, dynamic> json = responseData is Map<String, dynamic>
+          ? (responseData['data'] is Map<String, dynamic>
+                ? responseData['data'] as Map<String, dynamic>
+                : responseData)
+          : <String, dynamic>{};
+
+      final normalized = _normalizeAuthPayload(json);
+      return AuthResponseModel.fromJson(normalized);
+    } catch (e) {
+      print('❌ Register error: ${e.toString()}');
+      throw Exception('Register failed: ${e.toString()}');
+    }
+  }
+
+  @override
   Future<bool> sendOtp({required String email, String language = 'ar'}) async {
     try {
       print('📤 Sending OTP request to: ${ApiConstants.sendOtpEndpoint}');
@@ -178,7 +226,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String name,
     required String email,
     required String password,
-    String? phone,
     String language = 'ar',
   }) async {
     try {
@@ -188,7 +235,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'name': name,
           'email': email,
           'password': password,
-          if (phone != null) 'phone': phone,
           'language': language,
         },
       );

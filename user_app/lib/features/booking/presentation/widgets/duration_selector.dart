@@ -9,11 +9,11 @@ class DurationSelector extends StatelessWidget {
   final int? maxDuration; // حد أعلى اختياري اعتماداً على ساعات العمل
 
   const DurationSelector({
-    Key? key,
+    super.key,
     required this.selectedDuration,
     required this.onDurationChanged,
     this.maxDuration,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +35,7 @@ class DurationSelector extends StatelessWidget {
               children: [
                 const Icon(Iconsax.clock, size: 20),
                 const SizedBox(width: 8),
-                Expanded(child: Text('${selectedDuration} ${'hours'.tr()}')),
+                Expanded(child: Text('$selectedDuration ${'hours'.tr()}')),
                 Row(
                   children: [
                     IconButton(

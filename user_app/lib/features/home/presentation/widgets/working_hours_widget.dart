@@ -6,10 +6,7 @@ import '../../../../core/theme/app_colors.dart';
 class WorkingHoursWidget extends StatefulWidget {
   final BranchEntity branch;
 
-  const WorkingHoursWidget({
-    Key? key,
-    required this.branch,
-  }) : super(key: key);
+  const WorkingHoursWidget({super.key, required this.branch});
 
   @override
   State<WorkingHoursWidget> createState() => _WorkingHoursWidgetState();
@@ -53,15 +50,14 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
 
   @override
   Widget build(BuildContext context) {
-    if (widget.branch.workingHours == null || widget.branch.workingHours!.isEmpty) {
+    if (widget.branch.workingHours == null ||
+        widget.branch.workingHours!.isEmpty) {
       return _buildEmptyState(context);
     }
 
     return Card(
       elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Column(
         children: [
           _buildExpandableHeader(context),
@@ -77,9 +73,7 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
   Widget _buildEmptyState(BuildContext context) {
     return Card(
       elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -95,19 +89,12 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.info_outline,
-                    color: Colors.grey[600],
-                    size: 20,
-                  ),
+                  Icon(Icons.info_outline, color: Colors.grey[600], size: 20),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       'working_schedule'.tr(),
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
                     ),
                   ),
                 ],
@@ -166,10 +153,7 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
                     const SizedBox(height: 4),
                     Text(
                       _getCurrentDayStatus(),
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
                     ),
                   ],
                 ),
@@ -234,10 +218,7 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
                 const SizedBox(height: 4),
                 Text(
                   _getCurrentDayStatus(),
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
                 ),
               ],
             ),
@@ -259,7 +240,15 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
 
   Widget _buildStatusIndicator(BuildContext context) {
     final currentDay = DateTime.now().weekday - 1;
-    final days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    final days = [
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+      'sunday',
+    ];
     final todayKey = days[currentDay];
     final todayHours = widget.branch.workingHours![todayKey];
     final isOpen = todayHours != null && todayHours.toString().isNotEmpty;
@@ -267,12 +256,12 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: isOpen 
+        color: isOpen
             ? AppColors.availableColor.withValues(alpha: 0.1)
             : AppColors.closedColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isOpen 
+          color: isOpen
               ? AppColors.availableColor.withValues(alpha: 0.3)
               : AppColors.closedColor.withValues(alpha: 0.3),
           width: 1,
@@ -304,7 +293,15 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
   }
 
   Widget _buildWorkingHoursList(BuildContext context) {
-    final days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    final days = [
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+      'sunday',
+    ];
     final currentDay = DateTime.now().weekday - 1;
 
     return Column(
@@ -354,11 +351,11 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
         vertical: isToday ? 4 : 0,
       ),
       decoration: BoxDecoration(
-        color: isToday 
+        color: isToday
             ? Theme.of(context).primaryColor.withValues(alpha: 0.08)
             : Colors.transparent,
         borderRadius: isToday ? BorderRadius.circular(12) : null,
-        border: isToday 
+        border: isToday
             ? Border.all(
                 color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                 width: 1,
@@ -381,22 +378,20 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: isOpen 
+                    color: isOpen
                         ? Colors.green.withValues(alpha: 0.1)
                         : Colors.grey.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     dayIcon,
-                    color: isOpen 
-                        ? Colors.green[600]
-                        : Colors.grey[400],
+                    color: isOpen ? Colors.green[600] : Colors.grey[400],
                     size: 20,
                   ),
                 ),
-                
+
                 const SizedBox(width: 16),
-                
+
                 // اسم اليوم
                 Expanded(
                   child: Column(
@@ -408,8 +403,10 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
                             dayName,
                             style: TextStyle(
                               fontSize: 16,
-                              fontWeight: isToday ? FontWeight.bold : FontWeight.w600,
-                              color: isToday 
+                              fontWeight: isToday
+                                  ? FontWeight.bold
+                                  : FontWeight.w600,
+                              color: isToday
                                   ? Theme.of(context).primaryColor
                                   : Colors.grey[800],
                             ),
@@ -422,7 +419,9 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                                color: Theme.of(
+                                  context,
+                                ).primaryColor.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -442,7 +441,7 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
                         isOpen ? hours : 'closed_now'.tr(),
                         style: TextStyle(
                           fontSize: 14,
-                          color: isOpen 
+                          color: isOpen
                               ? AppColors.availableColor
                               : AppColors.closedColor,
                           fontWeight: FontWeight.w500,
@@ -451,7 +450,7 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
                     ],
                   ),
                 ),
-                
+
                 // Badge الحالة المحسّن
                 _buildEnhancedStatusBadge(isOpen),
               ],
@@ -467,16 +466,23 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: isOpen 
-              ? [AppColors.availableColor.withValues(alpha: 0.8), AppColors.availableColor]
-              : [AppColors.closedColor.withValues(alpha: 0.8), AppColors.closedColor],
+          colors: isOpen
+              ? [
+                  AppColors.availableColor.withValues(alpha: 0.8),
+                  AppColors.availableColor,
+                ]
+              : [
+                  AppColors.closedColor.withValues(alpha: 0.8),
+                  AppColors.closedColor,
+                ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: (isOpen ? AppColors.availableColor : AppColors.closedColor).withValues(alpha: 0.3),
+            color: (isOpen ? AppColors.availableColor : AppColors.closedColor)
+                .withValues(alpha: 0.3),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -547,17 +553,26 @@ class _WorkingHoursWidgetState extends State<WorkingHoursWidget>
   }
 
   String _getCurrentDayStatus() {
-    if (widget.branch.workingHours == null || widget.branch.workingHours!.isEmpty) {
+    if (widget.branch.workingHours == null ||
+        widget.branch.workingHours!.isEmpty) {
       return 'working_schedule'.tr();
     }
 
     final currentDay = DateTime.now().weekday - 1;
-    final days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    final days = [
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+      'sunday',
+    ];
     final todayKey = days[currentDay];
     final todayHours = widget.branch.workingHours![todayKey];
 
     if (todayHours != null && todayHours.toString().isNotEmpty) {
-      return 'open_now'.tr() + ' - ${todayHours.toString()}';
+      return '${'open_now'.tr()} - ${todayHours.toString()}';
     } else {
       return 'closed_now'.tr();
     }

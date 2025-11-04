@@ -23,7 +23,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 class BranchDetailsPage extends StatelessWidget {
   final String branchId;
 
-  const BranchDetailsPage({Key? key, required this.branchId}) : super(key: key);
+  const BranchDetailsPage({super.key, required this.branchId});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class BranchDetailsPage extends StatelessWidget {
 class BranchDetailsView extends StatefulWidget {
   final String branchId;
 
-  const BranchDetailsView({Key? key, required this.branchId}) : super(key: key);
+  const BranchDetailsView({super.key, required this.branchId});
 
   @override
   State<BranchDetailsView> createState() => _BranchDetailsViewState();
@@ -238,8 +238,9 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                           return true;
                         })
                         .toList();
-                    if (branchWideOffers.isEmpty)
+                    if (branchWideOffers.isEmpty) {
                       return const SizedBox.shrink();
+                    }
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

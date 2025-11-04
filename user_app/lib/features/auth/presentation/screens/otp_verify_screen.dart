@@ -12,10 +12,10 @@ class OtpVerifyScreen extends StatefulWidget {
   final bool isRegistration;
 
   const OtpVerifyScreen({
-    Key? key,
+    super.key,
     required this.email,
     this.isRegistration = false,
-  }) : super(key: key);
+  });
 
   @override
   State<OtpVerifyScreen> createState() => _OtpVerifyScreenState();
@@ -120,14 +120,7 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                   // Resend OTP Button
                   TextButton(
                     onPressed: () {
-                      if (widget.isRegistration) {
-                        // Resend registration OTP
-                        context.read<AuthCubit>().registerSendOtp(
-                          name: '', // This will be handled by the backend
-                          email: widget.email,
-                          password: '', // This will be handled by the backend
-                        );
-                      } else {
+                      if (!widget.isRegistration) {
                         // Resend login OTP
                         context.read<AuthCubit>().sendOtp(email: widget.email);
                       }

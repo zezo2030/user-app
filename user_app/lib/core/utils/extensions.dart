@@ -32,8 +32,8 @@ extension StringExtensions on String {
 // DioException to Failure conversion
 extension DioExceptionToFailure on DioException {
   Failure toFailure() {
-    print('🔍 DioException type: ${type}');
-    print('🔍 DioException message: ${message}');
+    print('🔍 DioException type: $type');
+    print('🔍 DioException message: $message');
     print('🔍 DioException response: ${response?.data}');
     print('🔍 DioException statusCode: ${response?.statusCode}');
 
@@ -61,9 +61,7 @@ extension DioExceptionToFailure on DioException {
         }
 
       case DioExceptionType.cancel:
-        return const NetworkFailure(
-          message: 'Request was cancelled.',
-        );
+        return const NetworkFailure(message: 'Request was cancelled.');
 
       case DioExceptionType.connectionError:
         return const NetworkFailure(

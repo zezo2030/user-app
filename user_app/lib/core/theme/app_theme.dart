@@ -6,6 +6,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
+      fontFamily: 'MontserratArabic',
 
       // Color Scheme
       colorScheme: ColorScheme.fromSeed(
@@ -32,6 +33,7 @@ class AppTheme {
         backgroundColor: AppColors.luxurySurface,
         foregroundColor: AppColors.luxuryTextPrimary,
         titleTextStyle: TextStyle(
+          fontFamily: 'MontserratArabic',
           color: AppColors.luxuryTextPrimary,
           fontSize: 22,
           fontWeight: FontWeight.w700,
@@ -51,6 +53,7 @@ class AppTheme {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           textStyle: const TextStyle(
+            fontFamily: 'MontserratArabic',
             fontSize: 16,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
@@ -68,6 +71,7 @@ class AppTheme {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           textStyle: const TextStyle(
+            fontFamily: 'MontserratArabic',
             fontSize: 16,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
@@ -84,6 +88,7 @@ class AppTheme {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           textStyle: const TextStyle(
+            fontFamily: 'MontserratArabic',
             fontSize: 16,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
@@ -116,6 +121,7 @@ class AppTheme {
         filled: true,
         fillColor: AppColors.luxurySurface,
         hintStyle: const TextStyle(
+          fontFamily: 'MontserratArabic',
           color: AppColors.luxuryTextHint,
           fontSize: 16,
           fontWeight: FontWeight.w400,
@@ -141,10 +147,12 @@ class AppTheme {
         type: BottomNavigationBarType.fixed,
         elevation: 12,
         selectedLabelStyle: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 12,
           fontWeight: FontWeight.w600,
         ),
         unselectedLabelStyle: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 12,
           fontWeight: FontWeight.w400,
         ),
@@ -177,90 +185,105 @@ class AppTheme {
       // Typography Theme
       textTheme: const TextTheme(
         displayLarge: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 32,
           fontWeight: FontWeight.w800,
           color: AppColors.luxuryTextPrimary,
           letterSpacing: 0.5,
         ),
         displayMedium: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 28,
           fontWeight: FontWeight.w700,
           color: AppColors.luxuryTextPrimary,
           letterSpacing: 0.5,
         ),
         displaySmall: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 24,
           fontWeight: FontWeight.w600,
           color: AppColors.luxuryTextPrimary,
           letterSpacing: 0.5,
         ),
         headlineLarge: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 22,
           fontWeight: FontWeight.w600,
           color: AppColors.luxuryTextPrimary,
           letterSpacing: 0.5,
         ),
         headlineMedium: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: AppColors.luxuryTextPrimary,
           letterSpacing: 0.5,
         ),
         headlineSmall: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: AppColors.luxuryTextPrimary,
           letterSpacing: 0.5,
         ),
         titleLarge: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 16,
           fontWeight: FontWeight.w600,
           color: AppColors.luxuryTextPrimary,
           letterSpacing: 0.5,
         ),
         titleMedium: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: AppColors.luxuryTextPrimary,
           letterSpacing: 0.5,
         ),
         titleSmall: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 12,
           fontWeight: FontWeight.w500,
           color: AppColors.luxuryTextPrimary,
           letterSpacing: 0.5,
         ),
         bodyLarge: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 16,
           fontWeight: FontWeight.w400,
           color: AppColors.luxuryTextPrimary,
           letterSpacing: 0.5,
         ),
         bodyMedium: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 14,
           fontWeight: FontWeight.w400,
           color: AppColors.luxuryTextSecondary,
           letterSpacing: 0.5,
         ),
         bodySmall: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 12,
           fontWeight: FontWeight.w400,
           color: AppColors.luxuryTextHint,
           letterSpacing: 0.5,
         ),
         labelLarge: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: AppColors.luxuryTextPrimary,
           letterSpacing: 0.5,
         ),
         labelMedium: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 12,
           fontWeight: FontWeight.w500,
           color: AppColors.luxuryTextSecondary,
           letterSpacing: 0.5,
         ),
         labelSmall: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 10,
           fontWeight: FontWeight.w500,
           color: AppColors.luxuryTextHint,
@@ -274,6 +297,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
+      fontFamily: 'MontserratArabic',
 
       // Color Scheme
       colorScheme: ColorScheme.fromSeed(
@@ -300,6 +324,7 @@ class AppTheme {
         backgroundColor: AppColors.luxuryCharcoal,
         foregroundColor: Colors.white,
         titleTextStyle: TextStyle(
+          fontFamily: 'MontserratArabic',
           color: Colors.white,
           fontSize: 22,
           fontWeight: FontWeight.w700,
@@ -319,6 +344,7 @@ class AppTheme {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           textStyle: const TextStyle(
+            fontFamily: 'MontserratArabic',
             fontSize: 16,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
@@ -336,6 +362,7 @@ class AppTheme {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           textStyle: const TextStyle(
+            fontFamily: 'MontserratArabic',
             fontSize: 16,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
@@ -352,6 +379,7 @@ class AppTheme {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           textStyle: const TextStyle(
+            fontFamily: 'MontserratArabic',
             fontSize: 16,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
@@ -384,6 +412,7 @@ class AppTheme {
         filled: true,
         fillColor: AppColors.luxuryCharcoal,
         hintStyle: const TextStyle(
+          fontFamily: 'MontserratArabic',
           color: AppColors.luxuryTextHint,
           fontSize: 16,
           fontWeight: FontWeight.w400,
@@ -409,10 +438,12 @@ class AppTheme {
         type: BottomNavigationBarType.fixed,
         elevation: 12,
         selectedLabelStyle: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 12,
           fontWeight: FontWeight.w600,
         ),
         unselectedLabelStyle: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 12,
           fontWeight: FontWeight.w400,
         ),
@@ -445,90 +476,105 @@ class AppTheme {
       // Typography Theme
       textTheme: const TextTheme(
         displayLarge: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 32,
           fontWeight: FontWeight.w800,
           color: Colors.white,
           letterSpacing: 0.5,
         ),
         displayMedium: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 28,
           fontWeight: FontWeight.w700,
           color: Colors.white,
           letterSpacing: 0.5,
         ),
         displaySmall: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 24,
           fontWeight: FontWeight.w600,
           color: Colors.white,
           letterSpacing: 0.5,
         ),
         headlineLarge: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 22,
           fontWeight: FontWeight.w600,
           color: Colors.white,
           letterSpacing: 0.5,
         ),
         headlineMedium: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: Colors.white,
           letterSpacing: 0.5,
         ),
         headlineSmall: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: Colors.white,
           letterSpacing: 0.5,
         ),
         titleLarge: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 16,
           fontWeight: FontWeight.w600,
           color: Colors.white,
           letterSpacing: 0.5,
         ),
         titleMedium: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: Colors.white,
           letterSpacing: 0.5,
         ),
         titleSmall: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 12,
           fontWeight: FontWeight.w500,
           color: Colors.white,
           letterSpacing: 0.5,
         ),
         bodyLarge: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 16,
           fontWeight: FontWeight.w400,
           color: Colors.white,
           letterSpacing: 0.5,
         ),
         bodyMedium: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 14,
           fontWeight: FontWeight.w400,
           color: AppColors.luxuryTextSecondary,
           letterSpacing: 0.5,
         ),
         bodySmall: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 12,
           fontWeight: FontWeight.w400,
           color: AppColors.luxuryTextHint,
           letterSpacing: 0.5,
         ),
         labelLarge: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: Colors.white,
           letterSpacing: 0.5,
         ),
         labelMedium: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 12,
           fontWeight: FontWeight.w500,
           color: AppColors.luxuryTextSecondary,
           letterSpacing: 0.5,
         ),
         labelSmall: TextStyle(
+          fontFamily: 'MontserratArabic',
           fontSize: 10,
           fontWeight: FontWeight.w500,
           color: AppColors.luxuryTextHint,

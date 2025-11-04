@@ -9,11 +9,11 @@ class RecommendationCard extends StatefulWidget {
   final VoidCallback? onTap;
 
   const RecommendationCard({
-    Key? key,
+    super.key,
     required this.branch,
     required this.reason,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   State<RecommendationCard> createState() => _RecommendationCardState();

@@ -7,7 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 class BranchCard extends StatelessWidget {
   final BranchEntity branch;
 
-  const BranchCard({Key? key, required this.branch}) : super(key: key);
+  const BranchCard({super.key, required this.branch});
 
   @override
   Widget build(BuildContext context) {

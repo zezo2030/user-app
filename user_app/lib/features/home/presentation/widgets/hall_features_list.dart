@@ -5,18 +5,13 @@ import 'package:iconsax/iconsax.dart';
 class HallFeaturesList extends StatelessWidget {
   final List<String> features;
 
-  const HallFeaturesList({
-    Key? key,
-    required this.features,
-  }) : super(key: key);
+  const HallFeaturesList({super.key, required this.features});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -39,9 +34,9 @@ class HallFeaturesList extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Features grid
             GridView.builder(
               shrinkWrap: true,
@@ -61,10 +56,14 @@ class HallFeaturesList extends StatelessWidget {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                    color: Theme.of(
+                      context,
+                    ).primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
+                      color: Theme.of(
+                        context,
+                      ).primaryColor.withValues(alpha: 0.2),
                     ),
                   ),
                   child: Row(
@@ -100,26 +99,33 @@ class HallFeaturesList extends StatelessWidget {
 
   IconData _getFeatureIcon(String feature) {
     final featureLower = feature.toLowerCase();
-    
+
     if (featureLower.contains('sound') || featureLower.contains('audio')) {
       return Iconsax.volume_high;
-    } else if (featureLower.contains('projector') || featureLower.contains('screen')) {
+    } else if (featureLower.contains('projector') ||
+        featureLower.contains('screen')) {
       return Iconsax.video;
-    } else if (featureLower.contains('air') || featureLower.contains('conditioning')) {
+    } else if (featureLower.contains('air') ||
+        featureLower.contains('conditioning')) {
       return Iconsax.wind;
-    } else if (featureLower.contains('stage') || featureLower.contains('platform')) {
+    } else if (featureLower.contains('stage') ||
+        featureLower.contains('platform')) {
       return Iconsax.microphone;
-    } else if (featureLower.contains('lighting') || featureLower.contains('light')) {
+    } else if (featureLower.contains('lighting') ||
+        featureLower.contains('light')) {
       return Iconsax.lamp;
-    } else if (featureLower.contains('wifi') || featureLower.contains('internet')) {
+    } else if (featureLower.contains('wifi') ||
+        featureLower.contains('internet')) {
       return Iconsax.wifi;
     } else if (featureLower.contains('parking')) {
       return Iconsax.car;
     } else if (featureLower.contains('security')) {
       return Iconsax.security_safe;
-    } else if (featureLower.contains('catering') || featureLower.contains('food')) {
+    } else if (featureLower.contains('catering') ||
+        featureLower.contains('food')) {
       return Iconsax.cake;
-    } else if (featureLower.contains('decoration') || featureLower.contains('decor')) {
+    } else if (featureLower.contains('decoration') ||
+        featureLower.contains('decor')) {
       return Iconsax.paintbucket;
     } else {
       return Iconsax.tick_circle;

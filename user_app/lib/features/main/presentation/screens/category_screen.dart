@@ -8,7 +8,7 @@ import '../../../branches/data/branches_repository.dart';
 import '../../../branches/presentation/widgets/branch_grid_card.dart';
 
 class CategoryScreen extends StatelessWidget {
-  const CategoryScreen({Key? key}) : super(key: key);
+  const CategoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

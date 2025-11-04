@@ -10,11 +10,11 @@ class AddOnsSelector extends StatefulWidget {
   final Function(List<String>) onAddOnsChanged;
 
   const AddOnsSelector({
-    Key? key,
+    super.key,
     required this.availableAddOns,
     required this.selectedAddOnIds,
     required this.onAddOnsChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<AddOnsSelector> createState() => _AddOnsSelectorState();
@@ -97,10 +97,14 @@ class _AddOnsSelectorState extends State<AddOnsSelector> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         border: Border.all(
-          color: isSelected ? Theme.of(context).primaryColor : Colors.grey.shade300,
+          color: isSelected
+              ? Theme.of(context).primaryColor
+              : Colors.grey.shade300,
         ),
         borderRadius: BorderRadius.circular(8),
-        color: isSelected ? Theme.of(context).primaryColor.withOpacity(0.05) : null,
+        color: isSelected
+            ? Theme.of(context).primaryColor.withOpacity(0.05)
+            : null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,7 +163,9 @@ class _AddOnsSelectorState extends State<AddOnsSelector> {
                       onPressed: () => _updateQuantity(addOn.id, quantity + 1),
                       icon: const Icon(Iconsax.add),
                       style: IconButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+                        backgroundColor: Theme.of(
+                          context,
+                        ).primaryColor.withOpacity(0.1),
                         minimumSize: const Size(32, 32),
                       ),
                     ),
@@ -181,4 +187,3 @@ class _AddOnsSelectorState extends State<AddOnsSelector> {
     );
   }
 }
-

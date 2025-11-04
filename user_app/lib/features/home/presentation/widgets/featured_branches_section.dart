@@ -9,11 +9,11 @@ class FeaturedBranchesSection extends StatelessWidget {
   final Function(BranchEntity)? onBranchTap;
 
   const FeaturedBranchesSection({
-    Key? key,
+    super.key,
     required this.branches,
     this.onViewMore,
     this.onBranchTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class FeaturedBranchesSection extends StatelessWidget {
             ],
           ),
         ),
-        
+
         // Branches List
         SizedBox(
           height: 240,
@@ -77,11 +77,7 @@ class FeaturedBranchCard extends StatelessWidget {
   final BranchEntity branch;
   final VoidCallback? onTap;
 
-  const FeaturedBranchCard({
-    Key? key,
-    required this.branch,
-    this.onTap,
-  }) : super(key: key);
+  const FeaturedBranchCard({super.key, required this.branch, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -109,9 +105,7 @@ class FeaturedBranchCard extends StatelessWidget {
                 flex: 3,
                 child: Container(
                   width: double.infinity,
-                  decoration: BoxDecoration(
-                    gradient: AppColors.cardGradient,
-                  ),
+                  decoration: BoxDecoration(gradient: AppColors.cardGradient),
                   child: branch.nameAr.isNotEmpty
                       ? Center(
                           child: Text(
@@ -131,15 +125,13 @@ class FeaturedBranchCard extends StatelessWidget {
                         ),
                 ),
               ),
-              
+
               // Content Section
               Expanded(
                 flex: 2,
                 child: Container(
                   padding: const EdgeInsets.all(12),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                  ),
+                  decoration: const BoxDecoration(color: Colors.white),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -204,10 +196,10 @@ class MockFeaturedBranchesSection extends StatelessWidget {
   final Function(String)? onBranchTap;
 
   const MockFeaturedBranchesSection({
-    Key? key,
+    super.key,
     this.onViewMore,
     this.onBranchTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -266,7 +258,7 @@ class MockFeaturedBranchesSection extends StatelessWidget {
             ],
           ),
         ),
-        
+
         // Branches List
         SizedBox(
           height: 240,
@@ -295,11 +287,7 @@ class MockFeaturedBranchCard extends StatelessWidget {
   final Map<String, dynamic> branch;
   final VoidCallback? onTap;
 
-  const MockFeaturedBranchCard({
-    Key? key,
-    required this.branch,
-    this.onTap,
-  }) : super(key: key);
+  const MockFeaturedBranchCard({super.key, required this.branch, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -363,15 +351,13 @@ class MockFeaturedBranchCard extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               // Content Section
               Expanded(
                 flex: 2,
                 child: Container(
                   padding: const EdgeInsets.all(12),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                  ),
+                  decoration: const BoxDecoration(color: Colors.white),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

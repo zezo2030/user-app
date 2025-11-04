@@ -5,6 +5,8 @@
   "login": "Login",
   "register": "Register",
   "login_with_otp": "Login with OTP",
+  "email_password": "Email & Password",
+  "otp": "OTP",
   "email": "Email",
   "phone": "Phone",
   "password": "Password",

@@ -12,17 +12,14 @@ import 'hall_card.dart';
 class HallsSection extends StatelessWidget {
   final String branchId;
 
-  const HallsSection({
-    Key? key,
-    required this.branchId,
-  }) : super(key: key);
+  const HallsSection({super.key, required this.branchId});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HallsCubit(
-        getHallsByBranchUseCase: sl<GetHallsByBranchUseCase>(),
-      )..loadHallsByBranch(branchId),
+      create: (context) =>
+          HallsCubit(getHallsByBranchUseCase: sl<GetHallsByBranchUseCase>())
+            ..loadHallsByBranch(branchId),
       child: BlocBuilder<HallsCubit, HallsState>(
         builder: (context, state) {
           return Column(
@@ -51,9 +48,9 @@ class HallsSection extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Halls content
               _buildHallsContent(context, state),
             ],
@@ -67,19 +64,19 @@ class HallsSection extends StatelessWidget {
     if (state is HallsLoading) {
       return _buildLoadingState();
     }
-    
+
     if (state is HallsError) {
       return _buildErrorState(context, state.message);
     }
-    
+
     if (state is HallsLoaded) {
       if (state.halls.isEmpty) {
         return _buildEmptyState();
       }
-      
+
       return _buildHallsList(context, state.halls);
     }
-    
+
     return const SizedBox.shrink();
   }
 
@@ -153,25 +150,16 @@ class HallsSection extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Card(
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Iconsax.info_circle,
-                size: 48,
-                color: Colors.red[300],
-              ),
+              Icon(Iconsax.info_circle, size: 48, color: Colors.red[300]),
               const SizedBox(height: 16),
               Text(
                 message,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.red,
-                ),
+                style: const TextStyle(fontSize: 14, color: Colors.red),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
@@ -194,25 +182,16 @@ class HallsSection extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Card(
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Iconsax.calendar_remove,
-                size: 48,
-                color: Colors.grey[400],
-              ),
+              Icon(Iconsax.calendar_remove, size: 48, color: Colors.grey[400]),
               const SizedBox(height: 16),
               Text(
                 'no_halls_available'.tr(),
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -236,10 +215,9 @@ class HallsSection extends StatelessWidget {
             child: HallCard(
               hall: hall,
               onTap: () {
-                Navigator.of(context).pushNamed(
-                  '/hall-details',
-                  arguments: {'hallId': hall.id},
-                );
+                Navigator.of(
+                  context,
+                ).pushNamed('/hall-details', arguments: {'hallId': hall.id});
               },
             ),
           );

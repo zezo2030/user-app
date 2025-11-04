@@ -11,14 +11,14 @@ class OtpInputField extends StatelessWidget {
   final String? errorText;
 
   const OtpInputField({
-    Key? key,
+    super.key,
     required this.controller,
     required this.onCompleted,
     this.onChanged,
     this.length = 6,
     this.enabled = true,
     this.errorText,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

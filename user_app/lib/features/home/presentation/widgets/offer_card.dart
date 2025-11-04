@@ -5,10 +5,7 @@ import '../../domain/entities/offer_entity.dart';
 class OfferCard extends StatelessWidget {
   final OfferEntity offer;
 
-  const OfferCard({
-    Key? key,
-    required this.offer,
-  }) : super(key: key);
+  const OfferCard({super.key, required this.offer});
 
   @override
   Widget build(BuildContext context) {
@@ -90,10 +87,10 @@ class OfferCard extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 8),
                     child: Text(
                       offer.description!,
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      fontSize: 12,
-                    ),
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.9),
+                        fontSize: 12,
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -166,7 +163,9 @@ class OfferCard extends StatelessWidget {
     if (offer.startsAt != null && offer.endsAt != null) {
       return '${offer.startsAt!.day}/${offer.startsAt!.month} - ${offer.endsAt!.day}/${offer.endsAt!.month}';
     } else if (offer.endsAt != null) {
-      return 'valid_until'.tr(args: ['${offer.endsAt!.day}/${offer.endsAt!.month}']);
+      return 'valid_until'.tr(
+        args: ['${offer.endsAt!.day}/${offer.endsAt!.month}'],
+      );
     } else {
       return 'valid_now'.tr();
     }

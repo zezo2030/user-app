@@ -5,19 +5,14 @@ import '../../domain/entities/branch_entity.dart';
 class AmenitiesGrid extends StatelessWidget {
   final BranchEntity branch;
 
-  const AmenitiesGrid({
-    Key? key,
-    required this.branch,
-  }) : super(key: key);
+  const AmenitiesGrid({super.key, required this.branch});
 
   @override
   Widget build(BuildContext context) {
     if (branch.amenities == null || branch.amenities!.isEmpty) {
       return Card(
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -43,10 +38,7 @@ class AmenitiesGrid extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 'branch_amenities'.tr(),
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: Colors.grey[600], fontSize: 14),
               ),
             ],
           ),
@@ -56,9 +48,7 @@ class AmenitiesGrid extends StatelessWidget {
 
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -92,10 +82,14 @@ class AmenitiesGrid extends StatelessWidget {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                    color: Theme.of(
+                      context,
+                    ).primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                      color: Theme.of(
+                        context,
+                      ).primaryColor.withValues(alpha: 0.3),
                       width: 1,
                     ),
                   ),
@@ -129,36 +123,47 @@ class AmenitiesGrid extends StatelessWidget {
 
   IconData _getAmenityIcon(String amenity) {
     final amenityLower = amenity.toLowerCase();
-    
+
     if (amenityLower.contains('wifi') || amenityLower.contains('wi-fi')) {
       return Icons.wifi;
     } else if (amenityLower.contains('parking')) {
       return Icons.local_parking;
-    } else if (amenityLower.contains('air') || amenityLower.contains('conditioning')) {
+    } else if (amenityLower.contains('air') ||
+        amenityLower.contains('conditioning')) {
       return Icons.ac_unit;
-    } else if (amenityLower.contains('food') || amenityLower.contains('restaurant')) {
+    } else if (amenityLower.contains('food') ||
+        amenityLower.contains('restaurant')) {
       return Icons.restaurant;
-    } else if (amenityLower.contains('drink') || amenityLower.contains('coffee')) {
+    } else if (amenityLower.contains('drink') ||
+        amenityLower.contains('coffee')) {
       return Icons.local_cafe;
     } else if (amenityLower.contains('security')) {
       return Icons.security;
-    } else if (amenityLower.contains('clean') || amenityLower.contains('hygiene')) {
+    } else if (amenityLower.contains('clean') ||
+        amenityLower.contains('hygiene')) {
       return Icons.cleaning_services;
-    } else if (amenityLower.contains('music') || amenityLower.contains('sound')) {
+    } else if (amenityLower.contains('music') ||
+        amenityLower.contains('sound')) {
       return Icons.music_note;
-    } else if (amenityLower.contains('tv') || amenityLower.contains('television')) {
+    } else if (amenityLower.contains('tv') ||
+        amenityLower.contains('television')) {
       return Icons.tv;
-    } else if (amenityLower.contains('game') || amenityLower.contains('gaming')) {
+    } else if (amenityLower.contains('game') ||
+        amenityLower.contains('gaming')) {
       return Icons.games;
     } else if (amenityLower.contains('smoking')) {
       return Icons.smoking_rooms;
-    } else if (amenityLower.contains('non-smoking') || amenityLower.contains('no smoking')) {
+    } else if (amenityLower.contains('non-smoking') ||
+        amenityLower.contains('no smoking')) {
       return Icons.smoke_free;
-    } else if (amenityLower.contains('wheelchair') || amenityLower.contains('accessibility')) {
+    } else if (amenityLower.contains('wheelchair') ||
+        amenityLower.contains('accessibility')) {
       return Icons.accessible;
-    } else if (amenityLower.contains('kids') || amenityLower.contains('children')) {
+    } else if (amenityLower.contains('kids') ||
+        amenityLower.contains('children')) {
       return Icons.child_care;
-    } else if (amenityLower.contains('pet') || amenityLower.contains('animal')) {
+    } else if (amenityLower.contains('pet') ||
+        amenityLower.contains('animal')) {
       return Icons.pets;
     } else {
       return Icons.star;

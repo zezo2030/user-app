@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import '../../../../core/storage/secure_storage_service.dart';
 import '../../domain/usecases/login_usecase.dart';
+import '../../domain/usecases/register_usecase.dart';
 import '../../domain/usecases/send_otp_usecase.dart';
 import '../../domain/usecases/verify_otp_usecase.dart';
 import '../../domain/usecases/register_send_otp_usecase.dart';
@@ -16,6 +17,7 @@ import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final LoginUseCase loginUseCase;
+  final RegisterUseCase registerUseCase;
   final SendOtpUseCase sendOtpUseCase;
   final VerifyOtpUseCase verifyOtpUseCase;
   final RegisterSendOtpUseCase registerSendOtpUseCase;
@@ -30,6 +32,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   AuthCubit({
     required this.loginUseCase,
+    required this.registerUseCase,
     required this.sendOtpUseCase,
     required this.verifyOtpUseCase,
     required this.registerSendOtpUseCase,
@@ -66,6 +69,40 @@ class AuthCubit extends Cubit<AuthState> {
       await _storageService.saveUserData(authResponse.user.toString());
 
       emit(Authenticated(user: authResponse.user));
+    });
+  }
+
+  // Register with email and password
+  Future<void> register({
+    required String name,
+    required String email,
+    required String password,
+    String? phone,
+    String language = 'ar',
+  }) async {
+    emit(AuthLoading());
+
+    final result = await registerUseCase(
+      name: name,
+      email: email,
+      password: password,
+      phone: phone,
+      language: language,
+    );
+
+    result.fold((failure) => emit(AuthError(message: failure.message)), (
+      authResponse,
+    ) async {
+      // Save tokens
+      await _storageService.saveTokens(
+        authResponse.accessToken,
+        authResponse.refreshToken,
+      );
+
+      // Save user data
+      await _storageService.saveUserData(authResponse.user.toString());
+
+      emit(RegisterSuccess(authResponse: authResponse));
     });
   }
 
@@ -126,7 +163,6 @@ class AuthCubit extends Cubit<AuthState> {
     required String name,
     required String email,
     required String password,
-    String? phone,
     String language = 'ar',
   }) async {
     emit(AuthLoading());
@@ -135,7 +171,6 @@ class AuthCubit extends Cubit<AuthState> {
       name: name,
       email: email,
       password: password,
-      phone: phone,
       language: language,
     );
 

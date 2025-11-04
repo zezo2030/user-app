@@ -11,6 +11,15 @@ abstract class AuthRepository {
     required String password,
   });
 
+  // Register with email and password
+  Future<Either<Failure, AuthResponseEntity>> register({
+    required String name,
+    required String email,
+    required String password,
+    String? phone,
+    String language = 'ar',
+  });
+
   // Send OTP for login
   Future<Either<Failure, bool>> sendOtp({
     required String email,
@@ -29,7 +38,6 @@ abstract class AuthRepository {
     required String name,
     required String email,
     required String password,
-    String? phone,
     String language = 'ar',
   });
 

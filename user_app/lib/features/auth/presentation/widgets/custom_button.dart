@@ -16,7 +16,7 @@ class CustomButton extends StatelessWidget {
   final bool useGradient;
 
   const CustomButton({
-    Key? key,
+    super.key,
     required this.text,
     this.onPressed,
     this.isLoading = false,
@@ -28,7 +28,7 @@ class CustomButton extends StatelessWidget {
     this.icon,
     this.padding,
     this.useGradient = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -56,11 +56,14 @@ class CustomButton extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
                   foregroundColor: textColor ?? Colors.white,
-                  disabledBackgroundColor: theme.colorScheme.surfaceContainerHighest,
+                  disabledBackgroundColor:
+                      theme.colorScheme.surfaceContainerHighest,
                   disabledForegroundColor: theme.colorScheme.onSurfaceVariant,
                   elevation: 0,
                   shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   padding:
                       padding ??
                       const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -73,11 +76,14 @@ class CustomButton extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: backgroundColor ?? theme.primaryColor,
                 foregroundColor: textColor ?? theme.colorScheme.onPrimary,
-                disabledBackgroundColor: theme.colorScheme.surfaceContainerHighest,
+                disabledBackgroundColor:
+                    theme.colorScheme.surfaceContainerHighest,
                 disabledForegroundColor: theme.colorScheme.onSurfaceVariant,
                 elevation: 2,
                 shadowColor: theme.shadowColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 padding:
                     padding ??
                     const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -86,7 +92,7 @@ class CustomButton extends StatelessWidget {
             ),
     );
   }
-  
+
   Widget _buildButtonContent(ThemeData theme) {
     return isLoading
         ? SizedBox(
@@ -128,7 +134,7 @@ class CustomOutlinedButton extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
 
   const CustomOutlinedButton({
-    Key? key,
+    super.key,
     required this.text,
     this.onPressed,
     this.isLoading = false,
@@ -139,7 +145,7 @@ class CustomOutlinedButton extends StatelessWidget {
     this.height,
     this.icon,
     this.padding,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

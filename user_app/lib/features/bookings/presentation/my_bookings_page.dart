@@ -212,7 +212,7 @@ class _MyBookingsViewState extends State<_MyBookingsView> {
                 ),
               ),
             ];
-          }).toList(),
+          }),
           const SizedBox(height: 24),
         ],
       ),

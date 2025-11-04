@@ -3,7 +3,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../../../core/theme/app_colors.dart';
 
 class HomeShimmerLoading extends StatelessWidget {
-  const HomeShimmerLoading({Key? key}) : super(key: key);
+  const HomeShimmerLoading({super.key});
 
   @override
   Widget build(BuildContext context) {

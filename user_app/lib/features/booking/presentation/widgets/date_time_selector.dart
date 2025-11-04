@@ -10,12 +10,12 @@ class DateTimeSelector extends StatelessWidget {
   final Function(TimeOfDay) onTimeChanged;
 
   const DateTimeSelector({
-    Key? key,
+    super.key,
     required this.selectedDate,
     required this.selectedTime,
     required this.onDateChanged,
     required this.onTimeChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,20 +28,16 @@ class DateTimeSelector extends StatelessWidget {
           children: [
             Text(
               'select_date_time'.tr(),
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Row(
               children: [
-                Expanded(
-                  child: _buildDateSelector(context),
-                ),
+                Expanded(child: _buildDateSelector(context)),
                 const SizedBox(width: 12),
-                Expanded(
-                  child: _buildTimeSelector(context),
-                ),
+                Expanded(child: _buildTimeSelector(context)),
               ],
             ),
           ],

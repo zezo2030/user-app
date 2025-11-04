@@ -8,7 +8,7 @@ import '../widgets/custom_button.dart';
 import '../widgets/loading_overlay.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+  const RegisterScreen({super.key});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -18,19 +18,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
 
   @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
-    _phoneController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -49,6 +43,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 'isRegistration': true,
               },
             );
+          } else if (state is RegisterSuccess) {
+            Navigator.pushReplacementNamed(context, '/main');
           } else if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -126,30 +122,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                     const SizedBox(height: 16),
 
-                    // Phone Field (Optional)
-                    CustomTextField(
-                      label: '${'phone'.tr()} (${'optional'.tr()})',
-                      hint: 'phone_hint'.tr(),
-                      controller: _phoneController,
-                      keyboardType: TextInputType.phone,
-                      validator: (value) {
-                        if (value != null && value.isNotEmpty) {
-                          if (!value.startsWith('+')) {
-                            return 'phone_invalid'.tr();
-                          }
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 16),
-
                     // Password Field
                     CustomTextField(
                       label: 'password'.tr(),
                       hint: 'password_hint'.tr(),
                       controller: _passwordController,
-                      obscureText: _obscurePassword,
+                      obscureText: true,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'password_required'.tr();
@@ -159,49 +137,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         }
                         return null;
                       },
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Confirm Password Field
-                    CustomTextField(
-                      label: 'confirm_password'.tr(),
-                      hint: 'confirm_password_hint'.tr(),
-                      controller: _confirmPasswordController,
-                      obscureText: _obscureConfirmPassword,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'confirm_password_required'.tr();
-                        }
-                        if (value != _passwordController.text) {
-                          return 'passwords_not_match'.tr();
-                        }
-                        return null;
-                      },
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscureConfirmPassword
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscureConfirmPassword = !_obscureConfirmPassword;
-                          });
-                        },
-                      ),
                     ),
 
                     const SizedBox(height: 24),
@@ -242,17 +177,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       text: 'register',
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
+                          // Register with OTP via email
                           context.read<AuthCubit>().registerSendOtp(
                             name: _nameController.text.trim(),
                             email: _emailController.text.trim(),
                             password: _passwordController.text,
-                            phone: _phoneController.text.trim().isNotEmpty
-                                ? _phoneController.text.trim()
-                                : null,
                           );
                         }
                       },
-                      icon: const Icon(Icons.person_add, size: 20),
+                      icon: const Icon(Icons.email, size: 20),
                     ),
 
                     const SizedBox(height: 24),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 
 class HomeHeaderWidget extends StatefulWidget {
-  const HomeHeaderWidget({Key? key}) : super(key: key);
+  const HomeHeaderWidget({super.key});
 
   @override
   State<HomeHeaderWidget> createState() => _HomeHeaderWidgetState();

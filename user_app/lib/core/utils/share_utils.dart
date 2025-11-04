@@ -11,8 +11,7 @@ Future<void> shareTicketQrPreferWhatsApp({
   required String qrData,
 }) async {
   final String text =
-      'تذكرة: $ticketId' +
-      (qrData.startsWith('data:image') ? '' : '\nQR: $qrData');
+      'تذكرة: $ticketId${qrData.startsWith('data:image') ? '' : '\nQR: $qrData'}';
   final Uri whatsappUri = Uri.parse(
     'whatsapp://send?text=${Uri.encodeComponent(text)}',
   );

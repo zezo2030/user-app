@@ -9,7 +9,7 @@ class HallCard extends StatelessWidget {
   final HallEntity hall;
   final VoidCallback? onTap;
 
-  const HallCard({Key? key, required this.hall, this.onTap}) : super(key: key);
+  const HallCard({super.key, required this.hall, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class HallCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
-        child: Container(
+        child: SizedBox(
           width: 280,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,7 +179,7 @@ class HallCard extends StatelessWidget {
             imageUrl: (() {
               final u = resolveFileUrlWithBust(hall.images!.first);
               // ignore: avoid_print
-              print('🖼️ HallCard URL => ' + u);
+              print('🖼️ HallCard URL => $u');
               return u;
             })(),
             width: double.infinity,

@@ -10,6 +10,7 @@ import '../domain/usecases/send_otp_usecase.dart';
 import '../domain/usecases/verify_otp_usecase.dart';
 import '../domain/usecases/register_send_otp_usecase.dart';
 import '../domain/usecases/register_verify_otp_usecase.dart';
+import '../domain/usecases/complete_registration_usecase.dart';
 import '../domain/usecases/get_profile_usecase.dart';
 import '../domain/usecases/refresh_token_usecase.dart';
 import '../domain/usecases/update_profile_usecase.dart';
@@ -45,6 +46,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => VerifyOtpUseCase(sl()));
   sl.registerLazySingleton(() => RegisterSendOtpUseCase(sl()));
   sl.registerLazySingleton(() => RegisterVerifyOtpUseCase(sl()));
+  sl.registerLazySingleton(() => CompleteRegistrationUseCase(sl()));
   sl.registerLazySingleton(() => GetProfileUseCase(sl()));
   sl.registerLazySingleton(() => RefreshTokenUseCase(sl()));
   sl.registerLazySingleton(() => UpdateProfileUseCase(repository: sl()));
@@ -60,6 +62,7 @@ Future<void> init() async {
       verifyOtpUseCase: sl(),
       registerSendOtpUseCase: sl(),
       registerVerifyOtpUseCase: sl(),
+      completeRegistrationUseCase: sl(),
       getProfileUseCase: sl(),
       refreshTokenUseCase: sl(),
       updateProfileUseCase: sl(),

@@ -6,14 +6,15 @@ import '../cubit/auth_state.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/otp_input_field.dart';
 import '../widgets/loading_overlay.dart';
+import '../../../../core/widgets/custom_toast.dart';
 
 class OtpVerifyScreen extends StatefulWidget {
-  final String email;
+  final String phone;
   final bool isRegistration;
 
   const OtpVerifyScreen({
     super.key,
-    required this.email,
+    required this.phone,
     this.isRegistration = false,
   });
 
@@ -38,19 +39,55 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
         listener: (context, state) {
           print('📱 OTP Verify Screen: State changed to ${state.runtimeType}');
 
-          if (state is OtpVerified || state is RegisterSuccess) {
+          if (state is OtpVerified) {
             print(
-              '✅ OTP Verify Screen: OTP verified successfully, navigating to profile',
+              '✅ OTP Verify Screen: OTP verified successfully, navigating to main',
+            );
+            Navigator.pushReplacementNamed(context, '/main');
+          } else if (state is RegistrationIncomplete) {
+            print(
+              '✅ OTP Verify Screen: Registration incomplete, navigating to complete registration',
+            );
+            Navigator.pushReplacementNamed(
+              context,
+              '/complete-registration',
+              arguments: {'phone': state.phone},
+            );
+          } else if (state is RegisterSuccess) {
+            print(
+              '✅ OTP Verify Screen: Registration successful, navigating to main',
             );
             Navigator.pushReplacementNamed(context, '/main');
           } else if (state is AuthError) {
             print('❌ OTP Verify Screen: Error occurred: ${state.message}');
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Theme.of(context).colorScheme.error,
-              ),
-            );
+            // Clear OTP field on error
+            _otpController.clear();
+            
+            // Show beautiful toast for OTP errors
+            final message = state.message.toLowerCase();
+            if (message.contains('invalid') || 
+                message.contains('expired') || 
+                message.contains('otp')) {
+              CustomToast.showOtpError(
+                context,
+                message: state.message,
+                onResend: () {
+                  // Resend OTP
+                  if (widget.isRegistration) {
+                    context.read<AuthCubit>().registerSendOtp(
+                      phone: widget.phone,
+                    );
+                  } else {
+                    context.read<AuthCubit>().sendOtp(phone: widget.phone);
+                  }
+                },
+              );
+            } else {
+              CustomToast.showError(
+                context,
+                message: state.message,
+              );
+            }
           }
         },
         builder: (context, state) {
@@ -84,7 +121,7 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                   const SizedBox(height: 8),
 
                   Text(
-                    widget.email,
+                    widget.phone,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).primaryColor,
@@ -120,9 +157,14 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                   // Resend OTP Button
                   TextButton(
                     onPressed: () {
-                      if (!widget.isRegistration) {
+                      if (widget.isRegistration) {
+                        // Resend registration OTP
+                        context.read<AuthCubit>().registerSendOtp(
+                          phone: widget.phone,
+                        );
+                      } else {
                         // Resend login OTP
-                        context.read<AuthCubit>().sendOtp(email: widget.email);
+                        context.read<AuthCubit>().sendOtp(phone: widget.phone);
                       }
                     },
                     child: Text('resend_otp'.tr()),
@@ -176,20 +218,20 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
 
   void _verifyOtp() {
     print('🔍 OTP Verify Screen: _verifyOtp called');
-    print('🔍 Email: ${widget.email}');
+    print('🔍 Phone: ${widget.phone}');
     print('🔍 OTP: ${_otpController.text}');
     print('🔍 Is Registration: ${widget.isRegistration}');
 
     if (widget.isRegistration) {
       print('📤 Calling registerVerifyOtp...');
       context.read<AuthCubit>().registerVerifyOtp(
-        email: widget.email,
+        phone: widget.phone,
         otp: _otpController.text,
       );
     } else {
       print('📤 Calling verifyOtp...');
       context.read<AuthCubit>().verifyOtp(
-        email: widget.email,
+        phone: widget.phone,
         otp: _otpController.text,
       );
     }

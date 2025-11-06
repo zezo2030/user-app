@@ -15,12 +15,12 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, AuthResponseEntity>> login({
-    required String identifier,
+    required String phone,
     required String password,
   }) async {
     try {
       final result = await remoteDataSource.login(
-        identifier: identifier,
+        phone: phone,
         password: password,
       );
       return Right(result.toEntity());
@@ -61,13 +61,13 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, bool>> sendOtp({
-    required String email,
+    required String phone,
     String language = 'ar',
   }) async {
     try {
-      print('🔄 Repository: Calling sendOtp for email: $email');
+      print('🔄 Repository: Calling sendOtp for phone: $phone');
       final result = await remoteDataSource.sendOtp(
-        email: email,
+        phone: phone,
         language: language,
       );
       print('✅ Repository: SendOtp result: $result');
@@ -83,16 +83,14 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, AuthResponseEntity>> verifyOtp({
-    required String email,
+    required String phone,
     required String otp,
-    String? name,
   }) async {
     try {
-      print('🔄 Repository: Calling verifyOtp for email: $email, otp: $otp');
+      print('🔄 Repository: Calling verifyOtp for phone: $phone, otp: $otp');
       final result = await remoteDataSource.verifyOtp(
-        email: email,
+        phone: phone,
         otp: otp,
-        name: name,
       );
       print('✅ Repository: VerifyOtp result: ${result.toEntity()}');
       return Right(result.toEntity());
@@ -107,16 +105,12 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, bool>> registerSendOtp({
-    required String name,
-    required String email,
-    required String password,
+    required String phone,
     String language = 'ar',
   }) async {
     try {
       final result = await remoteDataSource.registerSendOtp(
-        name: name,
-        email: email,
-        password: password,
+        phone: phone,
         language: language,
       );
       return Right(result);
@@ -128,14 +122,36 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, AuthResponseEntity>> registerVerifyOtp({
-    required String email,
+  Future<Either<Failure, Map<String, dynamic>>> registerVerifyOtp({
+    required String phone,
     required String otp,
   }) async {
     try {
       final result = await remoteDataSource.registerVerifyOtp(
-        email: email,
+        phone: phone,
         otp: otp,
+      );
+      return Right(result);
+    } on DioException catch (e) {
+      return Left(e.toFailure());
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, AuthResponseEntity>> completeRegistration({
+    required String phone,
+    required String name,
+    required String password,
+    String language = 'ar',
+  }) async {
+    try {
+      final result = await remoteDataSource.completeRegistration(
+        phone: phone,
+        name: name,
+        password: password,
+        language: language,
       );
       return Right(result.toEntity());
     } on DioException catch (e) {

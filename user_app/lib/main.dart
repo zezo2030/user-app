@@ -6,10 +6,13 @@ import 'core/theme/app_theme.dart';
 import 'features/auth/di/auth_injection.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/auth/presentation/screens/welcome_screen.dart';
-import 'features/auth/presentation/screens/login_screen.dart';
+import 'features/auth/presentation/screens/kinetic_login_screen.dart';
 import 'features/auth/presentation/screens/otp_login_screen.dart';
+import 'features/auth/presentation/screens/kinetic_otp_login_screen.dart';
+import 'features/auth/presentation/screens/kinetic_otp_verify_screen.dart';
 import 'features/auth/presentation/screens/register_screen.dart';
 import 'features/auth/presentation/screens/otp_verify_screen.dart';
+import 'features/auth/presentation/screens/complete_registration_screen.dart';
 import 'features/auth/presentation/screens/profile_screen.dart';
 import 'features/main/presentation/screens/main_screen.dart';
 import 'features/home/presentation/pages/branch_details_page.dart';
@@ -79,12 +82,17 @@ class MyApp extends StatelessWidget {
 
             case '/login':
               return MaterialPageRoute(
-                builder: (context) => const LoginScreen(),
+                builder: (context) => const KineticLoginScreen(),
               );
 
             case '/otp-login':
               return MaterialPageRoute(
                 builder: (context) => const OtpLoginScreen(),
+              );
+
+            case '/otp-login-kinetic':
+              return MaterialPageRoute(
+                builder: (context) => const KineticOtpLoginScreen(),
               );
 
             case '/register':
@@ -96,9 +104,25 @@ class MyApp extends StatelessWidget {
               final args = settings.arguments as Map<String, dynamic>?;
               return MaterialPageRoute(
                 builder: (context) => OtpVerifyScreen(
-                  email: args?['email'] ?? '',
+                  phone: args?['phone'] ?? '',
                   isRegistration: args?['isRegistration'] ?? false,
                 ),
+              );
+
+            case '/otp-verify-kinetic':
+              final args = settings.arguments as Map<String, dynamic>?;
+              return MaterialPageRoute(
+                builder: (context) => KineticOtpVerifyScreen(
+                  phone: args?['phone'] ?? '',
+                  isRegistration: args?['isRegistration'] ?? false,
+                ),
+              );
+
+            case '/complete-registration':
+              final args = settings.arguments as Map<String, dynamic>?;
+              return MaterialPageRoute(
+                builder: (context) => const CompleteRegistrationScreen(),
+                settings: RouteSettings(arguments: args),
               );
 
             case '/profile':

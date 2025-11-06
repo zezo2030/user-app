@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/errors/failures.dart';
-import '../entities/auth_response_entity.dart';
 import '../repositories/auth_repository.dart';
 
 class RegisterVerifyOtpUseCase {
@@ -8,12 +7,12 @@ class RegisterVerifyOtpUseCase {
 
   RegisterVerifyOtpUseCase(this.repository);
 
-  Future<Either<Failure, AuthResponseEntity>> call({
-    required String email,
+  Future<Either<Failure, Map<String, dynamic>>> call({
+    required String phone,
     required String otp,
   }) async {
     return await repository.registerVerifyOtp(
-      email: email,
+      phone: phone,
       otp: otp,
     );
   }

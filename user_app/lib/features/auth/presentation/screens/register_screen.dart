@@ -16,15 +16,11 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _phoneController = TextEditingController();
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -39,7 +35,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               context,
               '/otp-verify',
               arguments: {
-                'email': _emailController.text.trim(),
+                'phone': _phoneController.text.trim(),
                 'isRegistration': true,
               },
             );
@@ -85,55 +81,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                     const SizedBox(height: 32),
 
-                    // Name Field
+                    // Phone Field
                     CustomTextField(
-                      label: 'name'.tr(),
-                      hint: 'name_hint'.tr(),
-                      controller: _nameController,
+                      label: 'phone'.tr(),
+                      hint: 'phone_hint'.tr(),
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'name_required'.tr();
-                        }
-                        if (value.length < 2) {
-                          return 'name_too_short'.tr();
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Email Field
-                    CustomTextField(
-                      label: 'email'.tr(),
-                      hint: 'email_hint'.tr(),
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'email_required'.tr();
-                        }
-                        if (!value.contains('@')) {
-                          return 'email_invalid'.tr();
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Password Field
-                    CustomTextField(
-                      label: 'password'.tr(),
-                      hint: 'password_hint'.tr(),
-                      controller: _passwordController,
-                      obscureText: true,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'password_required'.tr();
-                        }
-                        if (value.length < 6) {
-                          return 'password_too_short'.tr();
+                          return 'phone_required'.tr();
                         }
                         return null;
                       },
@@ -141,51 +97,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                     const SizedBox(height: 24),
 
-                    // Terms and Conditions
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: true, // You can add state management for this
-                          onChanged: (value) {
-                            // Handle terms acceptance
-                          },
-                        ),
-                        Expanded(
-                          child: Text.rich(
-                            TextSpan(
-                              text: 'terms_acceptance'.tr(),
-                              children: [
-                                TextSpan(
-                                  text: 'terms_and_conditions'.tr(),
-                                  style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Register Button
+                    // Send OTP Button
                     CustomButton(
-                      text: 'register',
+                      text: 'send_otp',
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          // Register with OTP via email
                           context.read<AuthCubit>().registerSendOtp(
-                            name: _nameController.text.trim(),
-                            email: _emailController.text.trim(),
-                            password: _passwordController.text,
+                            phone: _phoneController.text.trim(),
                           );
                         }
                       },
-                      icon: const Icon(Icons.email, size: 20),
+                      icon: const Icon(Icons.phone, size: 20),
                     ),
 
                     const SizedBox(height: 24),

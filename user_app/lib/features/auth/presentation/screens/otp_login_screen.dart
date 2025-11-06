@@ -17,17 +17,14 @@ class OtpLoginScreen extends StatefulWidget {
 
 class _OtpLoginScreenState extends State<OtpLoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _otpController = TextEditingController();
-  final _nameController = TextEditingController();
   bool _otpSent = false;
-  bool _isNewUser = false;
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _phoneController.dispose();
     _otpController.dispose();
-    _nameController.dispose();
     super.dispose();
   }
 
@@ -52,19 +49,7 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
             );
           } else if (state is OtpVerified) {
             print('✅ OTP Login Screen: OTP verified successfully');
-            if (state.authResponse.isNewUser == true) {
-              setState(() {
-                _isNewUser = true;
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('new_user_detected'.tr()),
-                  backgroundColor: Colors.blue,
-                ),
-              );
-            } else {
-              Navigator.pushReplacementNamed(context, '/main');
-            }
+            Navigator.pushReplacementNamed(context, '/main');
           } else if (state is Authenticated) {
             Navigator.pushReplacementNamed(context, '/main');
           } else if (state is AuthError) {
@@ -111,18 +96,15 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
                     const SizedBox(height: 32),
 
                     if (!_otpSent) ...[
-                      // Email Field
+                      // Phone Field
                       CustomTextField(
-                        label: 'email'.tr(),
-                        hint: 'email_hint'.tr(),
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
+                        label: 'phone'.tr(),
+                        hint: 'phone_hint'.tr(),
+                        controller: _phoneController,
+                        keyboardType: TextInputType.phone,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'email_required'.tr();
-                          }
-                          if (!value.contains('@')) {
-                            return 'email_invalid'.tr();
+                            return 'phone_required'.tr();
                           }
                           return null;
                         },
@@ -136,23 +118,18 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             context.read<AuthCubit>().sendOtp(
-                              email: _emailController.text.trim(),
+                              phone: _phoneController.text.trim(),
                             );
                           }
                         },
-                        icon: const Icon(Icons.email, size: 20),
+                        icon: const Icon(Icons.phone, size: 20),
                       ),
                     ] else ...[
                       // OTP Input Field
                       OtpInputField(
                         controller: _otpController,
                         onCompleted: (otp) {
-                          if (_isNewUser) {
-                            // Show name field for new users
-                            _showNameDialog();
-                          } else {
-                            _verifyOtp();
-                          }
+                          _verifyOtp();
                         },
                       ),
 
@@ -163,11 +140,7 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
                         text: 'verify_otp',
                         onPressed: () {
                           if (_otpController.text.length == 6) {
-                            if (_isNewUser) {
-                              _showNameDialog();
-                            } else {
-                              _verifyOtp();
-                            }
+                            _verifyOtp();
                           }
                         },
                         icon: const Icon(Icons.verified, size: 20),
@@ -179,7 +152,7 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
                       TextButton(
                         onPressed: () {
                           context.read<AuthCubit>().sendOtp(
-                            email: _emailController.text.trim(),
+                            phone: _phoneController.text.trim(),
                           );
                         },
                         child: Text('resend_otp'.tr()),
@@ -210,41 +183,8 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
 
   void _verifyOtp() {
     context.read<AuthCubit>().verifyOtp(
-      email: _emailController.text.trim(),
+      phone: _phoneController.text.trim(),
       otp: _otpController.text,
-      name: _isNewUser ? _nameController.text.trim() : null,
-    );
-  }
-
-  void _showNameDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('name_required'.tr()),
-        content: CustomTextField(
-          label: 'name'.tr(),
-          controller: _nameController,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'name_required'.tr();
-            }
-            return null;
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('cancel'.tr()),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _verifyOtp();
-            },
-            child: Text('confirm'.tr()),
-          ),
-        ],
-      ),
     );
   }
 }

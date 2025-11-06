@@ -6,7 +6,7 @@ import '../models/update_profile_dto.dart';
 
 abstract class AuthRemoteDataSource {
   Future<AuthResponseModel> login({
-    required String identifier,
+    required String phone,
     required String password,
   });
 
@@ -18,24 +18,28 @@ abstract class AuthRemoteDataSource {
     String language = 'ar',
   });
 
-  Future<bool> sendOtp({required String email, String language = 'ar'});
+  Future<bool> sendOtp({required String phone, String language = 'ar'});
 
   Future<AuthResponseModel> verifyOtp({
-    required String email,
+    required String phone,
     required String otp,
-    String? name,
   });
 
   Future<bool> registerSendOtp({
-    required String name,
-    required String email,
-    required String password,
+    required String phone,
     String language = 'ar',
   });
 
-  Future<AuthResponseModel> registerVerifyOtp({
-    required String email,
+  Future<Map<String, dynamic>> registerVerifyOtp({
+    required String phone,
     required String otp,
+  });
+
+  Future<AuthResponseModel> completeRegistration({
+    required String phone,
+    required String name,
+    required String password,
+    String language = 'ar',
   });
 
   Future<UserModel> getProfile();
@@ -83,6 +87,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       userMap['createdAt'] =
           userMap['createdAt'] ?? DateTime.now().toIso8601String();
       normalized['user'] = userMap;
+    } else {
+      // If no user data (e.g., refresh token response), create a minimal user object
+      // This will be replaced by getProfile() call after token refresh
+      normalized['user'] = {
+        'id': '',
+        'email': '',
+        'name': 'User',
+        'language': 'ar',
+        'roles': <String>[],
+        'isActive': true,
+        'createdAt': DateTime.now().toIso8601String(),
+      };
     }
 
     return normalized;
@@ -90,6 +106,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   Map<String, dynamic> _normalizeUserPayload(Map<String, dynamic> json) {
     final Map<String, dynamic> userMap = Map<String, dynamic>.from(json);
+    
+    // Handle nullable email - set to empty string if null
+    userMap['email'] = userMap['email'] ?? '';
+    
+    // Handle nullable phone - keep as is (already nullable in model)
+    // userMap['phone'] is already handled as nullable
+    
     userMap['language'] = userMap['language'] ?? 'ar';
     userMap['roles'] = (userMap['roles'] is List)
         ? userMap['roles']
@@ -101,13 +124,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<AuthResponseModel> login({
-    required String identifier,
+    required String phone,
     required String password,
   }) async {
     try {
       final response = await dio.post(
         ApiConstants.loginEndpoint,
-        data: {'identifier': identifier, 'password': password},
+        data: {'phone': phone, 'password': password},
       );
 
       final dynamic responseData = response.data;
@@ -166,14 +189,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<bool> sendOtp({required String email, String language = 'ar'}) async {
+  Future<bool> sendOtp({required String phone, String language = 'ar'}) async {
     try {
       print('📤 Sending OTP request to: ${ApiConstants.sendOtpEndpoint}');
-      print('📤 Request data: {email: $email, language: $language}');
+      print('📤 Request data: {phone: $phone, language: $language}');
 
       final response = await dio.post(
         ApiConstants.sendOtpEndpoint,
-        data: {'email': email, 'language': language},
+        data: {'phone': phone, 'language': language},
       );
 
       print('📥 OTP Response status: ${response.statusCode}');
@@ -188,19 +211,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<AuthResponseModel> verifyOtp({
-    required String email,
+    required String phone,
     required String otp,
-    String? name,
   }) async {
     try {
       print(
         '📤 Sending verify OTP request to: ${ApiConstants.verifyOtpEndpoint}',
       );
-      print('📤 Request data: {email: $email, otp: $otp, name: $name}');
+      print('📤 Request data: {phone: $phone, otp: $otp}');
 
       final response = await dio.post(
         ApiConstants.verifyOtpEndpoint,
-        data: {'email': email, 'otp': otp, if (name != null) 'name': name},
+        data: {'phone': phone, 'otp': otp},
       );
 
       print('📥 Verify OTP Response status: ${response.statusCode}');
@@ -223,18 +245,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<bool> registerSendOtp({
-    required String name,
-    required String email,
-    required String password,
+    required String phone,
     String language = 'ar',
   }) async {
     try {
       final response = await dio.post(
         ApiConstants.registerSendOtpEndpoint,
         data: {
-          'name': name,
-          'email': email,
-          'password': password,
+          'phone': phone,
           'language': language,
         },
       );
@@ -246,14 +264,45 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<AuthResponseModel> registerVerifyOtp({
-    required String email,
+  Future<Map<String, dynamic>> registerVerifyOtp({
+    required String phone,
     required String otp,
   }) async {
     try {
       final response = await dio.post(
         ApiConstants.registerVerifyOtpEndpoint,
-        data: {'email': email, 'otp': otp},
+        data: {'phone': phone, 'otp': otp},
+      );
+
+      final dynamic responseData = response.data;
+      final Map<String, dynamic> json = responseData is Map<String, dynamic>
+          ? (responseData['data'] is Map<String, dynamic>
+                ? responseData['data'] as Map<String, dynamic>
+                : responseData)
+          : <String, dynamic>{};
+
+      return json;
+    } catch (e) {
+      throw Exception('Register verify OTP failed: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<AuthResponseModel> completeRegistration({
+    required String phone,
+    required String name,
+    required String password,
+    String language = 'ar',
+  }) async {
+    try {
+      final response = await dio.post(
+        ApiConstants.completeRegistrationEndpoint,
+        data: {
+          'phone': phone,
+          'name': name,
+          'password': password,
+          'language': language,
+        },
       );
 
       final dynamic responseData = response.data;
@@ -266,7 +315,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final normalized = _normalizeAuthPayload(json);
       return AuthResponseModel.fromJson(normalized);
     } catch (e) {
-      throw Exception('Register verify OTP failed: ${e.toString()}');
+      throw Exception('Complete registration failed: ${e.toString()}');
     }
   }
 

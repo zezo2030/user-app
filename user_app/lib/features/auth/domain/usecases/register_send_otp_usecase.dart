@@ -8,15 +8,11 @@ class RegisterSendOtpUseCase {
   RegisterSendOtpUseCase(this.repository);
 
   Future<Either<Failure, bool>> call({
-    required String name,
-    required String email,
-    required String password,
+    required String phone,
     String language = 'ar',
   }) async {
     return await repository.registerSendOtp(
-      name: name,
-      email: email,
-      password: password,
+      phone: phone,
       language: language,
     );
   }

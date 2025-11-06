@@ -77,6 +77,14 @@
   "otp_sent": "OTP sent successfully",
   "otp_verified": "OTP verified successfully",
   "otp_invalid": "Invalid or expired OTP",
+  "otp_expired_title": "OTP Expired",
+  "otp_expired_message": "The verification code has expired. Please request a new code",
+  "otp_invalid_title": "Invalid Code",
+  "otp_invalid_message": "The verification code you entered is incorrect. Please try again",
+  "phone_not_provided": "Phone number not provided",
+  "complete_registration": "Complete Registration",
+  "complete_registration_subtitle": "Please enter your name and password to complete registration",
+  "passwords_do_not_match": "Passwords do not match",
   "token_expired": "Token expired",
   "session_expired": "Session expired",
   "logout_success": "Logout successful",
@@ -466,5 +474,9 @@
   "show_qr": "Show QR",
   "ticket": "Ticket",
   "copy_ticket_id": "Copy ticket ID",
-  "copied": "Copied"
+  "copied": "Copied",
+  "view_map": "View Map",
+  "branches_map": "Branches Map",
+  "my_location": "My Location",
+  "no_branches_with_location": "No branches with location data"
 }

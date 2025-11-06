@@ -77,6 +77,14 @@
   "otp_sent": "تم إرسال رمز التحقق",
   "otp_verified": "تم تأكيد رمز التحقق",
   "otp_invalid": "رمز التحقق غير صالح أو منتهي الصلاحية",
+  "otp_expired_title": "انتهت صلاحية الرمز",
+  "otp_expired_message": "انتهت صلاحية رمز التحقق. يرجى طلب رمز جديد",
+  "otp_invalid_title": "رمز غير صحيح",
+  "otp_invalid_message": "رمز التحقق الذي أدخلته غير صحيح. يرجى المحاولة مرة أخرى",
+  "phone_not_provided": "لم يتم توفير رقم الهاتف",
+  "complete_registration": "إكمال التسجيل",
+  "complete_registration_subtitle": "يرجى إدخال اسمك وكلمة المرور لإكمال التسجيل",
+  "passwords_do_not_match": "كلمات المرور غير متطابقة",
   "token_expired": "انتهت صلاحية الرمز",
   "session_expired": "انتهت الجلسة",
   "logout_success": "تم تسجيل الخروج بنجاح",
@@ -471,4 +479,8 @@
   ,"ticket":"تذكرة"
   ,"copy_ticket_id":"نسخ رقم التذكرة"
   ,"copied":"تم النسخ"
+  ,"view_map":"عرض الخريطة"
+  ,"branches_map":"خريطة الفروع"
+  ,"my_location":"موقعي"
+  ,"no_branches_with_location":"لا توجد فروع بمواقع محددة"
 }

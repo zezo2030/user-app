@@ -9,14 +9,12 @@ class VerifyOtpUseCase {
   VerifyOtpUseCase(this.repository);
 
   Future<Either<Failure, AuthResponseEntity>> call({
-    required String email,
+    required String phone,
     required String otp,
-    String? name,
   }) async {
     return await repository.verifyOtp(
-      email: email,
+      phone: phone,
       otp: otp,
-      name: name,
     );
   }
 }

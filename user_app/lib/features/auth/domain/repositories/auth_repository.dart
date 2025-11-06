@@ -5,9 +5,9 @@ import '../entities/user_entity.dart';
 import '../../data/models/update_profile_dto.dart';
 
 abstract class AuthRepository {
-  // Login with email/phone and password
+  // Login with phone and password
   Future<Either<Failure, AuthResponseEntity>> login({
-    required String identifier,
+    required String phone,
     required String password,
   });
 
@@ -22,29 +22,34 @@ abstract class AuthRepository {
 
   // Send OTP for login
   Future<Either<Failure, bool>> sendOtp({
-    required String email,
+    required String phone,
     String language = 'ar',
   });
 
   // Verify OTP for login
   Future<Either<Failure, AuthResponseEntity>> verifyOtp({
-    required String email,
+    required String phone,
     required String otp,
-    String? name,
   });
 
   // Send OTP for registration
   Future<Either<Failure, bool>> registerSendOtp({
-    required String name,
-    required String email,
-    required String password,
+    required String phone,
     String language = 'ar',
   });
 
   // Verify OTP for registration
-  Future<Either<Failure, AuthResponseEntity>> registerVerifyOtp({
-    required String email,
+  Future<Either<Failure, Map<String, dynamic>>> registerVerifyOtp({
+    required String phone,
     required String otp,
+  });
+
+  // Complete registration with name and password
+  Future<Either<Failure, AuthResponseEntity>> completeRegistration({
+    required String phone,
+    required String name,
+    required String password,
+    String language = 'ar',
   });
 
   // Get user profile

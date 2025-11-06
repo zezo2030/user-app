@@ -32,6 +32,7 @@ class ApiConstants {
   static const String verifyOtpEndpoint = '/auth/otp/verify';
   static const String registerSendOtpEndpoint = '/auth/register/otp/send';
   static const String registerVerifyOtpEndpoint = '/auth/register/otp/verify';
+  static const String completeRegistrationEndpoint = '/auth/register/complete';
   static const String profileEndpoint = '/auth/me';
   static const String refreshTokenEndpoint = '/auth/refresh';
   static const String emailConfigEndpoint = '/auth/email-config';

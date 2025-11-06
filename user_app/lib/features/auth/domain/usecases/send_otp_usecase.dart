@@ -8,11 +8,11 @@ class SendOtpUseCase {
   SendOtpUseCase(this.repository);
 
   Future<Either<Failure, bool>> call({
-    required String email,
+    required String phone,
     String language = 'ar',
   }) async {
     return await repository.sendOtp(
-      email: email,
+      phone: phone,
       language: language,
     );
   }

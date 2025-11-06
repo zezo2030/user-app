@@ -25,12 +25,12 @@ class Authenticated extends AuthState {
 class Unauthenticated extends AuthState {}
 
 class OtpSent extends AuthState {
-  final String email;
+  final String phone;
 
-  const OtpSent({required this.email});
+  const OtpSent({required this.phone});
 
   @override
-  List<Object> get props => [email];
+  List<Object> get props => [phone];
 }
 
 class OtpVerified extends AuthState {
@@ -43,12 +43,21 @@ class OtpVerified extends AuthState {
 }
 
 class RegisterOtpSent extends AuthState {
-  final String email;
+  final String phone;
 
-  const RegisterOtpSent({required this.email});
+  const RegisterOtpSent({required this.phone});
 
   @override
-  List<Object> get props => [email];
+  List<Object> get props => [phone];
+}
+
+class RegistrationIncomplete extends AuthState {
+  final String phone;
+
+  const RegistrationIncomplete({required this.phone});
+
+  @override
+  List<Object> get props => [phone];
 }
 
 class RegisterSuccess extends AuthState {

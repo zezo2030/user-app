@@ -1,74 +1,247 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+import 'package:iconsax/iconsax.dart';
 
-class HomeHeaderWidget extends StatefulWidget {
+/// Home header widget matching Figma design with gradient background,
+/// notification bell, and Kinetic logo.
+class HomeHeaderWidget extends StatelessWidget {
   const HomeHeaderWidget({super.key});
 
   @override
-  State<HomeHeaderWidget> createState() => _HomeHeaderWidgetState();
-}
-
-class _HomeHeaderWidgetState extends State<HomeHeaderWidget>
-    with TickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
-      vsync: this,
-    );
-
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
-    );
-
-    _slideAnimation =
-        Tween<Offset>(begin: const Offset(0, -0.3), end: Offset.zero).animate(
-          CurvedAnimation(
-            parent: _animationController,
-            curve: Curves.easeOutCubic,
-          ),
-        );
-
-    _animationController.forward();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _animationController,
-      builder: (context, child) {
-        return FadeTransition(
-          opacity: _fadeAnimation,
-          child: SlideTransition(
-            position: _slideAnimation,
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    AppColors.luxuryBackground,
-                    AppColors.luxuryBackground.withOpacity(0.8),
-                  ],
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Header height – slightly reduced to tighten space between sections
+    final headerHeight = screenHeight * 0.25;
+
+    return Container(
+      height: headerHeight,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        // Gradient tweaked to match Figma (pink → red → orange)
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFFFF4B8B), // Pink
+            Color(0xFFFF1744), // Deep red
+            Color(0xFFFF9100), // Orange
+          ],
+          stops: [0.0, 0.55, 1.0],
+        ),
+        // Border radius only at the bottom
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
+      ),
+      child: Stack(
+        children: [
+          // Decorative background shapes
+          _buildDecorativeShapes(screenWidth, headerHeight),
+
+          // Top row: logo + notification button
+          SafeArea(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Logo section (left) with specific padding from edges
+                Padding(
+                  padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
+                  child: _buildLogoSection(),
                 ),
-              ),
-              child: const SizedBox.shrink(),
+
+                // Notification bell icon on the opposite side
+                Padding(
+                  padding: const EdgeInsets.only(right: 16, top: 16, left: 16),
+                  child: _buildNotificationButton(context),
+                ),
+              ],
             ),
           ),
-        );
-      },
+
+          // Middle title text
+          Positioned(
+            left: 16,
+            right: 16,
+            top:
+                130, // fixed distance from top (logo height ~100 + padding ~30)
+            child: Align(
+              alignment: Alignment.center,
+              child: Text(
+                'وش ودك تحجز اليوم؟',
+                textAlign: TextAlign.center,
+                style:
+                    Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                    ) ??
+                    const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+            ),
+          ),
+
+          // Bottom booking options row (tickets / school trips / events)
+          Positioned(
+            left: 16,
+            right: 16,
+            bottom: 12,
+            child: _buildBookingOptionsRow(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Builds the notification bell button in the top-left
+  Widget _buildNotificationButton(BuildContext context) {
+    return Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.12),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            Navigator.pushNamed(context, '/notifications');
+          },
+          borderRadius: BorderRadius.circular(22),
+          child: const Icon(
+            Iconsax.notification,
+            color: Color(0xFFFF1744), // Match Figma primary red
+            size: 24,
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Builds the logo section in the top-right
+  Widget _buildLogoSection() {
+    return SizedBox(
+      height: 100, // Slightly larger logo as requested
+      child: ColorFiltered(
+        colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+        child: Image.asset('assets/imgs/logoheader.png', fit: BoxFit.contain),
+      ),
+    );
+  }
+
+  /// Booking options row (tickets / school trips / private events)
+  Widget _buildBookingOptionsRow() {
+    return Row(
+      children: [
+        // First item uses the provided image (log1.png) instead of the card UI
+        Expanded(
+          child: SizedBox(
+            height: 48,
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: Image.asset('assets/imgs/log1.png'),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        // Second item uses the provided image (log2.png) for school trips
+        Expanded(
+          child: SizedBox(
+            height: 48,
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: Image.asset('assets/imgs/log2.png'),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        // Third item uses the provided image (log3.png) for special events
+        Expanded(
+          child: SizedBox(
+            height: 48,
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: Image.asset('assets/imgs/log3.png'),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Builds decorative background shapes
+  Widget _buildDecorativeShapes(double width, double height) {
+    return Stack(
+      children: [
+        // Large curved shape in top-right
+        Positioned(
+          top: -height * 0.3,
+          right: -width * 0.1,
+          child: Container(
+            width: width * 0.6,
+            height: height * 0.8,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [Colors.white.withOpacity(0.1), Colors.transparent],
+              ),
+            ),
+          ),
+        ),
+        // Medium curved shape in top-left
+        Positioned(
+          top: -height * 0.2,
+          left: -width * 0.15,
+          child: Container(
+            width: width * 0.4,
+            height: height * 0.6,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [Colors.white.withOpacity(0.08), Colors.transparent],
+              ),
+            ),
+          ),
+        ),
+        // Small accent shapes
+        Positioned(
+          top: height * 0.15,
+          right: width * 0.15,
+          child: Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white.withOpacity(0.05),
+            ),
+          ),
+        ),
+        Positioned(
+          top: height * 0.25,
+          left: width * 0.2,
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white.withOpacity(0.05),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

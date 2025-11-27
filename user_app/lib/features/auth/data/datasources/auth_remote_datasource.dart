@@ -203,8 +203,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       print('📥 OTP Response data: ${response.data}');
 
       return response.data['success'] == true;
+    } on DioException catch (e) {
+      // Re-throw DioException so the repository layer can convert it properly
+      print('❌ Send OTP Dio error: ${e.toString()}');
+      rethrow;
     } catch (e) {
-      print('❌ Send OTP error: ${e.toString()}');
+      // Any non-Dio error (e.g., parsing) will still be wrapped in a generic Exception
+      print('❌ Send OTP unknown error: ${e.toString()}');
       throw Exception('Send OTP failed: ${e.toString()}');
     }
   }

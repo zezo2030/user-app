@@ -46,6 +46,21 @@ class BookingsApi {
     return (items: items, hasMore: hasMore, nextPage: page + 1);
   }
 
+  Future<BookingModel> getBookingById(String id) async {
+    final response = await _dio.get(
+      '${core.ApiConstants.baseUrl}/bookings/$id',
+    );
+
+    final dynamic responseData = response.data;
+    final Map<String, dynamic> raw = responseData is Map<String, dynamic>
+        ? (responseData['data'] is Map<String, dynamic>
+              ? responseData['data'] as Map<String, dynamic>
+              : responseData)
+        : <String, dynamic>{};
+
+    return BookingModel.fromJson(raw);
+  }
+
   Future<void> cancelBooking({required String id, String? reason}) async {
     await _dio.post(
       '${core.ApiConstants.baseUrl}/bookings/$id/cancel',

@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import '../../activities/data/bookings_api.dart';
 import '../../activities/data/bookings_repository.dart';
 import '../../activities/domain/booking_status.dart';
@@ -187,8 +186,9 @@ class _MyBookingsViewState extends State<_MyBookingsView> {
                   child: BookingCard(
                     booking: b,
                     ticketsDs: widget.ticketsDs,
-                    onDetails: () {
-                      Navigator.of(context).push(
+                    onDetails: () async {
+                      // الانتقال إلى صفحة التفاصيل وانتظار النتيجة
+                      final result = await Navigator.of(context).push(
                         PageRouteBuilder(
                           transitionDuration: const Duration(milliseconds: 200),
                           pageBuilder: (_, animation, __) => FadeTransition(
@@ -207,6 +207,10 @@ class _MyBookingsViewState extends State<_MyBookingsView> {
                           },
                         ),
                       );
+                      // إذا تم إرجاع true (مثل بعد الدفع أو الإلغاء)، قم بتحديث البيانات
+                      if (result == true && mounted) {
+                        _load();
+                      }
                     },
                   ),
                 ),

@@ -1,28 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'core/constants/api_constants.dart';
 import 'core/theme/app_theme.dart';
+import 'core/services/firebase_service.dart';
 import 'features/auth/di/auth_injection.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
-import 'features/auth/presentation/screens/welcome_screen.dart';
-import 'features/auth/presentation/screens/kinetic_login_screen.dart';
-import 'features/auth/presentation/screens/otp_login_screen.dart';
-import 'features/auth/presentation/screens/kinetic_otp_login_screen.dart';
-import 'features/auth/presentation/screens/kinetic_otp_verify_screen.dart';
-import 'features/auth/presentation/screens/register_screen.dart';
-import 'features/auth/presentation/screens/otp_verify_screen.dart';
-import 'features/auth/presentation/screens/complete_registration_screen.dart';
-import 'features/auth/presentation/screens/profile_screen.dart';
-import 'features/main/presentation/screens/main_screen.dart';
-import 'features/home/presentation/pages/branch_details_page.dart';
-import 'features/home/presentation/pages/hall_details_page.dart';
-import 'features/bookings/presentation/my_bookings_page.dart';
+import 'core/routes/app_route_generator.dart';
+import 'features/notifications/data/models/notification_model.dart';
+import 'features/notifications/data/datasources/notifications_local_datasource.dart';
+import 'features/notifications/services/firebase_messaging_service.dart';
+import 'features/notifications/presentation/cubit/notifications_cubit.dart';
+
+// Background message handler
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await firebaseBackgroundMessageHandler(message);
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   print('🚀 Starting User App...');
+
+  // Initialize Firebase
+  try {
+    await FirebaseService.instance.initialize();
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    print('✅ Firebase initialized');
+  } catch (e) {
+    print('⚠️ Firebase initialization failed: $e');
+  }
+
+  // Initialize Hive
+  await Hive.initFlutter();
+  Hive.registerAdapter(NotificationModelAdapter());
+  print('✅ Hive initialized');
+
+  // Initialize Notification Services
+  final localDataSource = NotificationsLocalDataSource();
+  await localDataSource.init();
+
+  final messagingService = FirebaseMessagingService(localDataSource);
+  await messagingService.initialize();
+  print('✅ Notification services initialized');
 
   // Initialize EasyLocalization
   await EasyLocalization.ensureInitialized();
@@ -41,18 +64,26 @@ void main() async {
       path: 'assets/translations',
       fallbackLocale: const Locale('ar'),
       startLocale: const Locale('ar'),
-      child: const MyApp(),
+      child: MyApp(localDataSource: localDataSource),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final NotificationsLocalDataSource localDataSource;
+
+  const MyApp({super.key, required this.localDataSource});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<AuthCubit>()..checkAuthStatus(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => sl<AuthCubit>()..checkAuthStatus()),
+        BlocProvider(
+          create: (context) =>
+              NotificationsCubit(localDataSource)..loadNotifications(),
+        ),
+      ],
       child: MaterialApp(
         title: 'User App',
         debugShowCheckedModeBanner: false,
@@ -72,94 +103,8 @@ class MyApp extends StatelessWidget {
         themeMode: ThemeMode.light,
 
         // Routes
-        initialRoute: '/welcome',
-        onGenerateRoute: (settings) {
-          switch (settings.name) {
-            case '/welcome':
-              return MaterialPageRoute(
-                builder: (context) => const WelcomeScreen(),
-              );
-
-            case '/login':
-              return MaterialPageRoute(
-                builder: (context) => const KineticLoginScreen(),
-              );
-
-            case '/otp-login':
-              return MaterialPageRoute(
-                builder: (context) => const OtpLoginScreen(),
-              );
-
-            case '/otp-login-kinetic':
-              return MaterialPageRoute(
-                builder: (context) => const KineticOtpLoginScreen(),
-              );
-
-            case '/register':
-              return MaterialPageRoute(
-                builder: (context) => const RegisterScreen(),
-              );
-
-            case '/otp-verify':
-              final args = settings.arguments as Map<String, dynamic>?;
-              return MaterialPageRoute(
-                builder: (context) => OtpVerifyScreen(
-                  phone: args?['phone'] ?? '',
-                  isRegistration: args?['isRegistration'] ?? false,
-                ),
-              );
-
-            case '/otp-verify-kinetic':
-              final args = settings.arguments as Map<String, dynamic>?;
-              return MaterialPageRoute(
-                builder: (context) => KineticOtpVerifyScreen(
-                  phone: args?['phone'] ?? '',
-                  isRegistration: args?['isRegistration'] ?? false,
-                ),
-              );
-
-            case '/complete-registration':
-              final args = settings.arguments as Map<String, dynamic>?;
-              return MaterialPageRoute(
-                builder: (context) => const CompleteRegistrationScreen(),
-                settings: RouteSettings(arguments: args),
-              );
-
-            case '/profile':
-              return MaterialPageRoute(
-                builder: (context) => const ProfileScreen(),
-              );
-
-            case '/main':
-              return MaterialPageRoute(
-                builder: (context) => const MainScreen(),
-              );
-
-            case '/branch-details':
-              final args = settings.arguments as Map<String, dynamic>?;
-              return MaterialPageRoute(
-                builder: (context) =>
-                    BranchDetailsPage(branchId: args?['branchId'] ?? ''),
-              );
-
-            case '/hall-details':
-              final args = settings.arguments as Map<String, dynamic>?;
-              return MaterialPageRoute(
-                builder: (context) =>
-                    HallDetailsPage(hallId: args?['hallId'] ?? ''),
-              );
-
-            case '/my-bookings':
-              return MaterialPageRoute(
-                builder: (context) => const MyBookingsPage(),
-              );
-
-            default:
-              return MaterialPageRoute(
-                builder: (context) => const WelcomeScreen(),
-              );
-          }
-        },
+        initialRoute: AppRoutes.welcome,
+        onGenerateRoute: AppRouteGenerator.generateRoute,
       ),
     );
   }

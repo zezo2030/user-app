@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 class BannerEntity extends Equatable {
   final String id;
-  final String title;
+  final String? title;
   final String imageUrl;
   final String? link;
   final DateTime? startsAt;
@@ -13,7 +13,7 @@ class BannerEntity extends Equatable {
 
   const BannerEntity({
     required this.id,
-    required this.title,
+    this.title,
     required this.imageUrl,
     this.link,
     this.startsAt,
@@ -25,14 +25,14 @@ class BannerEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        title,
-        imageUrl,
-        link,
-        startsAt,
-        endsAt,
-        isActive,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    title,
+    imageUrl,
+    link,
+    startsAt,
+    endsAt,
+    isActive,
+    createdAt,
+    updatedAt,
+  ];
 }

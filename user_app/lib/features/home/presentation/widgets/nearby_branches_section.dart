@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../domain/entities/branch_entity.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/url_utils.dart';
@@ -24,10 +26,15 @@ class _NearbyBranchesSectionState extends State<NearbyBranchesSection>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+  late List<BranchEntity> _sortedBranches;
+  final Map<String, double> _branchDistances = {};
+  bool _isLoadingLocation = false;
+  String? _locationMessage;
 
   @override
   void initState() {
     super.initState();
+    _sortedBranches = List.from(widget.branches);
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -46,6 +53,17 @@ class _NearbyBranchesSectionState extends State<NearbyBranchesSection>
         );
 
     _animationController.forward();
+    _fetchNearbyBranches();
+  }
+
+  @override
+  void didUpdateWidget(covariant NearbyBranchesSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.branches != widget.branches) {
+      _sortedBranches = List.from(widget.branches);
+      _branchDistances.clear();
+      _fetchNearbyBranches();
+    }
   }
 
   @override
@@ -76,6 +94,47 @@ class _NearbyBranchesSectionState extends State<NearbyBranchesSection>
                   _buildSectionHeader(),
 
                   const SizedBox(height: 20),
+
+                  if (_isLoadingLocation)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation(
+                                Theme.of(context).primaryColor,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'detecting_location'.tr(),
+                              style: TextStyle(
+                                color: AppColors.luxuryTextSecondary,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  if (_locationMessage != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        _locationMessage!,
+                        style: TextStyle(
+                          color: AppColors.luxuryTextSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
 
                   // Branches List
                   _buildBranchesList(),
@@ -157,11 +216,10 @@ class _NearbyBranchesSectionState extends State<NearbyBranchesSection>
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: widget.branches.length,
+      itemCount: _sortedBranches.length,
       itemBuilder: (context, index) {
-        final branch = widget.branches[index];
-        // Mock distance data - in real app, this would be calculated based on user location
-        final distance = 1.5 + (index * 0.8);
+        final branch = _sortedBranches[index];
+        final distance = _branchDistances[branch.id];
 
         return _buildNearbyBranchCard(branch, distance, index);
       },
@@ -170,7 +228,7 @@ class _NearbyBranchesSectionState extends State<NearbyBranchesSection>
 
   Widget _buildNearbyBranchCard(
     BranchEntity branch,
-    double distance,
+    double? distance,
     int index,
   ) {
     return Container(
@@ -242,27 +300,28 @@ class _NearbyBranchesSectionState extends State<NearbyBranchesSection>
                             ),
                           ),
                           const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.luxuryRedGradient.colors.first
-                                  .withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              'distance_km'.tr(
-                                args: [distance.toStringAsFixed(1)],
+                          if (distance != null)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
                               ),
-                              style: TextStyle(
-                                color: AppColors.luxuryDeepRed,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
+                              decoration: BoxDecoration(
+                                color: AppColors.luxuryRedGradient.colors.first
+                                    .withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                'distance_km'.tr(
+                                  args: [distance.toStringAsFixed(1)],
+                                ),
+                                style: TextStyle(
+                                  color: AppColors.luxuryDeepRed,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
-                          ),
                         ],
                       ),
 
@@ -367,6 +426,95 @@ class _NearbyBranchesSectionState extends State<NearbyBranchesSection>
         ),
       ),
     );
+  }
+
+  Future<void> _fetchNearbyBranches() async {
+    if (_sortedBranches.isEmpty) return;
+    setState(() {
+      _isLoadingLocation = true;
+      _locationMessage = null;
+    });
+
+    final permissionGranted = await _ensurePermission();
+    if (!permissionGranted) {
+      setState(() {
+        _isLoadingLocation = false;
+        _locationMessage = 'location_permission_required'.tr();
+      });
+      return;
+    }
+
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      setState(() {
+        _isLoadingLocation = false;
+        _locationMessage = 'enable_location_services'.tr();
+      });
+      return;
+    }
+
+    try {
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      final branchesWithCoords = _sortedBranches
+          .where((b) => b.latitude != null && b.longitude != null)
+          .toList();
+
+      final branchesWithoutCoords = _sortedBranches
+          .where((b) => b.latitude == null || b.longitude == null)
+          .toList();
+
+      for (final branch in branchesWithCoords) {
+        final distanceMeters = Geolocator.distanceBetween(
+          position.latitude,
+          position.longitude,
+          branch.latitude!,
+          branch.longitude!,
+        );
+        _branchDistances[branch.id] = distanceMeters / 1000.0;
+      }
+
+      branchesWithCoords.sort((a, b) {
+        final distA = _branchDistances[a.id] ?? double.infinity;
+        final distB = _branchDistances[b.id] ?? double.infinity;
+        return distA.compareTo(distB);
+      });
+
+      setState(() {
+        _sortedBranches = [...branchesWithCoords, ...branchesWithoutCoords];
+        _isLoadingLocation = false;
+        _locationMessage = _branchDistances.isEmpty
+            ? 'no_location_data'.tr()
+            : null;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoadingLocation = false;
+        _locationMessage = 'location_error'.tr();
+      });
+    }
+  }
+
+  Future<bool> _ensurePermission() async {
+    PermissionStatus status = await Permission.location.status;
+
+    if (status.isGranted || status == PermissionStatus.limited) {
+      return true;
+    }
+
+    status = await Permission.location.request();
+
+    if (status.isGranted || status == PermissionStatus.limited) {
+      return true;
+    }
+
+    if (status.isPermanentlyDenied) {
+      await openAppSettings();
+    }
+
+    return false;
   }
 
   Widget _buildBranchThumb(BranchEntity branch) {

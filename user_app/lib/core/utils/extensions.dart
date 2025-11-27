@@ -69,6 +69,21 @@ extension DioExceptionToFailure on DioException {
               'Unable to connect to server. Please check your internet connection.',
         );
 
+      case DioExceptionType.unknown:
+        // Often happens when the server closes the connection early, e.g.:
+        // "Connection closed before full header was received"
+        final details = error?.toString() ?? message;
+        if (details != null &&
+            details.contains('Connection closed before full header was received')) {
+          return const NetworkFailure(
+            message:
+                'The server closed the connection unexpectedly. Please try again.',
+          );
+        }
+        return UnknownFailure(
+          message: details ?? 'An unknown error occurred.',
+        );
+
       default:
         return UnknownFailure(message: message ?? 'An unknown error occurred.');
     }

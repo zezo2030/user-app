@@ -67,23 +67,25 @@ class _ActivitiesViewState extends State<_ActivitiesView> {
           );
         }
 
-        if (state.bookings.isEmpty) {
+        if (state.bookings.isEmpty && !state.loading) {
           return Center(child: Text('no_bookings_found'.tr()));
         }
 
-        return RefreshIndicator(
-          onRefresh: () => context.read<ActivitiesCubit>().refresh(),
-          child: NotificationListener<ScrollNotification>(
-            onNotification: (notification) {
-              if (notification.metrics.pixels >=
-                      notification.metrics.maxScrollExtent - 200 &&
-                  state.canLoadMore &&
-                  !state.loading) {
-                context.read<ActivitiesCubit>().loadMore();
-              }
-              return false;
-            },
-            child: ListView.builder(
+        return Stack(
+          children: [
+            RefreshIndicator(
+              onRefresh: () => context.read<ActivitiesCubit>().refresh(),
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (notification) {
+                  if (notification.metrics.pixels >=
+                          notification.metrics.maxScrollExtent - 200 &&
+                      state.canLoadMore &&
+                      !state.loading) {
+                    context.read<ActivitiesCubit>().loadMore();
+                  }
+                  return false;
+                },
+                child: ListView.builder(
               itemCount: state.bookings.length + (state.canLoadMore ? 1 : 0),
               itemBuilder: (context, index) {
                 if (index >= state.bookings.length) {
@@ -96,8 +98,9 @@ class _ActivitiesViewState extends State<_ActivitiesView> {
                 return BookingCard(
                   booking: booking,
                   ticketsDs: context.read<ActivitiesCubit>().ticketsDs,
-                  onDetails: () {
-                    Navigator.of(context).push(
+                  onDetails: () async {
+                    // الانتقال إلى صفحة التفاصيل وانتظار النتيجة
+                    final result = await Navigator.of(context).push(
                       PageRouteBuilder(
                         transitionDuration: const Duration(milliseconds: 200),
                         pageBuilder: (_, animation, __) => FadeTransition(
@@ -116,11 +119,26 @@ class _ActivitiesViewState extends State<_ActivitiesView> {
                         },
                       ),
                     );
+                    // إذا تم إرجاع true (مثل بعد الدفع أو الإلغاء)، قم بتحديث البيانات
+                    if (result == true && mounted) {
+                      // إضافة تأخير بسيط لضمان تحديث البيانات من الخادم
+                      await Future.delayed(const Duration(milliseconds: 500));
+                      if (mounted) {
+                        await context.read<ActivitiesCubit>().refresh();
+                      }
+                    }
                   },
                 );
               },
             ),
           ),
+            ),
+            // مؤشر تحميل أثناء التحديث
+            if (state.loading && state.bookings.isNotEmpty)
+              const Center(
+                child: CircularProgressIndicator(),
+              ),
+          ],
         );
       },
     );

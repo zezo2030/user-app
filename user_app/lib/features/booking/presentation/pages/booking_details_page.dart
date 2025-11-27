@@ -5,7 +5,12 @@ import 'package:iconsax/iconsax.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../payments/presentation/cubit/payment_cubit.dart';
 import '../../../payments/di/payments_injection.dart' as payments_di;
+import '../../../wallet/presentation/cubit/wallet_cubit.dart';
+import '../../../wallet/presentation/cubit/wallet_state.dart';
+import '../../../auth/presentation/cubit/auth_cubit.dart';
+import '../../../auth/presentation/cubit/auth_state.dart';
 import '../../domain/entities/booking_entity.dart';
+import 'package:get_it/get_it.dart';
 import '../widgets/price_breakdown_card.dart';
 import '../../domain/entities/quote_entity.dart';
 import 'dart:convert';
@@ -18,7 +23,6 @@ import 'package:dio/dio.dart';
 import '../../../activities/data/bookings_api.dart';
 import '../widgets/ticket_card.dart';
 import '../../../../core/utils/share_utils.dart';
-// removed duplicate import
 
 class BookingDetailsPage extends StatelessWidget {
   final BookingEntity booking;
@@ -352,54 +356,17 @@ class BookingDetailsPage extends StatelessWidget {
         // لم نعد ننتقل لصفحة عامة؛ نعرض التذاكر هنا مباشرة
         // زر الإلغاء (إذا كان الحجز قابل للإلغاء)
         if (booking.status.toLowerCase() == 'pending') ...[
-          // زر الدفع الآن
+          // زر الدفع الآن مع اختيار طريقة الدفع
           SizedBox(
             width: double.infinity,
-            child: BlocProvider(
-              create: (_) {
-                // Ensure payments DI is initialized once
-                try {
-                  payments_di.initPayments();
-                } catch (_) {}
-                return payments_di.sl<PaymentCubit>();
-              },
-              child: BlocConsumer<PaymentCubit, PaymentState>(
-                listener: (context, state) {
-                  if (state is PaymentSuccess) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('payment_success'.tr()),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
-                    // بعد الدفع، يمكننا إعادة بناء تذاكر نفس الحجز في الصفحة
-                    // أو إظهار رسالة نجاح فقط
-                  } else if (state is PaymentFailure) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(state.message),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                },
-                builder: (context, state) {
-                  final isLoading = state is PaymentLoading;
-                  return ElevatedButton.icon(
-                    onPressed: isLoading
-                        ? null
-                        : () => context.read<PaymentCubit>().payForBooking(
-                            booking: booking,
-                          ),
-                    icon: const Icon(Iconsax.card),
-                    label: Text(isLoading ? 'processing'.tr() : 'pay_now'.tr()),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                  );
-                },
+            child: ElevatedButton.icon(
+              onPressed: () => _showPaymentMethodDialog(context),
+              icon: const Icon(Iconsax.card),
+              label: Text('pay_now'.tr()),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
               ),
             ),
           ),
@@ -645,43 +612,30 @@ class BookingDetailsPage extends StatelessWidget {
               const SizedBox(height: 12),
               Center(child: _buildQrWidget(qrData)),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  OutlinedButton.icon(
-                    onPressed: () async {
-                      await Clipboard.setData(ClipboardData(text: ticketId));
-                      if (!context.mounted) return;
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () async {
+                    try {
+                      HapticFeedback.selectionClick();
                       ScaffoldMessenger.of(
                         context,
-                      ).showSnackBar(SnackBar(content: Text('copied'.tr())));
-                    },
-                    icon: const Icon(Iconsax.copy),
-                    label: Text('copy_ticket_id'.tr()),
-                  ),
-                  const SizedBox(width: 8),
-                  OutlinedButton.icon(
-                    onPressed: () async {
-                      try {
-                        HapticFeedback.selectionClick();
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text('share'.tr())));
-                        await shareTicketQrPreferWhatsApp(
-                          context: context,
-                          ticketId: ticketId,
-                          qrData: qrData,
-                        );
-                      } catch (e) {
-                        if (!context.mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('unknown_error'.tr())),
-                        );
-                      }
-                    },
-                    icon: const Icon(Iconsax.export_1),
-                    label: Text('share'.tr()),
-                  ),
-                ],
+                      ).showSnackBar(SnackBar(content: Text('share'.tr())));
+                      await shareTicketQrPreferWhatsApp(
+                        context: context,
+                        ticketId: ticketId,
+                        qrData: qrData,
+                      );
+                    } catch (e) {
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('unknown_error'.tr())),
+                      );
+                    }
+                  },
+                  icon: const Icon(Iconsax.export_1),
+                  label: Text('share'.tr()),
+                ),
               ),
               const SizedBox(height: 8),
               Text(
@@ -765,41 +719,223 @@ class BookingDetailsPage extends StatelessWidget {
     );
   }
 
-  void _showCancelBookingDialog(BuildContext context) {
+  void _showPaymentMethodDialog(BuildContext context) {
+    final authState = context.read<AuthCubit>().state;
+    final user = authState is Authenticated ? authState.user : null;
+    final walletBalance = user?.wallet?.balance ?? 0.0;
+    final hasEnoughBalance = walletBalance >= booking.totalPrice;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        title: Text('select_payment_method'.tr()),
+        content: BlocProvider(
+          create: (_) {
+            final cubit = GetIt.instance<WalletCubit>();
+            if (cubit.state is WalletInitial) {
+              cubit.loadWallet();
+            }
+            return cubit;
+          },
+          child: BlocBuilder<WalletCubit, WalletState>(
+            builder: (context, walletState) {
+              double currentBalance = walletBalance;
+              bool currentHasEnoughBalance = hasEnoughBalance;
+
+              if (walletState is WalletLoaded) {
+                currentBalance = walletState.wallet.balance;
+                currentHasEnoughBalance = currentBalance >= booking.totalPrice;
+              }
+
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Credit Card
+                  ListTile(
+                    leading: const Icon(Iconsax.card, color: Colors.blue),
+                    title: Text('credit_card'.tr()),
+                    trailing: const Icon(Iconsax.arrow_left_2),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _processPayment(context, 'credit_card');
+                    },
+                  ),
+                  const Divider(),
+                  // Wallet
+                  ListTile(
+                    leading: const Icon(Iconsax.wallet_3, color: Colors.green),
+                    title: Text('pay_with_wallet'.tr()),
+                    subtitle: currentHasEnoughBalance
+                        ? Text('${'wallet_balance'.tr()}: ${currentBalance.toStringAsFixed(2)} ${'currency'.tr()}')
+                        : Text(
+                            'insufficient_balance'.tr(),
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                    trailing: currentHasEnoughBalance
+                        ? const Icon(Iconsax.arrow_left_2)
+                        : const Icon(Iconsax.info_circle, color: Colors.red),
+                    enabled: currentHasEnoughBalance,
+                    onTap: currentHasEnoughBalance
+                        ? () {
+                            Navigator.pop(context);
+                            _processPayment(context, 'wallet');
+                          }
+                        : null,
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('cancel'.tr()),
+          ),
+        ],
+      ),
+    );
+
+    // Load wallet balance
+    if (GetIt.instance<WalletCubit>().state is WalletInitial) {
+      GetIt.instance<WalletCubit>().loadWallet();
+    }
+  }
+
+  void _processPayment(BuildContext context, String method) {
+    try {
+      payments_di.initPayments();
+    } catch (_) {}
+
+    final paymentCubit = payments_di.sl<PaymentCubit>();
+    // حفظ context الصفحة الأصلية للعودة إليها بعد الدفع
+    final pageContext = context;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => BlocProvider.value(
+        value: paymentCubit,
+        child: BlocConsumer<PaymentCubit, PaymentState>(
+          listener: (dialogContext, state) async {
+            if (state is PaymentSuccess) {
+              Navigator.pop(dialogContext); // Close loading dialog
+              
+              // إظهار رسالة النجاح
+              ScaffoldMessenger.of(pageContext).showSnackBar(
+                SnackBar(
+                  content: Text('payment_success'.tr()),
+                  backgroundColor: Colors.green,
+                ),
+              );
+              
+              // جلب بيانات الحجز المحدثة من الخادم
+              try {
+                // إضافة تأخير بسيط لضمان تحديث البيانات في الخادم
+                await Future.delayed(const Duration(milliseconds: 500));
+                
+                if (!pageContext.mounted) return;
+                
+                // جلب بيانات الحجز المحدثة
+                final updatedBooking = await BookingsApi().getBookingById(booking.id);
+                
+                if (!pageContext.mounted) return;
+                
+                // إغلاق الصفحة الحالية والانتقال إلى صفحة تفاصيل الحجز المحدثة
+                Navigator.of(pageContext).pop(); // إغلاق الصفحة الحالية
+                
+                if (!pageContext.mounted) return;
+                
+                // الانتقال إلى صفحة تفاصيل الحجز المحدثة
+                Navigator.of(pageContext).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (_) => BookingDetailsPage(
+                      booking: updatedBooking,
+                      quote: quote,
+                      filterTicketIds: filterTicketIds,
+                    ),
+                  ),
+                );
+              } catch (e) {
+                // في حالة فشل جلب البيانات المحدثة، العودة للصفحة السابقة
+                if (!pageContext.mounted) return;
+                Navigator.of(pageContext).pop(true);
+              }
+            } else if (state is PaymentFailure) {
+              Navigator.pop(dialogContext); // Close loading dialog
+              ScaffoldMessenger.of(pageContext).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            final isLoading = state is PaymentLoading;
+            return AlertDialog(
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (isLoading) ...[
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    Text('processing'.tr()),
+                  ] else
+                    const CircularProgressIndicator(),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+
+    // Create payment intent and process
+    paymentCubit.payForBooking(
+      booking: booking,
+      method: method,
+    );
+  }
+
+  void _showCancelBookingDialog(BuildContext context) {
+    // حفظ context الصفحة الأصلية
+    final pageContext = context;
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
         title: Text('cancel_booking'.tr()),
         content: Text('cancel_booking_confirmation'.tr()),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: Text('no'.tr()),
           ),
           ElevatedButton(
             onPressed: () async {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
               // مؤشر انتظار
               showDialog(
-                context: context,
+                context: pageContext,
                 barrierDismissible: false,
                 builder: (_) =>
                     const Center(child: CircularProgressIndicator()),
               );
               try {
                 await BookingsApi().cancelBooking(id: booking.id);
-                if (!context.mounted) return;
-                Navigator.pop(context); // اغلاق مؤشر الانتظار
-                ScaffoldMessenger.of(context).showSnackBar(
+                if (!pageContext.mounted) return;
+                Navigator.pop(pageContext); // اغلاق مؤشر الانتظار
+                ScaffoldMessenger.of(pageContext).showSnackBar(
                   SnackBar(
                     content: Text('booking_cancelled'.tr()),
                     backgroundColor: Colors.green,
                   ),
                 );
-                Navigator.pop(context, true); // عودة مع نتيجة للتحديث
+                // العودة مع نتيجة true لتحديث البيانات في الصفحة السابقة
+                Navigator.of(pageContext).pop(true);
               } catch (e) {
-                if (!context.mounted) return;
-                Navigator.pop(context); // اغلاق مؤشر الانتظار
+                if (!pageContext.mounted) return;
+                Navigator.pop(pageContext); // اغلاق مؤشر الانتظار
                 String message = e.toString();
                 if (e is DioException) {
                   final data = e.response?.data;
@@ -812,7 +948,7 @@ class BookingDetailsPage extends StatelessWidget {
                     }
                   }
                 }
-                ScaffoldMessenger.of(context).showSnackBar(
+                ScaffoldMessenger.of(pageContext).showSnackBar(
                   SnackBar(content: Text(message), backgroundColor: Colors.red),
                 );
               }

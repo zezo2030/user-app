@@ -7,7 +7,7 @@ part 'banner_model.g.dart';
 class BannerModel extends BannerEntity {
   const BannerModel({
     required super.id,
-    required super.title,
+    super.title,
     required super.imageUrl,
     super.link,
     super.startsAt,
@@ -20,20 +20,20 @@ class BannerModel extends BannerEntity {
   factory BannerModel.fromJson(Map<String, dynamic> json) {
     return BannerModel(
       id: json['id']?.toString() ?? '',
-      title: json['title']?.toString() ?? '',
+      title: json['title']?.toString(),
       imageUrl: json['imageUrl']?.toString() ?? '',
       link: json['link']?.toString(),
-      startsAt: json['startsAt'] != null 
+      startsAt: json['startsAt'] != null
           ? DateTime.tryParse(json['startsAt'].toString())
           : null,
-      endsAt: json['endsAt'] != null 
+      endsAt: json['endsAt'] != null
           ? DateTime.tryParse(json['endsAt'].toString())
           : null,
       isActive: json['isActive'] == true,
-      createdAt: json['createdAt'] != null 
+      createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'].toString()) ?? DateTime.now()
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null 
+      updatedAt: json['updatedAt'] != null
           ? DateTime.tryParse(json['updatedAt'].toString()) ?? DateTime.now()
           : DateTime.now(),
     );

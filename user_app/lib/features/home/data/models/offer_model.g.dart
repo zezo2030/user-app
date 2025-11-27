@@ -7,24 +7,24 @@ part of 'offer_model.dart';
 // **************************************************************************
 
 OfferModel _$OfferModelFromJson(Map<String, dynamic> json) => OfferModel(
-  id: json['id'] as String,
-  title: json['title'] as String,
-  description: json['description'] as String?,
-  discountType: json['discountType'] as String,
-  discountValue: (json['discountValue'] as num).toDouble(),
-  startsAt: json['startsAt'] == null
-      ? null
-      : DateTime.parse(json['startsAt'] as String),
-  endsAt: json['endsAt'] == null
-      ? null
-      : DateTime.parse(json['endsAt'] as String),
-  isActive: json['isActive'] as bool,
-  createdAt: DateTime.parse(json['createdAt'] as String),
-  updatedAt: DateTime.parse(json['updatedAt'] as String),
-  imageUrl: json['imageUrl'] as String?,
-  hallName: json['hallName'] as String?,
-  branchName: json['branchName'] as String?,
-);
+      id: json['id'] as String,
+      title: json['title'] as String,
+      description: json['description'] as String?,
+      discountType: json['discountType'] as String,
+      discountValue: (json['discountValue'] as num).toDouble(),
+      startsAt: json['startsAt'] == null
+          ? null
+          : DateTime.parse(json['startsAt'] as String),
+      endsAt: json['endsAt'] == null
+          ? null
+          : DateTime.parse(json['endsAt'] as String),
+      isActive: json['isActive'] as bool,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      imageUrl: json['imageUrl'] as String?,
+      hallName: json['hallName'] as String?,
+      branchName: json['branchName'] as String?,
+    );
 
 Map<String, dynamic> _$OfferModelToJson(OfferModel instance) =>
     <String, dynamic>{

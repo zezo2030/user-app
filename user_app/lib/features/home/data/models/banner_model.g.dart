@@ -7,20 +7,20 @@ part of 'banner_model.dart';
 // **************************************************************************
 
 BannerModel _$BannerModelFromJson(Map<String, dynamic> json) => BannerModel(
-  id: json['id'] as String,
-  title: json['title'] as String,
-  imageUrl: json['imageUrl'] as String,
-  link: json['link'] as String?,
-  startsAt: json['startsAt'] == null
-      ? null
-      : DateTime.parse(json['startsAt'] as String),
-  endsAt: json['endsAt'] == null
-      ? null
-      : DateTime.parse(json['endsAt'] as String),
-  isActive: json['isActive'] as bool,
-  createdAt: DateTime.parse(json['createdAt'] as String),
-  updatedAt: DateTime.parse(json['updatedAt'] as String),
-);
+      id: json['id'] as String,
+      title: json['title'] as String?,
+      imageUrl: json['imageUrl'] as String,
+      link: json['link'] as String?,
+      startsAt: json['startsAt'] == null
+          ? null
+          : DateTime.parse(json['startsAt'] as String),
+      endsAt: json['endsAt'] == null
+          ? null
+          : DateTime.parse(json['endsAt'] as String),
+      isActive: json['isActive'] as bool,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
+    );
 
 Map<String, dynamic> _$BannerModelToJson(BannerModel instance) =>
     <String, dynamic>{

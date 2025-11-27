@@ -54,9 +54,11 @@ class ActivitiesCubit extends Cubit<ActivitiesState> {
         !state.loading) {
       return;
     }
+    if (isClosed) return;
     emit(state.copyWith(currentTab: tab, loading: true, error: null));
     try {
       final res = await repository.fetch(filter: tab, page: 1);
+      if (isClosed) return;
       emit(
         state.copyWith(
           bookings: res.items,
@@ -66,22 +68,44 @@ class ActivitiesCubit extends Cubit<ActivitiesState> {
         ),
       );
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(loading: false, error: e.toString()));
     }
   }
 
   Future<void> refresh() async {
-    await loadTab(state.currentTab);
+    // إجبار إعادة التحميل حتى لو كانت البيانات موجودة
+    if (isClosed) return;
+    // إعادة تعيين الحالة لضمان التحديث الكامل
+    emit(state.copyWith(loading: true, error: null, bookings: []));
+    try {
+      final res = await repository.fetch(filter: state.currentTab, page: 1);
+      if (isClosed) return;
+      emit(
+        state.copyWith(
+          bookings: res.items,
+          loading: false,
+          canLoadMore: res.hasMore,
+          nextPage: res.nextPage,
+          error: null,
+        ),
+      );
+    } catch (e) {
+      if (isClosed) return;
+      emit(state.copyWith(loading: false, error: e.toString()));
+    }
   }
 
   Future<void> loadMore() async {
     if (!state.canLoadMore || state.loading) return;
+    if (isClosed) return;
     emit(state.copyWith(loading: true));
     try {
       final res = await repository.fetch(
         filter: state.currentTab,
         page: state.nextPage,
       );
+      if (isClosed) return;
       emit(
         state.copyWith(
           bookings: [...state.bookings, ...res.items],
@@ -91,6 +115,7 @@ class ActivitiesCubit extends Cubit<ActivitiesState> {
         ),
       );
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(loading: false, error: e.toString()));
     }
   }

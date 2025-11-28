@@ -9,17 +9,41 @@ import '../../booking/data/models/booking_model.dart';
 import '../../booking/presentation/pages/booking_details_page.dart';
 import '../../tickets/data/datasources/tickets_remote_datasource.dart';
 import '../../../core/network/dio_client.dart';
+import '../../auth/presentation/cubit/auth_cubit.dart';
+import '../../auth/presentation/cubit/auth_state.dart';
+import '../../../core/routes/app_route_generator.dart';
 
 class MyBookingsPage extends StatelessWidget {
   const MyBookingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider<BookingsRepository>(
-      create: (_) => BookingsRepositoryImpl(api: BookingsApi()),
-      child: _MyBookingsView(
-        ticketsDs: TicketsRemoteDataSourceImpl(dio: DioClient.instance),
-      ),
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, authState) {
+        // Check if user is guest
+        if (authState is Guest) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.of(context).pop();
+            Navigator.pushNamed(context, AppRoutes.login);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('login_required'.tr()),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          });
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        return RepositoryProvider<BookingsRepository>(
+          create: (_) => BookingsRepositoryImpl(api: BookingsApi()),
+          child: _MyBookingsView(
+            ticketsDs: TicketsRemoteDataSourceImpl(dio: DioClient.instance),
+          ),
+        );
+      },
     );
   }
 }

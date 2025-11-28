@@ -22,7 +22,9 @@ import '../cubit/create_trip_request_cubit.dart';
 import '../cubit/create_trip_request_state.dart';
 
 class TripRequestWizardPage extends StatefulWidget {
-  const TripRequestWizardPage({super.key});
+  final String? branchId;
+
+  const TripRequestWizardPage({super.key, this.branchId});
 
   @override
   State<TripRequestWizardPage> createState() => _TripRequestWizardPageState();
@@ -68,6 +70,14 @@ class _TripRequestWizardPageState extends State<TripRequestWizardPage> {
     _hallsCubit = home_di.sl<HallsCubit>(); // Get halls cubit for hall fetching
     _loadBranches(); // Load available branches
     _fetchSlotsForDate(); // Initial slot fetch
+
+    // If branchId is provided, set it and load halls
+    if (widget.branchId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _cubit.updateSelectedBranchId(widget.branchId!);
+        _loadHallsForBranch(widget.branchId!);
+      });
+    }
   }
 
   @override

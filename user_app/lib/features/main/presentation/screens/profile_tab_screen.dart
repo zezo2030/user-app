@@ -63,6 +63,20 @@ class ProfileTabScreen extends StatelessWidget {
         }
       },
       builder: (context, state) {
+        // Check if user is guest
+        if (state is Guest) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.pushNamed(context, '/login');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('login_required'.tr()),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          });
+          return const Center(child: CircularProgressIndicator());
+        }
+
         if (state is AuthLoading || state is ProfileUpdating) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is Authenticated) {

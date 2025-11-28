@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../domain/entities/offer_entity.dart';
+import '../../domain/entities/branch_entity.dart';
 import 'modern_offer_card.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../pages/offer_branches_page.dart';
 
 class FeaturedOffersSection extends StatefulWidget {
   final List<OfferEntity> offers;
   final VoidCallback? onViewAll;
+  final List<BranchEntity>? featuredBranches;
 
   const FeaturedOffersSection({
     super.key,
     required this.offers,
     this.onViewAll,
+    this.featuredBranches,
   });
 
   @override
@@ -216,13 +220,12 @@ class _FeaturedOffersSectionState extends State<FeaturedOffersSection>
   }
 
   void _onOfferTap(OfferEntity offer) {
-    // TODO: Navigate to offer details or apply offer
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${'claim_offer'.tr()}: ${offer.title}'),
-        backgroundColor: Theme.of(context).primaryColor,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => OfferBranchesPage(
+          offer: offer,
+          featuredBranches: widget.featuredBranches,
+        ),
       ),
     );
   }

@@ -7,6 +7,9 @@ import '../../../../core/network/dio_client.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../cubit/booking_cubit.dart';
 import '../cubit/booking_state.dart';
+import '../../../auth/presentation/cubit/auth_cubit.dart';
+import '../../../auth/presentation/cubit/auth_state.dart';
+import '../../../../core/routes/app_route_generator.dart';
 import '../widgets/date_time_selector.dart';
 import '../widgets/duration_selector.dart';
 import '../widgets/persons_input.dart';
@@ -77,6 +80,20 @@ class _HallBookingWizardPageState extends State<HallBookingWizardPage> {
     super.initState();
     _bookingCubit = booking_di.sl<BookingCubit>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Check if user is guest
+      final authState = context.read<AuthCubit>().state;
+      if (authState is Guest) {
+        // Redirect to login
+        Navigator.of(context).pop();
+        Navigator.pushNamed(context, AppRoutes.login);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('login_required'.tr()),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
       _loadAddOns();
     });
   }

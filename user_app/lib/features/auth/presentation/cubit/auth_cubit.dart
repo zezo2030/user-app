@@ -328,6 +328,11 @@ class AuthCubit extends Cubit<AuthState> {
     emit(Unauthenticated());
   }
 
+  // Enter as guest
+  Future<void> enterAsGuest() async {
+    emit(Guest());
+  }
+
   // Check if user is logged in
   Future<void> checkAuthStatus() async {
     final isLoggedIn = await _storageService.isLoggedIn();

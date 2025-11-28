@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart' as easy_localization;
 import '../../../../core/routes/app_route_generator.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
@@ -14,19 +15,19 @@ class WelcomeScreen extends StatelessWidget {
     return Scaffold(
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
-          if (state is Authenticated) {
-            print('✅ [Welcome Screen] User authenticated, navigating to /main');
+          if (state is Authenticated || state is Guest) {
+            print('✅ [Welcome Screen] User authenticated or guest, navigating to /main');
             WidgetsBinding.instance.addPostFrameCallback((_) {
               Navigator.pushReplacementNamed(context, '/main');
             });
           }
         },
         builder: (context, state) {
-          // Check if already authenticated when screen is built
-          if (state is Authenticated) {
+          // Check if already authenticated or guest when screen is built
+          if (state is Authenticated || state is Guest) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               print(
-                '✅ [Welcome Screen] Already authenticated, navigating to /main',
+                '✅ [Welcome Screen] Already authenticated or guest, navigating to /main',
               );
               Navigator.pushReplacementNamed(context, '/main');
             });
@@ -125,6 +126,16 @@ class WelcomeScreen extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Continue as Guest button
+                        _OutlinedSoftButton(
+                          text: 'continue_as_guest'.tr(),
+                          onTap: () {
+                            context.read<AuthCubit>().enterAsGuest();
+                          },
                         ),
 
                         const SizedBox(height: 48),

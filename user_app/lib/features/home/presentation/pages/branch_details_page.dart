@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:dio/dio.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../di/home_injection.dart';
 import '../../domain/usecases/get_branch_details_usecase.dart';
 import '../../domain/usecases/get_halls_by_branch_usecase.dart';
 import '../../domain/entities/branch_entity.dart';
-import '../../domain/entities/hall_entity.dart';
 import '../cubit/branch_details_cubit.dart';
 import '../cubit/branch_details_state.dart';
 import '../cubit/halls_cubit.dart';
@@ -18,7 +18,10 @@ import '../widgets/ratings_section.dart';
 import '../widgets/offers_section.dart';
 import '../widgets/hall_video_player.dart';
 import '../../../../core/utils/url_utils.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import '../../../../core/constants/api_constants.dart';
+import '../../../booking/presentation/pages/hall_booking_wizard_page.dart';
+import '../../../events/presentation/pages/create_event_request_page.dart';
+import '../../../trips/presentation/pages/trip_request_wizard_page.dart';
 
 class BranchDetailsPage extends StatelessWidget {
   final String branchId;
@@ -280,8 +283,13 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
 
               const SizedBox(height: 24),
 
-              // Halls Section
-              _buildHallsSection(),
+              // Booking Options Section
+              _buildBookingOptionsSection(context),
+
+              const SizedBox(height: 24),
+
+              // Book Hall Button
+              _buildBookHallButton(),
             ]),
           ),
         ),
@@ -1023,12 +1031,12 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
     );
   }
 
-  Widget _buildHallsSection() {
+  Widget _buildBookHallButton() {
     return BlocBuilder<HallsCubit, HallsState>(
       builder: (context, state) {
         if (state is HallsLoading) {
           return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
+            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -1041,35 +1049,15 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                 ),
               ],
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(Iconsax.home_2, color: AppColors.primaryRed, size: 24),
-                    const SizedBox(width: 12),
-                    Text(
-                      'halls'.tr(),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                const Center(
-                  child: CircularProgressIndicator(color: AppColors.primaryRed),
-                ),
-              ],
+            child: const Center(
+              child: CircularProgressIndicator(color: AppColors.primaryRed),
             ),
           );
         }
 
         if (state is HallsError) {
           return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
+            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -1082,45 +1070,25 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                 ),
               ],
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(Iconsax.home_2, color: AppColors.primaryRed, size: 24),
-                    const SizedBox(width: 12),
-                    Text(
-                      'halls'.tr(),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Center(
-                  child: Column(
-                    children: [
-                      Icon(
-                        Iconsax.info_circle,
-                        size: 48,
-                        color: AppColors.errorColor,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        state.message,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.errorColor,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+            child: Center(
+              child: Column(
+                children: [
+                  Icon(
+                    Iconsax.info_circle,
+                    size: 48,
+                    color: AppColors.errorColor,
                   ),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  Text(
+                    state.message,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColors.errorColor,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
           );
         }
@@ -1128,7 +1096,7 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
         if (state is HallsLoaded) {
           if (state.halls.isEmpty) {
             return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -1141,103 +1109,141 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
                   ),
                 ],
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Iconsax.home_2,
-                        color: AppColors.primaryRed,
-                        size: 24,
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'halls'.tr(),
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Center(
-                    child: Column(
-                      children: [
-                        Icon(
-                          Iconsax.home_2,
-                          size: 48,
-                          color: AppColors.textSecondary,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'no_halls_available'.tr(),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
+              child: Center(
+                child: Column(
                   children: [
-                    Icon(Iconsax.home_2, color: AppColors.primaryRed, size: 24),
-                    const SizedBox(width: 12),
+                    Icon(
+                      Iconsax.home_2,
+                      size: 48,
+                      color: AppColors.textSecondary,
+                    ),
+                    const SizedBox(height: 8),
                     Text(
-                      'halls'.tr(),
+                      'no_halls_available'.tr(),
                       style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                child: SizedBox(
-                  height: 200,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: state.halls.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        width: 160,
-                        margin: EdgeInsets.only(
-                          right: index < state.halls.length - 1 ? 12 : 0,
+            );
+          }
+
+          // Get the first (and only) hall
+          final hall = state.halls.first;
+          final isBookable = hall.status.toLowerCase() == 'available';
+          final label = isBookable
+              ? 'book_hall'.tr()
+              : 'hall_not_available'.tr();
+
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.shadowColor,
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: isBookable
+                        ? const LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              Color(0xFFFF5CAB),
+                              Color(0xFFFF6A00),
+                            ],
+                          )
+                        : null,
+                    color: isBookable
+                        ? null
+                        : Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: isBookable
+                          ? () async {
+                              try {
+                                final dio = Dio();
+                                final res = await dio.get(
+                                  '${ApiConstants.baseUrl}${ApiConstants.hallsEndpoint}/${hall.id}',
+                                );
+                                String latestStatus = hall.status;
+                                if (res.data is Map) {
+                                  final data = res.data as Map;
+                                  final status = data['status'];
+                                  if (status is String) {
+                                    latestStatus = status;
+                                  }
+                                }
+
+                                if (latestStatus.toLowerCase() != 'available') {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('hall_not_available'.tr()),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => HallBookingWizardPage(
+                                      hallId: hall.id,
+                                      branchId: hall.branchId,
+                                      hallName: hall.nameAr,
+                                    ),
+                                  ),
+                                );
+                              } catch (_) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('hall_not_available'.tr()),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            }
+                          : null,
+                      icon: const Icon(Iconsax.calendar_1, color: Colors.white),
+                      label: Text(
+                        label,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              '/hall-details',
-                              arguments: {'hallId': state.halls[index].id},
-                            );
-                          },
-                          child: _buildHallCard(state.halls[index]),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        foregroundColor: Colors.white,
+                        shadowColor: Colors.transparent,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                      );
-                    },
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         }
 
@@ -1246,167 +1252,173 @@ class _BranchDetailsViewState extends State<BranchDetailsView> {
     );
   }
 
-  Widget _buildHallCard(HallEntity hall) {
-    final imageUrl = hall.images != null && hall.images!.isNotEmpty
-        ? resolveFileUrlWithBust(hall.images![0])
-        : null;
-
-    final basePrice = hall.priceConfig['basePrice'] ?? 0;
-
-    Color statusColor;
-    String statusText;
-    switch (hall.status) {
-      case 'available':
-        statusColor = AppColors.availableColor;
-        statusText = 'available'.tr();
-        break;
-      case 'maintenance':
-        statusColor = AppColors.maintenanceColor;
-        statusText = 'maintenance'.tr();
-        break;
-      case 'reserved':
-        statusColor = AppColors.reservedColor;
-        statusText = 'reserved'.tr();
-        break;
-      default:
-        statusColor = AppColors.textSecondary;
-        statusText = 'unknown'.tr();
-    }
-
+  Widget _buildBookingOptionsSection(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowColor,
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'booking_options'.tr(),
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: BlocBuilder<HallsCubit, HallsState>(
+                  builder: (context, hallsState) {
+                    return _buildBookingOptionCard(
+                      icon: Iconsax.ticket,
+                      title: 'book_tickets'.tr(),
+                      description: 'ticket_booking_description'.tr(),
+                      gradientColors: const [
+                        AppColors.primaryRed,
+                        AppColors.accentRed,
+                      ],
+                      onTap: () {
+                        // Navigate to first available hall for ticket booking
+                        if (hallsState is HallsLoaded && hallsState.halls.isNotEmpty) {
+                          final firstHall = hallsState.halls.first;
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HallBookingWizardPage(
+                                hallId: firstHall.id,
+                                branchId: widget.branchId,
+                                hallName: firstHall.nameAr,
+                              ),
+                            ),
+                          );
+                        } else {
+                          // If no halls loaded yet, show message or navigate to hall selection
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('no_halls_available'.tr()),
+                              backgroundColor: Colors.orange,
+                            ),
+                          );
+                        }
+                      },
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildBookingOptionCard(
+                  icon: Iconsax.cake,
+                  title: 'book_special_events'.tr(),
+                  description: 'special_events_description'.tr(),
+                  gradientColors: const [
+                    AppColors.primaryPink,
+                    AppColors.primaryRed,
+                  ],
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CreateEventRequestPage(
+                          branchId: widget.branchId,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _buildBookingOptionCard(
+            icon: Iconsax.bus,
+            title: 'book_school_trips'.tr(),
+            description: 'school_trips_description'.tr(),
+            gradientColors: const [
+              AppColors.primaryRed,
+              AppColors.deepRed,
+            ],
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TripRequestWizardPage(
+                    branchId: widget.branchId,
+                  ),
+                ),
+              );
+            },
+            isFullWidth: true,
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Stack(
+    );
+  }
+
+  Widget _buildBookingOptionCard({
+    required IconData icon,
+    required String title,
+    required String description,
+    required List<Color> gradientColors,
+    required VoidCallback onTap,
+    bool isFullWidth = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: isFullWidth ? double.infinity : null,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: gradientColors,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: gradientColors.first.withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // Hall Image with error handling
-            Positioned.fill(
-              child: imageUrl == null
-                  ? Container(
-                      color: AppColors.greyLight,
-                      child: Icon(
-                        Iconsax.home_2,
-                        size: 48,
-                        color: AppColors.textSecondary,
-                      ),
-                    )
-                  : CachedNetworkImage(
-                      imageUrl: imageUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (_, __) =>
-                          Container(color: AppColors.greyLight),
-                      errorWidget: (_, __, ___) => Container(
-                        color: AppColors.greyLight,
-                        child: Icon(
-                          Iconsax.home_2,
-                          size: 48,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ),
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 32,
             ),
-
-            // Gradient Overlay
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0.7),
-                  ],
-                ),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
-
-            // Status Badge
-            Positioned(
-              top: 8,
-              right: 8,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: statusColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  statusText,
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+            const SizedBox(height: 4),
+            Text(
+              description,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.white.withOpacity(0.9),
+                height: 1.3,
               ),
-            ),
-
-            // Hall Info
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.8),
-                    ],
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      hall.nameAr,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryRed,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        '${'ticket_price'.tr()}: $basePrice ${'currency'.tr()}',
-                        style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
       ),
     );
   }
+
 }

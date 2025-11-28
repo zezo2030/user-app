@@ -19,7 +19,9 @@ import '../../../booking/presentation/widgets/date_time_selector.dart';
 import '../../../booking/domain/entities/time_slot_entity.dart';
 
 class CreateEventRequestPage extends StatefulWidget {
-  const CreateEventRequestPage({super.key});
+  final String? branchId;
+
+  const CreateEventRequestPage({super.key, this.branchId});
 
   @override
   State<CreateEventRequestPage> createState() => _CreateEventRequestPageState();
@@ -79,6 +81,13 @@ class _CreateEventRequestPageState extends State<CreateEventRequestPage> {
   void initState() {
     super.initState();
     _loadBranches();
+    // If branchId is provided, set it and load halls
+    if (widget.branchId != null) {
+      _selectedBranchId = widget.branchId;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _loadHalls(widget.branchId!);
+      });
+    }
   }
 
   Future<void> _loadBranches() async {
@@ -217,8 +226,15 @@ class _CreateEventRequestPageState extends State<CreateEventRequestPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => sl<BookingCubit>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => sl<BookingCubit>(),
+        ),
+        BlocProvider(
+          create: (_) => sl<EventRequestCubit>(),
+        ),
+      ],
       child: Scaffold(
         appBar: AppBar(title: const Text('إنشاء طلب حجز خاص')),
         body: BlocListener<BookingCubit, BookingState>(

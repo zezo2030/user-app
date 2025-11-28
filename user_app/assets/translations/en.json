@@ -139,6 +139,8 @@
   "tab_upcoming": "Upcoming",
   "tab_past": "Past",
   "tab_cancelled": "Cancelled",
+  "tab_active": "Active Bookings",
+  "tab_ended": "Ended Bookings",
   "no_bookings": "No bookings",
   "retry": "Retry",
   "view_details": "View details",
@@ -615,5 +617,14 @@
   "video_load_error": "Video load error",
   "invalid_video_url": "Invalid video URL",
   "video": "Video",
-  "watch_video": "Watch Video"
+  "watch_video": "Watch Video",
+  "book_tickets": "Book Tickets",
+  "book_special_events": "Book Special Events",
+  "book_school_trips": "Book School Trips",
+  "ticket_booking_description": "Book general entry tickets",
+  "special_events_description": "Book a special event at this branch",
+  "school_trips_description": "Book a school trip at this branch",
+  "continue_as_guest": "Continue as Guest",
+  "login_required": "Login required to access this feature",
+  "guest_mode": "Guest Mode"
 }

@@ -11,6 +11,7 @@ import '../widgets/popular_branches_section.dart';
 import '../widgets/nearby_branches_section.dart';
 import '../../../main/presentation/cubit/main_navigation_cubit.dart';
 import 'all_offers_page.dart';
+import 'branches_with_offers_page.dart';
 import '../../../branches/presentation/cubit/branches_cubit.dart';
 import '../../../branches/presentation/cubit/branches_state.dart';
 
@@ -51,11 +52,14 @@ class HomeContentView extends StatelessWidget {
                   SliverToBoxAdapter(
                     child: FeaturedOffersSection(
                       offers: state.data.offers,
+                      featuredBranches: state.data.featuredBranches,
                       onViewAll: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) =>
-                                AllOffersPage(offers: state.data.offers),
+                            builder: (_) => BranchesWithOffersPage(
+                              offers: state.data.offers,
+                              featuredBranches: state.data.featuredBranches,
+                            ),
                           ),
                         );
                       },

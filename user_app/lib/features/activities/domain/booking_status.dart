@@ -1,5 +1,5 @@
 // Booking status used for filtering in My Activities
-enum BookingStatusFilter { all, upcoming, past, cancelled }
+enum BookingStatusFilter { all, upcoming, past, cancelled, active, ended }
 
 extension BookingStatusFilterQuery on BookingStatusFilter {
   String? get apiValue {
@@ -12,6 +12,10 @@ extension BookingStatusFilterQuery on BookingStatusFilter {
         return 'past';
       case BookingStatusFilter.cancelled:
         return 'cancelled';
+      case BookingStatusFilter.active:
+        return 'active';
+      case BookingStatusFilter.ended:
+        return 'ended';
     }
   }
 }

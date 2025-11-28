@@ -45,7 +45,7 @@ class ActivitiesCubit extends Cubit<ActivitiesState> {
   final TicketsRemoteDataSource ticketsDs;
 
   ActivitiesCubit({required this.repository, required this.ticketsDs})
-    : super(const ActivitiesState(currentTab: BookingStatusFilter.all));
+    : super(const ActivitiesState(currentTab: BookingStatusFilter.active));
 
   Future<void> loadTab(BookingStatusFilter tab) async {
     // Guard: avoid reloading same tab if we already have data and not forced

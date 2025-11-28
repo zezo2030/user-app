@@ -24,6 +24,8 @@ class Authenticated extends AuthState {
 
 class Unauthenticated extends AuthState {}
 
+class Guest extends AuthState {}
+
 class OtpSent extends AuthState {
   final String phone;
 

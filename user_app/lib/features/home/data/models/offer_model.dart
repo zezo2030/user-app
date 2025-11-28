@@ -16,10 +16,11 @@ class OfferModel extends OfferEntity {
     required super.isActive,
     required super.createdAt,
     required super.updatedAt,
-    super.imageUrl,
-    super.hallName,
-    super.branchName,
-  });
+      super.imageUrl,
+      super.hallName,
+      super.branchName,
+      super.branchId,
+    });
 
   factory OfferModel.fromJson(Map<String, dynamic> json) {
     // معالجة مخصصة لـ discountValue لتجنب خطأ تحويل النوع
@@ -113,6 +114,7 @@ class OfferModel extends OfferEntity {
       imageUrl: json['imageUrl']?.toString(),
       hallName: parsedHallName,
       branchName: parsedBranchName,
+      branchId: json['branchId']?.toString(),
     );
   }
 
@@ -133,6 +135,7 @@ class OfferModel extends OfferEntity {
       imageUrl: entity.imageUrl,
       hallName: entity.hallName,
       branchName: entity.branchName,
+      branchId: entity.branchId,
     );
   }
 
@@ -151,6 +154,7 @@ class OfferModel extends OfferEntity {
       imageUrl: imageUrl,
       hallName: hallName,
       branchName: branchName,
+      branchId: branchId,
     );
   }
 }

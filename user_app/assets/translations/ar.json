@@ -139,6 +139,8 @@
   "tab_upcoming": "القادمة",
   "tab_past": "السابقة",
   "tab_cancelled": "الملغاة",
+  "tab_active": "الحجوزات النشطة",
+  "tab_ended": "الحجوزات المنتهية",
   "no_bookings": "لا توجد حجوزات",
   "retry": "إعادة المحاولة",
   "view_details": "عرض التفاصيل",
@@ -657,5 +659,14 @@
   "video_load_error": "خطأ في تحميل الفيديو",
   "invalid_video_url": "رابط الفيديو غير صالح",
   "video": "فيديو",
-  "watch_video": "مشاهدة الفيديو"
+  "watch_video": "مشاهدة الفيديو",
+  "book_tickets": "حجز تذاكر",
+  "book_special_events": "حجز مناسبات خاصة",
+  "book_school_trips": "حجز رحلات مدرسية",
+  "ticket_booking_description": "احجز تذاكر الدخول العامة",
+  "special_events_description": "احجز مناسبة خاصة في هذا الفرع",
+  "school_trips_description": "احجز رحلة مدرسية في هذا الفرع",
+  "continue_as_guest": "متابعة كضيف",
+  "login_required": "يجب تسجيل الدخول للوصول إلى هذه الميزة",
+  "guest_mode": "وضع الضيف"
 }

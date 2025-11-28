@@ -14,6 +14,7 @@ class OfferEntity extends Equatable {
   final String? imageUrl;
   final String? hallName;
   final String? branchName;
+  final String? branchId;
 
   const OfferEntity({
     required this.id,
@@ -29,6 +30,7 @@ class OfferEntity extends Equatable {
     this.imageUrl,
     this.hallName,
     this.branchName,
+    this.branchId,
   });
 
   @override
@@ -46,5 +48,6 @@ class OfferEntity extends Equatable {
     imageUrl,
     hallName,
     branchName,
+    branchId,
   ];
 }

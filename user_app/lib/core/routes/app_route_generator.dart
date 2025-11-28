@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../features/auth/presentation/screens/complete_registration_screen.dart';
 import '../../features/auth/presentation/screens/kinetic_login_screen.dart';
@@ -9,6 +11,8 @@ import '../../features/auth/presentation/screens/otp_verify_screen.dart';
 import '../../features/auth/presentation/screens/profile_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/welcome_screen.dart';
+import '../../features/auth/presentation/cubit/auth_cubit.dart';
+import '../../features/auth/presentation/cubit/auth_state.dart';
 import '../../features/booking/presentation/pages/hall_booking_wizard_page.dart';
 import '../../features/bookings/presentation/my_bookings_page.dart';
 import '../../features/home/presentation/pages/branch_details_page.dart';
@@ -91,7 +95,7 @@ class AppRouteGenerator {
           arguments: args,
         );
       case AppRoutes.profile:
-        return _buildSoftFadeRoute(
+        return _buildProtectedRoute(
           settings: settings,
           page: const ProfileScreen(),
         );
@@ -109,11 +113,15 @@ class AppRouteGenerator {
           builder: (context) => HallDetailsPage(hallId: args?['hallId'] ?? ''),
         );
       case AppRoutes.myBookings:
-        return MaterialPageRoute(builder: (context) => const MyBookingsPage());
+        return _buildProtectedRoute(
+          settings: settings,
+          page: const MyBookingsPage(),
+        );
       case AppRoutes.hallBookingWizard:
         final args = settings.arguments as Map<String, dynamic>?;
-        return MaterialPageRoute(
-          builder: (context) => HallBookingWizardPage(
+        return _buildProtectedRoute(
+          settings: settings,
+          page: HallBookingWizardPage(
             hallId: args?['hallId'] ?? '',
             branchId: args?['branchId'] ?? '',
             hallName: args?['hallName'] ?? '',
@@ -171,6 +179,50 @@ PageRoute<dynamic> _buildSoftFadeRoute({
     transitionDuration: const Duration(milliseconds: 320),
     reverseTransitionDuration: const Duration(milliseconds: 280),
     pageBuilder: (context, animation, secondaryAnimation) => page,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final curvedAnimation = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      );
+      final offsetAnimation = Tween<Offset>(
+        begin: const Offset(0.0, 0.05),
+        end: Offset.zero,
+      ).animate(curvedAnimation);
+      return FadeTransition(
+        opacity: curvedAnimation,
+        child: SlideTransition(position: offsetAnimation, child: child),
+      );
+    },
+  );
+}
+
+PageRoute<dynamic> _buildProtectedRoute({
+  required RouteSettings settings,
+  required Widget page,
+}) {
+  return PageRouteBuilder(
+    settings: settings,
+    pageBuilder: (context, animation, secondaryAnimation) {
+      // Check authentication state
+      final authState = context.read<AuthCubit>().state;
+      if (authState is Guest) {
+        // Redirect to login
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('login_required'.tr()),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        });
+        return const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        );
+      }
+      return page;
+    },
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       final curvedAnimation = CurvedAnimation(
         parent: animation,

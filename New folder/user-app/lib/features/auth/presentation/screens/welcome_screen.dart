@@ -88,10 +88,8 @@ class WelcomeScreen extends StatelessWidget {
                         // Primary Login button
                         _GradientButton(
                           text: 'تسجيل دخول',
-                          onTap: () => Navigator.pushNamed(
-                            context,
-                            AppRoutes.login,
-                          ),
+                          onTap: () =>
+                              Navigator.pushNamed(context, AppRoutes.login),
                           gradient: const LinearGradient(
                             colors: [Color(0xFFFF5CAB), Color(0xFFFF6A00)],
                             begin: Alignment.centerLeft,
@@ -114,10 +112,8 @@ class WelcomeScreen extends StatelessWidget {
 
                         // Forgot password link
                         GestureDetector(
-                          onTap: () => Navigator.pushNamed(
-                            context,
-                            AppRoutes.otpLogin,
-                          ),
+                          onTap: () =>
+                              Navigator.pushNamed(context, AppRoutes.otpLogin),
                           child: Text(
                             'هل نسيت كلمة السر',
                             style: theme.textTheme.bodySmall?.copyWith(

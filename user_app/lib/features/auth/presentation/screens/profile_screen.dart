@@ -41,6 +41,24 @@ class ProfileScreen extends StatelessWidget {
           }
         },
         builder: (context, state) {
+          // Check if user is guest
+          if (state is Guest) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/welcome',
+                (route) => false,
+              );
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('login_required'.tr()),
+                  backgroundColor: Colors.orange,
+                ),
+              );
+            });
+            return const Center(child: CircularProgressIndicator());
+          }
+
           if (state is AuthLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is Authenticated) {

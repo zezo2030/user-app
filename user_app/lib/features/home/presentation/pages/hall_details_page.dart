@@ -17,6 +17,9 @@ import '../../../../core/constants/api_constants.dart';
 import '../../../home/presentation/widgets/offers_section.dart';
 import '../../../booking/presentation/pages/hall_booking_wizard_page.dart';
 import '../../../../core/realtime/socket_service.dart';
+import '../../../auth/presentation/cubit/auth_cubit.dart';
+import '../../../auth/presentation/cubit/auth_state.dart';
+import '../../../../core/routes/app_route_generator.dart';
 
 class HallDetailsPage extends StatelessWidget {
   final String hallId;
@@ -414,6 +417,51 @@ class HallDetailsBottomBar extends StatelessWidget {
 
   const HallDetailsBottomBar({super.key, required this.hall});
 
+  Future<void> _proceedToBooking(BuildContext context) async {
+    try {
+      final dio = Dio();
+      final res = await dio.get(
+        '${ApiConstants.baseUrl}${ApiConstants.hallsEndpoint}/${hall.id}',
+      );
+      String latestStatus = hall.status;
+      if (res.data is Map) {
+        final data = res.data as Map;
+        final status = data['status'];
+        if (status is String) {
+          latestStatus = status;
+        }
+      }
+
+      if (latestStatus.toLowerCase() != 'available') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('hall_not_available'.tr()),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HallBookingWizardPage(
+            hallId: hall.id,
+            branchId: hall.branchId,
+            hallName: hall.nameAr,
+          ),
+        ),
+      );
+    } catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('hall_not_available'.tr()),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -461,49 +509,29 @@ class HallDetailsBottomBar extends StatelessWidget {
                     ),
                     child: ElevatedButton.icon(
                       onPressed: isBookable
-                          ? () async {
-                            try {
-                              final dio = Dio();
-                              final res = await dio.get(
-                                '${ApiConstants.baseUrl}${ApiConstants.hallsEndpoint}/${hall.id}',
-                              );
-                              String latestStatus = hall.status;
-                              if (res.data is Map) {
-                                final data = res.data as Map;
-                                final status = data['status'];
-                                if (status is String) {
-                                  latestStatus = status;
-                                }
-                              }
-
-                              if (latestStatus.toLowerCase() != 'available') {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('hall_not_available'.tr()),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                                return;
-                              }
-
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => HallBookingWizardPage(
-                                    hallId: hall.id,
-                                    branchId: hall.branchId,
-                                    hallName: hall.nameAr,
-                                  ),
-                                ),
-                              );
-                            } catch (_) {
+                          ? () {
+                            // Check if user is authenticated
+                            final authState = context.read<AuthCubit>().state;
+                            if (authState is Guest) {
+                              // Show login required message
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('hall_not_available'.tr()),
-                                  backgroundColor: Colors.red,
+                                  content: Text('login_required'.tr()),
+                                  backgroundColor: Colors.orange,
+                                  action: SnackBarAction(
+                                    label: 'login'.tr(),
+                                    textColor: Colors.white,
+                                    onPressed: () {
+                                      Navigator.pushNamed(context, AppRoutes.login);
+                                    },
+                                  ),
                                 ),
                               );
+                              return;
                             }
+
+                            // Proceed with booking for authenticated users
+                            _proceedToBooking(context);
                           }
                         : null,
                       icon: const Icon(Iconsax.calendar_1),
